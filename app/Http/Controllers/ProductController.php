@@ -49,8 +49,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required_without:name_en|string|max:255|nullable',
+            'name_en' => 'required_without:name_ar|string|max:255|nullable',
             'brand_ar' => 'nullable|string|max:255',
             'brand_en' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
@@ -164,8 +164,8 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required_without:name_en|string|max:255|nullable',
+            'name_en' => 'required_without:name_ar|string|max:255|nullable',
             'brand_ar' => 'nullable|string|max:255',
             'brand_en' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
@@ -405,8 +405,8 @@ class ProductController extends Controller
     public function quickStore(Request $request)
     {
         $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required_without:name_en|string|max:255|nullable',
+            'name_en' => 'required_without:name_ar|string|max:255|nullable',
             'barcode' => 'required|string|max:255|unique:products,barcode',
             'category_id' => 'required|exists:categories,id',
             'sale_price' => 'required|numeric|min:0',

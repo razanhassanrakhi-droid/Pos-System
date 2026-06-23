@@ -13,8 +13,8 @@ class ExpenseTypeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name_ar' => 'required|string|max:255|unique:expense_types,name_ar',
-            'name_en' => 'required|string|max:255|unique:expense_types,name_en',
+            'name_ar' => 'required_without:name_en|string|max:255|nullable',
+            'name_en' => 'required_without:name_ar|string|max:255|nullable',
         ]);
 
         $type = ExpenseType::create([

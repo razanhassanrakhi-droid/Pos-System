@@ -40,8 +40,8 @@ class CategoryController extends Controller
         }
 
         $request->validate([
-            'name_ar' => 'required|string|max:150',
-            'name_en' => 'required|string|max:150',
+            'name_ar' => 'required_without:name_en|string|max:150|nullable',
+            'name_en' => 'required_without:name_ar|string|max:150|nullable',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -70,8 +70,8 @@ class CategoryController extends Controller
         $branchId = session('branch_id') ?: ($user->branches()->first()?->id ?: \App\Models\Branch::value('id'));
 
         $request->validate([
-            'name_ar' => 'required|string|max:150',
-            'name_en' => 'required|string|max:150',
+            'name_ar' => 'required_without:name_en|string|max:150|nullable',
+            'name_en' => 'required_without:name_ar|string|max:150|nullable',
             'is_active' => 'nullable|boolean',
         ]);
 

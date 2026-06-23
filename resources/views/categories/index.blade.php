@@ -973,12 +973,12 @@
                     {{-- Arabic Name --}}
                     <div class="col-md-6">
                         <label class="pm-form-label">Category Name (Arabic) <span class="text-danger">*</span></label>
-                        <input type="text" name="name_ar" class="pm-form-control" required dir="rtl" placeholder="مثال: إلكترونيات">
+                        <input type="text" name="name_ar" class="pm-form-control" dir="rtl" placeholder="مثال: إلكترونيات">
                     </div>
                     {{-- English Name --}}
                     <div class="col-md-6">
                         <label class="pm-form-label">Category Name (English) <span class="text-danger">*</span></label>
-                        <input type="text" name="name_en" class="pm-form-control" required dir="ltr" placeholder="e.g. Electronics">
+                        <input type="text" name="name_en" class="pm-form-control" dir="ltr" placeholder="e.g. Electronics (Optional)">
                     </div>
                 </div>
             </div>
@@ -1032,12 +1032,12 @@
                     {{-- Arabic Name --}}
                     <div class="col-md-6">
                         <label class="pm-form-label">Category Name (Arabic) <span class="text-danger">*</span></label>
-                        <input type="text" id="edit_name_ar" name="name_ar" class="pm-form-control" required dir="rtl" placeholder="مثال: إلكترونيات">
+                        <input type="text" id="edit_name_ar" name="name_ar" class="pm-form-control" dir="rtl" placeholder="مثال: إلكترونيات">
                     </div>
                     {{-- English Name --}}
                     <div class="col-md-6">
                         <label class="pm-form-label">Category Name (English) <span class="text-danger">*</span></label>
-                        <input type="text" id="edit_name_en" name="name_en" class="pm-form-control" required dir="ltr" placeholder="e.g. Electronics">
+                        <input type="text" id="edit_name_en" name="name_en" class="pm-form-control" dir="ltr" placeholder="e.g. Electronics (Optional)">
                     </div>
                 </div>
             </div>

@@ -660,7 +660,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="pm-form-label">{{ __('pos.customer_name') }} (AR) <span class="text-danger">*</span></label>
-                                <input type="text" name="name_ar" class="pm-form-control" value="{{ old('name_ar') }}" required>
+                                <input type="text" name="name_ar" class="pm-form-control" value="{{ old('name_ar') }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="pm-form-label">{{ __('pos.customer_name') }} (EN)</label>
@@ -758,7 +758,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="pm-form-label">{{ __('pos.customer_name') }} (AR) <span class="text-danger">*</span></label>
-                                <input type="text" id="edit_name_ar" name="name_ar" class="pm-form-control" required>
+                                <input type="text" id="edit_name_ar" name="name_ar" class="pm-form-control">
                             </div>
                             <div class="col-md-6">
                                 <label class="pm-form-label">{{ __('pos.customer_name') }} (EN)</label>

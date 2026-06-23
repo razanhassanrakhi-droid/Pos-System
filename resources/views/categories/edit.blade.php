@@ -16,11 +16,11 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="name_ar" class="form-label fw-semibold">{{ __('pos.category_name_ar') }} <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="name_ar" name="name_ar" required value="{{ old('name_ar', $category->getTranslation('name', 'ar')) }}" dir="rtl">
+                    <input type="text" class="form-control" id="name_ar" name="name_ar" value="{{ old('name_ar', $category->getTranslation('name', 'ar')) }}" dir="rtl">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="name_en" class="form-label fw-semibold">{{ __('pos.category_name_en') }} <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="name_en" name="name_en" required value="{{ old('name_en', $category->getTranslation('name', 'en')) }}" dir="ltr">
+                    <input type="text" class="form-control" id="name_en" name="name_en" value="{{ old('name_en', $category->getTranslation('name', 'en')) }}" dir="ltr">
                 </div>
             </div>
             

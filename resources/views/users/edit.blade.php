@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="full_name_en" class="form-label fw-semibold">{{ __('pos.full_name') }} (EN) <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="full_name_en" name="full_name_en" value="{{ old('full_name_en', $user->getTranslation('full_name', 'en')) }}" required>
+                    <input type="text" class="form-control" id="full_name_en" name="full_name_en" value="{{ old('full_name_en', $user->getTranslation('full_name', 'en')) }}">
                 </div>
             </div>
 

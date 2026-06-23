@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // إضافة SetLocale
         // $middleware->append(\App\Http\Middleware\SetLocale::class);
         // $middleware->append(\App\Http\Middleware\BranchMiddleware::class);
+        $middleware->append(\App\Http\Middleware\NormalizeMultilingualInput::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

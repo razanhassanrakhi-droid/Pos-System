@@ -57,8 +57,8 @@ class CustomerController extends Controller
         $branchId = session('branch_id');
 
         $request->validate([
-            'name_ar'       => 'required|string|max:255',
-            'name_en'       => 'nullable|string|max:255',
+            'name_ar'       => 'required_without:name_en|string|max:255|nullable',
+            'name_en'       => 'required_without:name_ar|string|max:255|nullable',
             'phone'         => 'required|string|max:20|unique:customers,phone',
             'email'         => 'nullable|email|max:255',
             'address'       => 'nullable|string|max:500',
@@ -137,8 +137,8 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $request->validate([
-            'name_ar'       => 'required|string|max:255',
-            'name_en'       => 'nullable|string|max:255',
+            'name_ar'       => 'required_without:name_en|string|max:255|nullable',
+            'name_en'       => 'required_without:name_ar|string|max:255|nullable',
             'phone'         => 'required|string|max:20|unique:customers,phone,' . $customer->id,
             'email'         => 'nullable|email|max:255',
             'address'       => 'nullable|string|max:500',

@@ -932,11 +932,11 @@
                 <div class="row g-3">
                     <div class="col-12">
                         <label class="pm-form-label">Supplier Name (Arabic) <span class="text-danger">*</span></label>
-                        <input type="text" name="name_ar" class="pm-form-control" required>
+                        <input type="text" name="name_ar" class="pm-form-control">
                     </div>
                     <div class="col-12">
                         <label class="pm-form-label">Supplier Name (English) <span class="text-danger">*</span></label>
-                        <input type="text" name="name_en" class="pm-form-control" required>
+                        <input type="text" name="name_en" class="pm-form-control">
                     </div>
                     <div class="col-12">
                         <label class="pm-form-label">Phone <span class="text-danger">*</span></label>
@@ -993,11 +993,11 @@
                     </div>
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('purchases.product_name_ar') }} <span class="text-danger">*</span></label>
-                        <input type="text" name="name_ar" class="pm-form-control" required>
+                        <input type="text" name="name_ar" class="pm-form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('purchases.product_name_en') }} <span class="text-danger">*</span></label>
-                        <input type="text" name="name_en" class="pm-form-control" required>
+                        <input type="text" name="name_en" class="pm-form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('pos.barcode') }} <span class="text-danger">*</span></label>

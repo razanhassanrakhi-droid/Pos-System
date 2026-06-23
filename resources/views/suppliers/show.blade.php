@@ -518,11 +518,11 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="pm-form-label">{{ __('pos.supplier_name') }} (AR) <span class="text-danger">*</span></label>
-                                <input type="text" id="edit_name_ar" name="name_ar" class="pm-form-control" required>
+                                <input type="text" id="edit_name_ar" name="name_ar" class="pm-form-control">
                             </div>
                             <div class="col-md-6">
                                 <label class="pm-form-label">{{ __('pos.supplier_name') }} (EN) <span class="text-danger">*</span></label>
-                                <input type="text" id="edit_name_en" name="name_en" class="pm-form-control" required>
+                                <input type="text" id="edit_name_en" name="name_en" class="pm-form-control">
                             </div>
                             <div class="col-md-6">
                                 <label class="pm-form-label">{{ __('pos.contact_person') }} (AR)</label>

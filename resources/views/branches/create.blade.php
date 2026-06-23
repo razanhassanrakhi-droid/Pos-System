@@ -14,11 +14,11 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="name_ar" class="form-label fw-semibold">{{ __('pos.branch_name_ar') }} <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="name_ar" name="name_ar" required dir="rtl">
+                    <input type="text" class="form-control" id="name_ar" name="name_ar" dir="rtl">
                 </div>
                 <div class="col-md-6">
                     <label for="name_en" class="form-label fw-semibold">{{ __('pos.branch_name_en') }} <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="name_en" name="name_en" required dir="ltr">
+                    <input type="text" class="form-control" id="name_en" name="name_en" dir="ltr" placeholder="(Optional)">
                 </div>
             </div>
 

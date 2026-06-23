@@ -324,7 +324,7 @@
                                 <div class="premium-field">
                                     <label for="name_ar">Category Name (Arabic) <span class="text-danger">*</span></label>
                                     <div class="input-wrapper rtl">
-                                        <input type="text" class="premium-input" id="name_ar" name="name_ar" required placeholder="مثال: إلكترونيات">
+                                        <input type="text" class="premium-input" id="name_ar" name="name_ar" placeholder="مثال: إلكترونيات">
                                         <i class="bi bi-tag input-icon"></i>
                                     </div>
                                 </div>
@@ -349,7 +349,7 @@
                                 <div class="premium-field">
                                     <label for="name_en">Category Name (English) <span class="text-danger">*</span></label>
                                     <div class="input-wrapper ltr">
-                                        <input type="text" class="premium-input" id="name_en" name="name_en" required placeholder="e.g. Electronics">
+                                        <input type="text" class="premium-input" id="name_en" name="name_en" placeholder="e.g. Electronics (Optional)">
                                         <i class="bi bi-tag input-icon"></i>
                                     </div>
                                 </div>

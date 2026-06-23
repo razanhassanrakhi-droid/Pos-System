@@ -31,8 +31,8 @@ public function store(Request $request)
 {
     // Validation
     $request->validate([
-        'name_ar' => 'required|string|max:255',
-        'name_en' => 'required|string|max:255',
+        'name_ar' => 'required_without:name_en|string|max:255|nullable',
+        'name_en' => 'required_without:name_ar|string|max:255|nullable',
         'code' => 'required|string|max:50|unique:branches,code',
         'phone' => 'nullable|string|max:20',
         'address_ar' => 'nullable|string|max:255',
@@ -76,8 +76,8 @@ public function store(Request $request)
    public function update(Request $request, Branch $branch)
 {
     $request->validate([
-        'name_ar' => 'required|string|max:255',
-        'name_en' => 'required|string|max:255',
+        'name_ar' => 'required_without:name_en|string|max:255|nullable',
+        'name_en' => 'required_without:name_ar|string|max:255|nullable',
         'code' => 'required|string|max:50|unique:branches,code,'.$branch->id,
         'phone' => 'nullable|string|max:20',
         'address_ar' => 'nullable|string|max:255',

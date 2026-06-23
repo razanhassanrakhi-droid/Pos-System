@@ -33,8 +33,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'full_name_ar' => 'required|string|max:150',
-            'full_name_en' => 'required|string|max:150',
+            'full_name_ar' => 'required_without:full_name_en|string|max:150|nullable',
+            'full_name_en' => 'required_without:full_name_ar|string|max:150|nullable',
             'username' => 'required|string|max:50|unique:users',
             'email' => 'nullable|email|max:150|unique:users',
             'phone' => 'nullable|string|max:20',
@@ -103,8 +103,8 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'full_name_ar' => 'required|string|max:150',
-            'full_name_en' => 'required|string|max:150',
+            'full_name_ar' => 'required_without:full_name_en|string|max:150|nullable',
+            'full_name_en' => 'required_without:full_name_ar|string|max:150|nullable',
             'username' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
             'email' => ['nullable', 'email', 'max:150', Rule::unique('users')->ignore($user->id)],
             'phone' => 'nullable|string|max:20',

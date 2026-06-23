@@ -2752,12 +2752,12 @@
                     {{-- Arabic Name --}}
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('product.product_name_ar') }} <span class="text-danger">*</span></label>
-                        <input type="text" name="name_ar" class="pm-form-control" required dir="rtl" placeholder="اسم المنتج باللغة العربية">
+                        <input type="text" name="name_ar" class="pm-form-control" dir="rtl" placeholder="اسم المنتج باللغة العربية">
                     </div>
                     {{-- English Name --}}
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('product.product_name_en') }} <span class="text-danger">*</span></label>
-                        <input type="text" name="name_en" class="pm-form-control" required dir="ltr" placeholder="Product name in English">
+                        <input type="text" name="name_en" class="pm-form-control" dir="ltr" placeholder="Product name in English (Optional)">
                     </div>
 
                     {{-- Arabic Brand --}}
@@ -3003,11 +3003,11 @@
 
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('product.product_name_ar') }} <span class="text-danger">*</span></label>
-                        <input type="text" name="name_ar" id="edit_name_ar" class="pm-form-control" required dir="rtl">
+                        <input type="text" name="name_ar" id="edit_name_ar" class="pm-form-control" dir="rtl">
                     </div>
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('product.product_name_en') }} <span class="text-danger">*</span></label>
-                        <input type="text" name="name_en" id="edit_name_en" class="pm-form-control" required dir="ltr">
+                        <input type="text" name="name_en" id="edit_name_en" class="pm-form-control" dir="ltr">
                     </div>
 
                     {{-- Arabic Brand --}}

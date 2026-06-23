@@ -79,11 +79,11 @@
                 <form id="addTypeForm">
                     <div class="mb-3">
                         <label class="form-label fw-bold">{{ __('pos.name') }} (AR) <span class="text-danger">*</span></label>
-                        <input type="text" id="new_type_name_ar" class="form-control" required>
+                        <input type="text" id="new_type_name_ar" class="form-control">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">{{ __('pos.name') }} (EN) <span class="text-danger">*</span></label>
-                        <input type="text" id="new_type_name_en" class="form-control" required>
+                        <input type="text" id="new_type_name_en" class="form-control">
                     </div>
                 </form>
             </div>
@@ -102,8 +102,8 @@
         const nameAr = document.getElementById('new_type_name_ar').value;
         const nameEn = document.getElementById('new_type_name_en').value;
 
-        if (!nameAr || !nameEn) {
-            alert('Please fill all required fields.');
+        if (!nameAr && !nameEn) {
+            alert('Please fill at least one required field (Arabic or English).');
             return;
         }
 

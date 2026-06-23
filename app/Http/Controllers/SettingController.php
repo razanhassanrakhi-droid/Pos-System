@@ -16,8 +16,8 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'company_name_en' => 'required|string',
-            'company_name_ar' => 'required|string',
+            'company_name_en' => 'required_without:company_name_ar|string|nullable',
+            'company_name_ar' => 'required_without:company_name_en|string|nullable',
             'tax_number' => 'nullable|string',
             'company_phone' => 'nullable|string',
             'company_email' => 'nullable|email',

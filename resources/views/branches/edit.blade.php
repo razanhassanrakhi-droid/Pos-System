@@ -16,12 +16,12 @@
                 <div class="col-md-6">
                     <label for="name_ar" class="form-label fw-semibold">{{ __('pos.branch_name_ar') }} <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="name_ar" name="name_ar" 
-                        value="{{ old('name_ar', $branch->getTranslation('name', 'ar')) }}" required dir="rtl">
+                        value="{{ old('name_ar', $branch->getTranslation('name', 'ar')) }}" dir="rtl">
                 </div>
                 <div class="col-md-6">
                     <label for="name_en" class="form-label fw-semibold">{{ __('pos.branch_name_en') }} <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="name_en" name="name_en" 
-                        value="{{ old('name_en', $branch->getTranslation('name', 'en')) }}" required dir="ltr">
+                        value="{{ old('name_en', $branch->getTranslation('name', 'en')) }}" dir="ltr" placeholder="(Optional)">
                 </div>
             </div>
 

@@ -64,7 +64,7 @@
                                             <label class="form-label fw-bold small">{{ __('pos.company_name_en') }} <span class="text-danger">*</span></label>
                                             <div class="input-group input-group-merge">
                                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-alphabet"></i></span>
-                                                <input type="text" name="company_name_en" class="form-control border-start-0 ps-0" value="{{ old('company_name_en', $setting->company_name['en'] ?? '') }}" required placeholder="e.g. My Store">
+                                                <input type="text" name="company_name_en" class="form-control border-start-0 ps-0" value="{{ old('company_name_en', $setting->company_name['en'] ?? '') }}" placeholder="e.g. My Store (Optional)">
                                             </div>
                                         </div>
                                         <div class="col-md-6">

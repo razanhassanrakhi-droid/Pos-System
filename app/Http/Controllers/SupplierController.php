@@ -60,8 +60,8 @@ class SupplierController extends Controller
         }
 
         $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required_without:name_en|string|max:255|nullable',
+            'name_en' => 'required_without:name_ar|string|max:255|nullable',
             'contact_person' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'required|string|max:20',
@@ -107,8 +107,8 @@ class SupplierController extends Controller
         }
 
         $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required_without:name_en|string|max:255|nullable',
+            'name_en' => 'required_without:name_ar|string|max:255|nullable',
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'contact_person_ar' => 'nullable|string|max:255',
@@ -191,8 +191,8 @@ class SupplierController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_ar' => 'required_without:name_en|string|max:255|nullable',
+            'name_en' => 'required_without:name_ar|string|max:255|nullable',
             'contact_person_ar' => 'nullable|string|max:255',
             'contact_person_en' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
