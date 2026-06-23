@@ -1,0 +1,23 @@
+:root{
+      --page-bg: #fbf3f4;          /* very light off-white / pinkish tint */
+      --card-bg: #efeff1;          /* light grey */
+      --accent: #f59e0b;           /* orange */
+      --link: #1d4ed8;             /* blue */
+      --arrow-bg: #e5e7eb;         /* grey */
+      --arrow-fg: #6b7280;         /* darker grey */
+       --brand-orange: #f97316;       /* الأساسي */
+    --brand-orange-soft: #fb923c;  /* أفتح */
+    --brand-orange-light: #fed7aa; /* خلفيات خفيفة */
+    --brand-orange-glow: rgba(249,115,22,0.25);
+    }
+
+    body{
+      background: var(--page-bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+/* مهم جدًا */
+html, body{
+  background-color: var(--page-bg) !important;
+  min-height: 100%;
+}

@@ -1,0 +1,47 @@
+/* الحالة العادية */
+.custom-nav  {
+background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);          /* تأثير زجاج */
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  height: 80px;
+  z-index: 9999;
+  
+}
+
+/* الكتابة */
+.custom-nav  .nav-link {
+  color: #000 !important;
+  font-weight: 500;
+}
+ 
+/* عند الهوفر */
+.custom-nav  .nav-link:hover {
+  color: #f97316 !important;
+}
+
+/* زر Login */
+.custom-nav  .btn-login {
+  border: 1px solid #f97316;
+  color: #f97316;
+  background: transparent;
+}
+
+.custom-nav  .btn-login:hover {
+  background: #f97316;
+  color: #fff;
+}
+
+/* شكل اللوجو */
+.custom-nav  img {
+  background: rgba(255,255,255,0.6);
+  padding: 6px;
+  border-radius: 50%;
+}
+/* كل كلام الناف بار يبقى أسود */
+.custom-nav  a,
+.custom-nav  .nav-link,
+.custom-nav  span,
+.custom-nav  i {
+  color: #000 !important;
+}
