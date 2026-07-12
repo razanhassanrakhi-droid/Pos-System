@@ -10,36 +10,6 @@
     }
 </style>
 
-<!-- Header Banner Section (Stunning Dark Indigo Hero Card) -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="welcome-hero-card py-3 px-4 rounded-4 border-0 position-relative overflow-hidden shadow-sm">
-            <div class="position-relative z-index-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
-                        <span class="badge bg-primary bg-opacity-25 text-primary-light px-2 py-1 rounded-pill text-uppercase fw-semibold tracking-wider" style="font-size: 0.6rem;">
-                            <i class="bi bi-cpu me-1"></i> {{ app()->getLocale() == 'ar' ? 'النظام متصل' : 'System Online' }}
-                        </span>
-                        <h4 class="fw-bold mb-0 text-white welcome-title tracking-tight fs-4">
-                            {{ __('pos.welcome_back', ['name' => auth()->user()->full_name ?? auth()->user()->username ?? 'User']) }} 👋
-                        </h4>
-                    </div>
-                    <p class="mb-0 welcome-subtitle" style="font-size: 0.85rem;">
-                        {{ __('pos.dashboard_subtitle', ['date' => now()->translatedFormat('l, d F Y')]) }}
-                    </p>
-                </div>
-                <div class="hero-time-badge px-3 py-1 rounded-3 d-flex align-items-center gap-2">
-                    <i class="bi bi-clock-history fs-6"></i>
-                    <span id="live-clock" class="fw-bold fs-6">{{ now()->format('H:i') }}</span>
-                </div>
-            </div>
-            <!-- Decorative light blobs -->
-            <div class="hero-blob blob-1"></div>
-            <div class="hero-blob blob-2"></div>
-        </div>
-    </div>
-</div>
-
 <div class="row mb-4">
     <!-- Total Products -->
     <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
@@ -210,7 +180,6 @@
                                 <button type="button" class="btn btn-filter rounded-pill active" onclick="filterStatus('all', this)">{{ __('pos.all') }}</button>
                                 <button type="button" class="btn btn-filter rounded-pill" onclick="filterStatus('critical', this)">{{ __('pos.critical') }}</button>
                                 <button type="button" class="btn btn-filter rounded-pill" onclick="filterStatus('low', this)">{{ __('pos.low') }}</button>
-                                <button type="button" class="btn btn-filter rounded-pill" onclick="filterStatus('warning', this)">{{ __('pos.warning') }}</button>
                             </div>
                         </div>
                     </div>
@@ -371,8 +340,8 @@
                                     <div class="d-flex flex-column min-width-0">
                                         <h6 class="mb-0 fw-bold text-dark text-truncate text-sm" style="max-width: 130px;">{{ $b->product->name }}</h6>
                                         <div class="d-flex flex-wrap gap-1 align-items-center mt-1">
-                                            <span class="badge bg-light-soft text-muted border text-xxs">Batch: {{ $b->batch_number }}</span>
-                                            <span class="badge bg-light-soft text-muted border text-xxs">Stock: {{ (int)$b->remaining_quantity }}</span>
+                                            <span class="badge bg-light-soft text-muted border text-xxs">{{ app()->getLocale() == 'ar' ? 'الدفعة:' : 'Batch:' }} {{ $b->batch_number }}</span>
+                                            <span class="badge bg-light-soft text-muted border text-xxs">{{ app()->getLocale() == 'ar' ? 'المخزون:' : 'Stock:' }} {{ (int)$b->remaining_quantity }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -804,8 +773,8 @@
     
     /* Search Box style */
     .search-input-wrapper {
-        flex: 1 1 200px;
-        max-width: 300px;
+        flex: 1 1 220px;
+        max-width: 380px;
     }
     .search-input-wrapper input {
         border: 1px solid var(--border-color) !important;
@@ -813,6 +782,10 @@
         color: var(--text-color) !important;
         width: 100%;
         transition: all 0.2s ease;
+        font-size: 0.8rem !important;
+    }
+    .search-input-wrapper input::placeholder {
+        font-size: 0.78rem;
     }
     .search-input-wrapper input:focus {
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
@@ -957,7 +930,7 @@
     };
 
     function renderProductsList() {
-        const cards = Array.from(document.querySelectorAll('.horizontal-product-card'));
+        const cards = Array.from(document.querySelectorAll('#low-stock-products-list .horizontal-product-card'));
         let visibleCards = [];
         
         cards.forEach(card => {
@@ -970,7 +943,7 @@
             if (matchesSearch && matchesStatus) {
                 visibleCards.push(card);
             } else {
-                card.style.display = 'none';
+                card.style.setProperty('display', 'none', 'important');
             }
         });
         

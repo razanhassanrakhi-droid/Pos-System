@@ -13,6 +13,7 @@ class Branch extends Model
         'name',
         'code',
         'phone',
+        'manager',
         'address',
         'city',
         'is_active',
@@ -22,6 +23,7 @@ class Branch extends Model
         'name' => 'array',
         'address' => 'array',
         'city' => 'array',
+        'manager' => 'array',
         'is_active' => 'boolean',
     ];
 

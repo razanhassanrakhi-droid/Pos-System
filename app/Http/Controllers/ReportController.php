@@ -21,9 +21,20 @@ class ReportController extends Controller
     {
         $user = auth()->user();
         
-        // Initial dates (default to current month)
-        $fromDate = $request->get('from_date', now()->startOfMonth()->format('Y-m-d'));
-        $toDate = $request->get('to_date', now()->format('Y-m-d'));
+        // Initial dates (default to current month, persisted in session)
+        if ($request->has('from_date')) {
+            $fromDate = $request->get('from_date');
+            session(['report_from_date' => $fromDate]);
+        } else {
+            $fromDate = session('report_from_date', now()->startOfMonth()->format('Y-m-d'));
+        }
+
+        if ($request->has('to_date')) {
+            $toDate = $request->get('to_date');
+            session(['report_to_date' => $toDate]);
+        } else {
+            $toDate = session('report_to_date', now()->format('Y-m-d'));
+        }
         
         // Branch filter handle
         $branchId = session('branch_id');
@@ -36,9 +47,14 @@ class ReportController extends Controller
             'from_date' => $fromDate,
             'to_date' => $toDate,
             'branch_id' => $branchId,
+            'customer_id' => $request->get('customer_id'),
+            'payment_method' => $request->get('payment_method'),
+            'status' => $request->get('status'),
+            'category_id' => $request->get('category_id'),
         ];
 
         // Fetch all report sections
+        $salesKPIs = $this->reportService->getSalesKPIs($filters);
         $salesReport = $this->reportService->getSalesReport($filters);
         $purchaseReport = $this->reportService->getPurchaseReport($filters);
         $inventoryReport = $this->reportService->getInventoryReport($filters);
@@ -51,7 +67,12 @@ class ReportController extends Controller
         $branches = $user->isAdmin() ? Branch::all() : null;
         $setting = \App\Models\Setting::first();
 
+        // Fetch categories & customers for the filters
+        $filterCategories = \App\Models\Category::all();
+        $filterCustomers = \App\Models\Customer::all();
+
         return view('reports.index', compact(
+            'salesKPIs',
             'salesReport', 
             'purchaseReport',
             'inventoryReport', 
@@ -62,7 +83,9 @@ class ReportController extends Controller
             'expensesReport',
             'filters', 
             'branches',
-            'setting'
+            'setting',
+            'filterCategories',
+            'filterCustomers'
         ));
     }
 
@@ -229,5 +252,63 @@ class ReportController extends Controller
         }
 
         return redirect()->back()->with('error', 'Invalid export type.');
+    }
+
+    public function apiAnalytics(Request $request)
+    {
+        $type = $request->get('type');
+        $limit = $request->get('limit', 5);
+        
+        $fromDate = $request->get('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $toDate = $request->get('to_date', now()->format('Y-m-d'));
+        $branchId = session('branch_id');
+        if (auth()->user()->isAdmin() && $request->has('branch_id')) {
+            $branchId = $request->get('branch_id');
+            if ($branchId === 'all') $branchId = null;
+        }
+
+        $filters = [
+            'from_date' => $fromDate,
+            'to_date' => $toDate,
+            'branch_id' => $branchId
+        ];
+
+        $data = $this->reportService->getTopAnalyticsData($type, $filters, $limit);
+        return response()->json($data);
+    }
+
+    public function detailedReport(Request $request)
+    {
+        $type = $request->get('type', 'top-selling');
+        if ($request->has('from_date')) {
+            $fromDate = $request->get('from_date');
+            session(['report_from_date' => $fromDate]);
+        } else {
+            $fromDate = session('report_from_date', now()->startOfMonth()->format('Y-m-d'));
+        }
+
+        if ($request->has('to_date')) {
+            $toDate = $request->get('to_date');
+            session(['report_to_date' => $toDate]);
+        } else {
+            $toDate = session('report_to_date', now()->format('Y-m-d'));
+        }
+        $branchId = session('branch_id');
+        if (auth()->user()->isAdmin() && $request->has('branch_id')) {
+            $branchId = $request->get('branch_id');
+            if ($branchId === 'all') $branchId = null;
+        }
+
+        $filters = [
+            'from_date' => $fromDate,
+            'to_date' => $toDate,
+            'branch_id' => $branchId
+        ];
+
+        $data = $this->reportService->getTopAnalyticsData($type, $filters, 'all');
+        $setting = \App\Models\Setting::first();
+        $branches = auth()->user()->isAdmin() ? Branch::all() : null;
+
+        return view('reports.detailed', compact('data', 'type', 'filters', 'setting', 'branches'));
     }
 }

@@ -93,6 +93,9 @@ class PermissionSeeder extends Seeder
             // Settings
             'manage-settings',
 
+            // Notifications
+            'view-notifications',
+
             // Permissions
             'manage-permissions',
         ];

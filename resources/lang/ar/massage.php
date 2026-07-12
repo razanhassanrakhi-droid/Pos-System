@@ -433,7 +433,7 @@ return [
     'form_back_to_list' => 'العودة للقائمة',
     'form_cancel' => 'إلغاء',
     'company_name_1' => 'ديجيتال',
-    'company_name_2' => ' إيج',
+    'company_name_2' => ' أيج',
     'form_name_ar' => 'الاسم (عربي - AR)',
     'form_name_en' => 'الاسم (إنجليزي - EN)',
     'form_challenge_ar' => 'التحدي (عربي - AR)',

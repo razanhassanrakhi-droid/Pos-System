@@ -35,21 +35,40 @@ class UserController extends Controller
         $request->validate([
             'full_name_ar' => 'required_without:full_name_en|string|max:150|nullable',
             'full_name_en' => 'required_without:full_name_ar|string|max:150|nullable',
-            'username' => 'required|string|max:50|unique:users',
+            'username_ar' => 'required_without:username_en|string|max:50|nullable',
+            'username_en' => 'required_without:username_ar|string|max:50|nullable',
             'email' => 'nullable|email|max:150|unique:users',
             'phone' => 'nullable|string|max:20',
             'role' => 'required|in:admin,employee',
             'password' => 'required|string|min:6',
             'branches' => 'required_if:role,employee|array',
             'branches.*' => 'exists:branches,id',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $usernameAr = $request->username_ar ?? $request->username_en;
+        $usernameEn = $request->username_en ?? $request->username_ar;
+
+        // Custom validation for unique username in json/string
+        $existing = User::where('username->ar', $usernameAr)
+            ->orWhere('username->en', $usernameEn)
+            ->orWhere('username', $usernameAr)
+            ->orWhere('username', $usernameEn)
+            ->first();
+
+        if ($existing) {
+            return redirect()->back()->withInput()->withErrors(['username_ar' => __('validation.unique', ['attribute' => 'username'])]);
+        }
 
         $user = User::create([
             'full_name' => [
                 'ar' => $request->full_name_ar,
                 'en' => $request->full_name_en,
             ],
-            'username' => $request->username,
+            'username' => [
+                'ar' => $usernameAr,
+                'en' => $usernameEn,
+            ],
             'email' => $request->email,
             'phone' => $request->phone,
             'role' => $request->role,
@@ -59,6 +78,11 @@ class UserController extends Controller
 
         if ($request->has('branches')) {
             $user->branches()->sync($request->branches);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->update(['avatar' => $avatarPath]);
         }
 
         // Sync Spatie Role
@@ -105,21 +129,43 @@ class UserController extends Controller
         $request->validate([
             'full_name_ar' => 'required_without:full_name_en|string|max:150|nullable',
             'full_name_en' => 'required_without:full_name_ar|string|max:150|nullable',
-            'username' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'username_ar' => 'required_without:username_en|string|max:50|nullable',
+            'username_en' => 'required_without:username_ar|string|max:50|nullable',
             'email' => ['nullable', 'email', 'max:150', Rule::unique('users')->ignore($user->id)],
             'phone' => 'nullable|string|max:20',
             'role' => 'required|in:admin,employee',
             'password' => 'nullable|string|min:6',
             'branches' => 'required_if:role,employee|array',
             'branches.*' => 'exists:branches,id',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $usernameAr = $request->username_ar ?? $request->username_en;
+        $usernameEn = $request->username_en ?? $request->username_ar;
+
+        // Custom validation for unique username in json/string (excluding current user)
+        $existing = User::where('id', '!=', $user->id)
+            ->where(function($query) use ($usernameAr, $usernameEn) {
+                $query->where('username->ar', $usernameAr)
+                      ->orWhere('username->en', $usernameEn)
+                      ->orWhere('username', $usernameAr)
+                      ->orWhere('username', $usernameEn);
+            })
+            ->first();
+
+        if ($existing) {
+            return redirect()->back()->withInput()->withErrors(['username_ar' => __('validation.unique', ['attribute' => 'username'])]);
+        }
 
         $userData = [
             'full_name' => [
                 'ar' => $request->full_name_ar,
                 'en' => $request->full_name_en,
             ],
-            'username' => $request->username,
+            'username' => [
+                'ar' => $usernameAr,
+                'en' => $usernameEn,
+            ],
             'email' => $request->email,
             'phone' => $request->phone,
             'role' => $request->role,
@@ -137,6 +183,14 @@ class UserController extends Controller
         } else {
             // If no branches selected (e.g. unchecked all), sync empty array
             $user->branches()->sync([]);
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+                \Storage::disk('public')->delete($user->avatar);
+            }
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->update(['avatar' => $avatarPath]);
         }
 
         // Sync Spatie Role

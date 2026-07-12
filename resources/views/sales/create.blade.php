@@ -738,7 +738,7 @@
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-1">
                 <label class="form-label fw-bold text-uppercase mb-0" style="font-size: 0.8rem; color: var(--pos-text-muted);">{{ __('pos.amount_paid') }}</label>
-                <span class="badge badge-unpaid py-1 px-2 rounded font-monospace" id="paidBadge">Unpaid</span>
+                <span class="badge badge-unpaid py-1 px-2 rounded font-monospace" id="paidBadge">{{ app()->getLocale() == 'ar' ? 'غير مدفوع' : 'Unpaid' }}</span>
             </div>
             <input type="number" id="paid_amount" class="drawer-input text-end font-monospace" value="0.00" step="0.01">
         </div>
@@ -803,6 +803,7 @@
     let paidAmountManuallyEdited = false;
 
     $(document).ready(function() {
+        const locale = "{{ app()->getLocale() }}";
         $('.select2').select2({ theme: 'bootstrap-5', width: '100%', dropdownParent: $('#checkout_drawer') });
         const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 3000});
 
@@ -884,7 +885,8 @@
         function renderSearchDropdown(products) {
             dropdown.empty();
             if (products.length === 0) {
-                dropdown.append('<div class="p-3 text-muted text-center">No products found</div>').show();
+                const noProductsText = locale === 'ar' ? 'لم يتم العثور على منتجات' : 'No products found';
+                dropdown.append(`<div class="p-3 text-muted text-center">${noProductsText}</div>`).show();
                 selectedIndex = -1;
                 return;
             }
@@ -911,12 +913,16 @@
                     unitBadge = `<span class="badge bg-warning ms-2">${product.matched_unit_name}</span>`;
                 }
 
+                const barcodeLabel = locale === 'ar' ? 'الباركود:' : 'Barcode:';
+                const stockLabel = locale === 'ar' ? 'المخزون:' : 'Stock:';
+                const notAvailable = locale === 'ar' ? 'غير متوفر' : 'N/A';
+
                 const itemHtml = $(`
                     <div class="dropdown-item-product" data-index="${index}">
                         ${imgHtml}
                         <div style="flex: 1; min-width: 0;">
                             <div class="fw-bold text-truncate" style="font-size:1rem; color:var(--pos-text-main);">${product.text} ${unitBadge}</div>
-                            <div class="small text-muted">Barcode: ${product.barcode || 'N/A'} | Stock: ${product.stock}</div>
+                            <div class="small text-muted">${barcodeLabel} ${product.barcode || notAvailable} | ${stockLabel} ${product.stock}</div>
                         </div>
                         <div class="unit-options-pane" style="display: flex; gap: 4px;">
                             ${unitButtonsHtml}
@@ -1378,11 +1384,11 @@
         const paidBadge = $('#paidBadge');
         paidBadge.removeClass('badge-paid badge-partial badge-unpaid');
         if (paid === 0) {
-            paidBadge.addClass('badge-unpaid').text('Unpaid');
+            paidBadge.addClass('badge-unpaid').text(isAr ? 'غير مدفوع' : 'Unpaid');
         } else if (paid >= total && total > 0) {
-            paidBadge.addClass('badge-paid').text('Fully Paid');
+            paidBadge.addClass('badge-paid').text(isAr ? 'مدفوع بالكامل' : 'Fully Paid');
         } else {
-            paidBadge.addClass('badge-partial').text('Partially Paid');
+            paidBadge.addClass('badge-partial').text(isAr ? 'مدفوع جزئياً' : 'Partially Paid');
         }
 
         $('#panel_items_count').text(itemsCount);

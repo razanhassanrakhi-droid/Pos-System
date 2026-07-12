@@ -40,6 +40,12 @@
             position: relative;
         }
 
+        /* Hide default browser password reveal eye icon (like in MS Edge) */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+
         .bg-mesh {
             position: fixed;
             top: 0;
@@ -265,7 +271,11 @@
 
                 <div class="mt-4">
                     <label class="form-label">{{ __('massage.form_new_password') }}</label>
-                    <input type="password" name="password" class="form-control w-100 mb-3" required placeholder="********" autofocus>
+                    <input type="password" name="password" class="form-control w-100 mb-1" required placeholder="********" autofocus>
+                    <div class="text-muted small mb-3 d-flex align-items-center gap-1" style="font-size: 0.78rem; opacity: 0.85;">
+                        <i class="bi bi-info-circle"></i>
+                        <span>{{ app()->getLocale() == 'ar' ? 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.' : 'Password must be at least 8 characters long.' }}</span>
+                    </div>
                     
                     <label class="form-label">{{ __('massage.form_confirm_password') }}</label>
                     <input type="password" name="password_confirmation" class="form-control w-100" required placeholder="********">

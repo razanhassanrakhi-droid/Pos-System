@@ -43,9 +43,26 @@ class ProductUnit extends Model
     public function getUnitNameAttribute()
     {
         $locale = app()->getLocale();
-        if ($locale === 'ar') {
-            return $this->unit_name_ar ?? $this->unit_name_en;
+        $val = $locale === 'ar'
+            ? ($this->unit_name_ar ?? $this->unit_name_en)
+            : ($this->unit_name_en ?? $this->unit_name_ar);
+
+        if ($locale === 'ar' && $val) {
+            $translations = [
+                'piece'  => 'حبة',
+                'pieces' => 'حبة',
+                'pices'  => 'حبة',
+                'psc'    => 'حبة',
+                'pcs'    => 'حبة',
+                'box'    => 'علبة',
+                'pack'   => 'عبوة',
+                'tape'   => 'شريط',
+                'tabe'   => 'شريط',
+                'kg'     => 'كجم',
+                'gram'   => 'جرام',
+            ];
+            return $translations[strtolower($val)] ?? $val;
         }
-        return $this->unit_name_en ?? $this->unit_name_ar;
+        return $val;
     }
 }

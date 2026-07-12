@@ -72,6 +72,9 @@
         .text-end {
             text-align: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }} !important;
         }
+        .text-start {
+            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;
+        }
         .totals-table {
             width: 100%;
             border-collapse: collapse;
@@ -81,12 +84,14 @@
         }
         .totals-table .label {
             font-weight: bold;
-            text-align: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }};
+            width: 60%;
+            text-align: right !important;
             padding-right: 15px;
+            padding-left: 15px;
         }
         .totals-table .value {
-            text-align: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }};
-            width: 120px;
+            text-align: left !important;
+            width: 40%;
         }
         .totals-wrapper {
             float: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }};
@@ -104,31 +109,42 @@
         <div class="header">
             <table>
                 <tr>
-                    <td>
-                        <div class="title">{{ __('purchases.purchase_invoice') }}</div>
-                        <div style="margin-top: 5px; color: #64748b;">#{{ $purchase->invoice_number }}</div>
-                    </td>
-                    <td class="text-end">
-                        <div style="font-weight: bold; font-size: 16px;">{{ $purchase->branch->name }}</div>
-                        <div style="margin-top: 5px; color: #64748b;">{{ $purchase->created_at->format('Y-m-d H:i') }}</div>
-                    </td>
+                    @if(app()->getLocale() == 'ar')
+                        <td style="text-align: right;">
+                            <div class="title">{{ __('purchases.purchase_invoice') }}</div>
+                            <div style="margin-top: 5px; color: #64748b;" dir="ltr">&#x200E;#{{ $purchase->invoice_number }}</div>
+                        </td>
+                        <td style="text-align: left;">
+                            <div style="font-weight: bold; font-size: 16px;">{{ $purchase->branch->name }}</div>
+                            <div style="margin-top: 5px; color: #64748b;">{{ $purchase->created_at->format('Y-m-d H:i') }}</div>
+                        </td>
+                    @else
+                        <td style="text-align: left;">
+                            <div class="title">{{ __('purchases.purchase_invoice') }}</div>
+                            <div style="margin-top: 5px; color: #64748b;" dir="ltr">&#x200E;#{{ $purchase->invoice_number }}</div>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="font-weight: bold; font-size: 16px;">{{ $purchase->branch->name }}</div>
+                            <div style="margin-top: 5px; color: #64748b;">{{ $purchase->created_at->format('Y-m-d H:i') }}</div>
+                        </td>
+                    @endif
                 </tr>
             </table>
         </div>
 
         <table class="info-table">
             <tr>
-                <td>
+                <td style="text-align: right;">
                     <div class="section-title">{{ __('purchases.supplier') }}</div>
                     <div style="font-weight: bold; font-size: 15px;">{{ $purchase->supplier->name }}</div>
                     @if($purchase->supplier->phone)
-                        <div style="color: #64748b; margin-top: 3px;">{{ $purchase->supplier->phone }}</div>
+                        <div style="color: #64748b; margin-top: 3px;" dir="ltr">&#x200E;{{ $purchase->supplier->phone }}</div>
                     @endif
                     @if($purchase->supplier->email)
                         <div style="color: #64748b;">{{ $purchase->supplier->email }}</div>
                     @endif
                 </td>
-                <td class="text-end">
+                <td style="text-align: left;">
                     <div class="section-title">{{ __('purchases.payment_method') }}</div>
                     <div style="font-weight: bold; font-size: 15px;">{{ __('pos.' . str_replace(' ', '_', strtolower($purchase->payment_method))) }}</div>
                     <div style="color: #64748b; margin-top: 3px;">{{ __('pos.user') }}: {{ $purchase->user->name }}</div>

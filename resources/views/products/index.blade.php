@@ -601,6 +601,42 @@
         border-bottom-left-radius: 16px;
     }
 
+    /* Sticky Actions Column (Disabled per user request) */
+    /*
+    .pm-table th.pm-sticky-actions {
+        inset-inline-end: 0;
+        z-index: 12 !important;
+    }
+    .pm-table td.pm-sticky-actions {
+        position: sticky;
+        inset-inline-end: 0;
+        z-index: 2;
+        background: inherit;
+    }
+    html[dir="rtl"] .pm-table th.pm-sticky-actions,
+    html[dir="rtl"] .pm-table td.pm-sticky-actions {
+        box-shadow: 3px 0 10px rgba(0,0,0,0.05);
+    }
+    html[dir="ltr"] .pm-table th.pm-sticky-actions,
+    html[dir="ltr"] .pm-table td.pm-sticky-actions {
+        box-shadow: -3px 0 10px rgba(0,0,0,0.05);
+    }
+    */
+
+    /* Sticky Product Column (Desktop only) */
+    @media (min-width: 769px) {
+        .pm-table th.pm-sticky-product,
+        .pm-table td.pm-sticky-product {
+            position: sticky;
+            inset-inline-start: 0;
+            z-index: 2;
+            background: inherit;
+        }
+        .pm-table thead th.pm-sticky-product {
+            z-index: 12 !important;
+        }
+    }
+
     /* ── Product cell ── */
     .pm-product-cell { display: flex; align-items: center; gap: 14px; }
 
@@ -752,6 +788,8 @@
         position: relative;
         text-decoration: none;
         flex-shrink: 0;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
     .pm-icon-btn:hover {
         transform: translateY(-2px);
@@ -767,35 +805,37 @@
     .pm-icon-btn.delete { color: var(--pm-danger); border-color: rgba(244,63,94,0.25); background: var(--pm-danger-soft); }
     .pm-icon-btn.delete:hover { background: rgba(244,63,94,0.18); border-color: rgba(244,63,94,0.5); }
 
-    /* Tooltip */
-    .pm-icon-btn[data-tooltip]:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: calc(100% + 7px);
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--pm-text-1);
-        color: var(--pm-surface);
-        font-size: 0.68rem;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 7px;
-        white-space: nowrap;
-        pointer-events: none;
-        z-index: 99;
-        letter-spacing: .3px;
-        box-shadow: var(--pm-shadow-sm);
-    }
-    .pm-icon-btn[data-tooltip]:hover::before {
-        content: '';
-        position: absolute;
-        bottom: calc(100% + 2px);
-        left: 50%;
-        transform: translateX(-50%);
-        border: 5px solid transparent;
-        border-top-color: var(--pm-text-1);
-        pointer-events: none;
-        z-index: 99;
+    /* Tooltip only on hover-capable devices */
+    @media (hover: hover) {
+        .pm-icon-btn[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 7px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--pm-text-1);
+            color: var(--pm-surface);
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 7px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 99;
+            letter-spacing: .3px;
+            box-shadow: var(--pm-shadow-sm);
+        }
+        .pm-icon-btn[data-tooltip]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--pm-text-1);
+            pointer-events: none;
+            z-index: 99;
+        }
     }
 
     /* ── DataTables override ── */
@@ -842,6 +882,11 @@
         font-weight: 500;
         font-size: 0.85rem;
         transition: all 0.2s;
+    }
+    .pm-dt-wrapper .page-item.previous .page-link,
+    .pm-dt-wrapper .page-item.next .page-link {
+        width: auto !important;
+        padding: 0 12px !important;
     }
     .pm-dt-wrapper .page-item:not(.active):not(.disabled) .page-link:hover {
         background-color: var(--pm-border);
@@ -1627,6 +1672,8 @@
         position: relative;
         text-decoration: none;
         flex-shrink: 0;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
     .pm-icon-btn:hover {
         transform: translateY(-2px);
@@ -1681,35 +1728,37 @@
         color: #e11d48;
     }
 
-    /* Tooltip */
-    .pm-icon-btn[data-tooltip]:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: calc(100% + 7px);
-        left: 50%;
-        transform: translateX(-50%);
-        background: #0f172a;
-        color: #fff;
-        font-size: 0.7rem;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 7px;
-        white-space: nowrap;
-        pointer-events: none;
-        z-index: 99;
-        letter-spacing: .3px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    .pm-icon-btn[data-tooltip]:hover::before {
-        content: '';
-        position: absolute;
-        bottom: calc(100% + 2px);
-        left: 50%;
-        transform: translateX(-50%);
-        border: 5px solid transparent;
-        border-top-color: #0f172a;
-        pointer-events: none;
-        z-index: 99;
+    /* Tooltip only on hover-capable devices */
+    @media (hover: hover) {
+        .pm-icon-btn[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 7px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 7px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 99;
+            letter-spacing: .3px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .pm-icon-btn[data-tooltip]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #0f172a;
+            pointer-events: none;
+            z-index: 99;
+        }
     }
 
     /* Keep old dropdown styles for backward compat */
@@ -1922,6 +1971,17 @@
         .pm-card-header { padding: 18px 20px; }
         .pm-toolbar { padding: 14px 20px; }
         .pm-modal .modal-body { padding: 20px; }
+
+        /* Disable fade animation on mobile to open modals instantly and prevent delay */
+        .modal.fade,
+        .modal.fade .modal-dialog,
+        .modal-backdrop.fade {
+            transition: none !important;
+            transform: none !important;
+        }
+        .modal-backdrop.show {
+            opacity: 0.55 !important;
+        }
     }
 
     .form-check-input { cursor: pointer; }
@@ -2456,10 +2516,12 @@
                        placeholder="{{ __('product.search') ?? 'Search products…' }}">
             </div>
             {{-- Add Product --}}
+            @can('create-products')
             <button class="pm-add-btn" data-bs-toggle="modal" data-bs-target="#createProductModal" style="padding: 9px 18px; font-size: 0.8rem; border-radius: 11px; line-height: 1.5;">
                 <i class="bi bi-plus-lg"></i>
                 {{ __('product.add_product') }}
             </button>
+            @endcan
         </div>
 
         {{-- Right: Status Filter + Export + Per page --}}
@@ -2492,7 +2554,7 @@
                     <tr>
 
                         <th class="text-center" style="width:50px">#</th>
-                        <th style="min-width:260px">{{ __('product.product_name') }}</th>
+                        <th class="pm-sticky-product" style="min-width:260px">{{ __('product.product_name') }}</th>
                         <th class="text-center" style="min-width:120px">{{ __('product.barcode') }}</th>
                         <th class="text-center" style="min-width:120px">SKU</th>
                         <th class="text-center" style="min-width:120px">{{ __('product.stock') }}</th>
@@ -2500,7 +2562,7 @@
                         <th class="text-center" style="min-width:90px">{{ __('purchases.batches') ?? 'Batches' }}</th>
                         <th class="text-center" style="min-width:100px">{{ __('product.stock_status') }}</th>
                         <th class="text-center" style="min-width:90px">{{ app()->getLocale() == 'ar' ? 'الحالة' : 'Status' }}</th>
-                        <th class="text-center" style="width:80px">{{ __('product.actions') }}</th>
+                        <th class="text-center pm-sticky-actions" style="width:80px">{{ __('product.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -2509,8 +2571,8 @@
                             $stockStatus      = $product->stock_status;
                             $stockBadgeClass  = 'pm-badge-success';
                             $stockFillClass   = '';
-                            if ($stockStatus == 'Out of Stock') { $stockBadgeClass = 'pm-badge-neutral'; $stockFillClass = 'out'; }
-                            elseif ($stockStatus == 'Low Stock')  { $stockBadgeClass = 'pm-badge-danger';  $stockFillClass = 'low'; }
+                            if ($stockStatus == 'Out of Stock') { $stockBadgeClass = 'pm-badge-danger'; $stockFillClass = 'out'; }
+                            elseif ($stockStatus == 'Low Stock')  { $stockBadgeClass = 'pm-badge-warning';  $stockFillClass = 'low'; }
 
                             $expiryBadgeClass = 'pm-badge-success';
                             $rowClass         = '';
@@ -2529,7 +2591,7 @@
                                 {{ $loop->iteration }}
                             </td>
                             {{-- Product Info --}}
-                            <td>
+                            <td class="pm-sticky-product">
                                 <div class="pm-product-cell">
                                     @if($product->image)
                                         <img
@@ -2564,14 +2626,16 @@
                                                   data-sale-price="{{ $product->sale_price }}"
                                                   data-minimum-stock="{{ $product->minimum_stock }}"
                                                   data-current-stock="{{ $product->current_stock }}"
-                                                  data-base-unit="{{ $product->base_unit_name ?: 'Piece' }}"
+                                                  data-base-unit-ar="{{ $product->base_unit_name_ar ?: '' }}"
+                                                   data-base-unit-en="{{ $product->base_unit_name_en ?: '' }}"
+                                                   data-base-unit="{{ $product->base_unit_name ?: 'Piece' }}"
                                                   data-has-warranty="{{ $product->has_warranty ? 1 : 0 }}"
                                                   data-warranty-months="{{ $product->warranty_period_months }}"
                                                   data-units="{{ $product->units->toJson() }}"
                                                   data-barcode="{{ $product->barcode }}"
                                                   data-sku="{{ $product->sku }}"
-                                                  data-created-by="{{ $product->creator ? $product->creator->name : '' }}"
-                                                  data-updated-by="{{ $product->updater ? $product->updater->name : '' }}"
+                                                  data-created-by="{{ $product->creator ? ($product->creator->full_name ?: $product->creator->username) : '' }}"
+                                                  data-updated-by="{{ $product->updater ? ($product->updater->full_name ?: $product->updater->username) : '' }}"
                                                   data-created-at="{{ $product->created_at->format('Y-m-d H:i') }}"
                                                   title="{{ app()->getLocale() == 'ar' ? 'انقر لعرض التفاصيل' : 'Click to view details' }}">
                                                 {{ $product->name }}
@@ -2667,10 +2731,11 @@
                             </td>
 
                             {{-- Actions --}}
-                            <td class="text-center">
+                            <td class="text-center pm-sticky-actions">
                                 <div class="pm-actions-group">
 
                                     {{-- Edit --}}
+                                     @can('edit-products')
                                      <button class="pm-icon-btn edit edit-product-btn" type="button"
                                              data-id="{{ $product->id }}"
                                              data-name-ar="{{ $product->getTranslation('name', 'ar') }}"
@@ -2684,26 +2749,28 @@
                                              data-category-id="{{ $product->category_id ?: 'null' }}"
                                              data-has-warranty="{{ $product->has_warranty ? 1 : 0 }}"
                                              data-warranty-months="{{ $product->warranty_period_months }}"
+                                             data-warranty-type="{{ $product->warranty_type }}"
                                              data-base-unit-ar="{{ $product->base_unit_name_ar }}"
                                              data-base-unit-en="{{ $product->base_unit_name_en }}"
                                              data-units="{{ $product->units->toJson() }}"
                                              data-barcode="{{ $product->barcode }}"
                                              data-sku="{{ $product->sku }}"
-                                             data-status="{{ $product->status }}"
-                                             data-tooltip="{{ __('product.edit_product') }}">
+                                             data-status="{{ $product->status }}">
                                          <i class="bi bi-pencil-square"></i>
                                      </button>
+                                     @endcan
 
                                     {{-- Delete --}}
+                                    @can('delete-products')
                                     <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline"
                                           onsubmit="return confirm('{{ __('pos.confirm_delete') }}');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="pm-icon-btn delete"
-                                                data-tooltip="{{ __('pos.delete') ?? 'Delete' }}">
+                                        <button type="submit" class="pm-icon-btn delete">
                                             <i class="bi bi-trash3"></i>
                                         </button>
                                     </form>
+                                    @endcan
 
                                 </div>
                             </td>
@@ -2913,9 +2980,17 @@
                                 </div>
                             </div>
                             <div id="warranty_period_div" style="display:none; min-width:220px;" class="flex-shrink-0">
-                                <div class="pm-input-group">
-                                    <input type="number" name="warranty_period_months" class="pm-form-control" value="0" min="0" placeholder="{{ __('pos.warranty_period_months') ?? 'Warranty Period' }}">
-                                    <span class="pm-input-group-text">{{ __('pos.months') }}</span>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="pm-input-group">
+                                        <input type="number" name="warranty_period_months" class="pm-form-control" value="0" min="0" placeholder="{{ __('pos.warranty_period_months') ?? 'Warranty Period' }}">
+                                        <span class="pm-input-group-text">{{ __('pos.months') }}</span>
+                                    </div>
+                                    <select class="pm-form-control" name="warranty_type">
+                                        <option value="Manufacturer Warranty">{{ app()->getLocale() == 'ar' ? 'ضمان الوكيل' : 'Manufacturer Warranty' }}</option>
+                                        <option value="Store Warranty">{{ app()->getLocale() == 'ar' ? 'ضمان المتجر' : 'Store Warranty' }}</option>
+                                        <option value="Extended Warranty">{{ app()->getLocale() == 'ar' ? 'ضمان ممتد' : 'Extended Warranty' }}</option>
+                                        <option value="Other">{{ app()->getLocale() == 'ar' ? 'أخرى' : 'Other' }}</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -3152,9 +3227,17 @@
                                 </div>
                             </div>
                             <div id="edit_warranty_period_div" style="display:none; min-width:220px;" class="flex-shrink-0">
-                                <div class="pm-input-group">
-                                    <input type="number" name="warranty_period_months" id="edit_warranty_period_months" class="pm-form-control" min="0" placeholder="{{ __('pos.warranty_period_months') ?? 'Warranty Period' }}">
-                                    <span class="pm-input-group-text">{{ __('pos.months') }}</span>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="pm-input-group">
+                                        <input type="number" name="warranty_period_months" id="edit_warranty_period_months" class="pm-form-control" min="0" placeholder="{{ __('pos.warranty_period_months') ?? 'Warranty Period' }}">
+                                        <span class="pm-input-group-text">{{ __('pos.months') }}</span>
+                                    </div>
+                                    <select class="pm-form-control" name="warranty_type" id="edit_warranty_type">
+                                        <option value="Manufacturer Warranty">{{ app()->getLocale() == 'ar' ? 'ضمان الوكيل' : 'Manufacturer Warranty' }}</option>
+                                        <option value="Store Warranty">{{ app()->getLocale() == 'ar' ? 'ضمان المتجر' : 'Store Warranty' }}</option>
+                                        <option value="Extended Warranty">{{ app()->getLocale() == 'ar' ? 'ضمان ممتد' : 'Extended Warranty' }}</option>
+                                        <option value="Other">{{ app()->getLocale() == 'ar' ? 'أخرى' : 'Other' }}</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -3323,7 +3406,7 @@
                                 <th>{{ app()->getLocale() == 'ar' ? 'تاريخ الانتهاء' : 'Expiry' }}</th>
                                 <th>{{ app()->getLocale() == 'ar' ? 'الكمية المشتراة' : 'Purchased' }}</th>
                                 <th>{{ app()->getLocale() == 'ar' ? 'الكمية المتبقية' : 'Remaining' }}</th>
-                                <th>{{ app()->getLocale() == 'ar' ? 'رقم التشغيلة' : 'Batch' }}</th>
+                                <th>{{ app()->getLocale() == 'ar' ? 'رقم الدفعة' : 'Batch' }}</th>
                                 <th class="text-end"></th>
                             </tr>
                         </thead>
@@ -3354,7 +3437,7 @@
      EDIT BATCH MODAL
 ══════════════════════════════════════ --}}
 <div class="modal fade pm-modal" id="editBatchModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered pm-modal-premium">
+    <div class="modal-dialog modal-lg modal-dialog-centered pm-modal-premium">
         <div class="modal-content">
 
             {{-- ── Premium Header ── --}}
@@ -3385,16 +3468,15 @@
                     <div class="pm-section-label"><i class="bi bi-tag-fill"></i> {{ __('purchases.batch_number') }}</div>
 
                     <div class="mb-3">
-                        <label class="pm-form-label">{{ __('purchases.batch_number') }}</label>
                         <input type="text" name="batch_number" id="eb_batch_number" class="pm-form-control" required>
                     </div>
 
                     <div class="pm-section-label"><i class="bi bi-boxes"></i> {{ __('purchases.quantity') }} & {{ __('purchases.expiry_date') }}</div>
 
-                    <div class="row g-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-6">
                             <label class="pm-form-label">{{ __('purchases.quantity') }}</label>
-                            <input type="number" step="1" name="quantity" id="eb_quantity" class="pm-form-control" required>
+                            <input type="number" step="1" name="quantity" id="eb_quantity" class="pm-form-control" readonly style="background-color: var(--pm-surface-3) !important; opacity: 0.85; cursor: not-allowed;" required>
                         </div>
                         <div class="col-6">
                             <label class="pm-form-label">{{ __('purchases.expiry_date') }}</label>
@@ -3404,7 +3486,6 @@
 
                     <div class="mt-3">
                         <div class="pm-section-label"><i class="bi bi-currency-dollar"></i> {{ __('purchases.purchase_price') }}</div>
-                        <label class="pm-form-label">{{ __('purchases.purchase_price') }}</label>
                         <div class="pm-input-group">
                             <span class="pm-input-group-text fw-bold">{{ $setting->currency ?? '' }}</span>
                             <input type="number" step="0.01" name="purchase_price" id="eb_purchase_price" class="pm-form-control" required>
@@ -3473,16 +3554,19 @@
         color: var(--pm-text-2) !important;
     }
     #productDetailDrawer .table-responsive {
-        border-color: var(--pm-border) !important;
+        border-color: #ffffff !important;
+    }
+    #productDetailDrawer .table {
+        border-color: #ffffff !important;
     }
     #productDetailDrawer .table th {
-        background-color: var(--pm-surface-2) !important;
-        color: var(--pm-text-1) !important;
-        border-color: var(--pm-border) !important;
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+        border-color: #ffffff !important;
     }
     #productDetailDrawer .table td {
         color: var(--pm-text-2) !important;
-        border-color: var(--pm-border) !important;
+        border-color: #ffffff !important;
     }
     #productDetailDrawer #drawer_image_placeholder {
         background-color: var(--pm-surface-2) !important;
@@ -3581,15 +3665,15 @@
 {{-- ══════════════════════════════════════
      PRODUCT DETAILS DRAWER (OFFCANVAS)
 ══════════════════════════════════════ --}}
-<div class="offcanvas offcanvas-end" tabindex="-1" id="productDetailDrawer" aria-labelledby="productDetailDrawerLabel" style="width: 450px; border-left: 1px solid rgba(0,0,0,0.08); box-shadow: -5px 0 25px rgba(0,0,0,0.05); z-index: 1060;">
-    <div class="offcanvas-header border-bottom py-3" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="productDetailDrawer" aria-labelledby="productDetailDrawerLabel" style="width: 450px; {{ app()->getLocale() == 'ar' ? 'border-right: 1px solid rgba(0,0,0,0.08); box-shadow: 5px 0 25px rgba(0,0,0,0.05);' : 'border-left: 1px solid rgba(0,0,0,0.08); box-shadow: -5px 0 25px rgba(0,0,0,0.05);' }} z-index: 1060;">
+    <div class="offcanvas-header border-bottom py-3" style="background: var(--pm-surface-2);">
         <div class="d-flex align-items-center gap-2">
             <span class="fs-5 fw-bold text-dark" id="drawer_product_name">Product Details</span>
             <span class="badge" id="drawer_product_id" style="font-size: 0.8rem; background-color: #475569 !important; color: #ffffff !important; font-weight: 600; padding: 4px 8px; border-radius: 4px;">#ID</span>
         </div>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body p-4" style="background: #ffffff; overflow-y: auto;">
+    <div class="offcanvas-body p-4" style="background: var(--pm-surface); overflow-y: auto;">
         
         <!-- Image & Main Info -->
         <div class="text-center mb-4">
@@ -3696,7 +3780,35 @@ $(document).ready(function() {
     // ── DataTable init (hidden controls — we use custom toolbar) ──
     var table = $('#productsTable').DataTable({
         language: {
-            url: "{{ app()->getLocale() == 'ar' ? '//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json' : '' }}"
+            @if(app()->getLocale() == 'ar')
+                search: "البحث:",
+                lengthMenu: "عرض _MENU_ منتجات",
+                info: "صفحة _PAGE_ من _PAGES_",
+                infoEmpty: "صفحة 0 من 0",
+                infoFiltered: "(تصفية من مجموع _MAX_ منتج)",
+                zeroRecords: "لم يتم العثور على أية منتجات",
+                emptyTable: "لا توجد منتجات متاحة في الجدول",
+                paginate: {
+                    first: "الأول",
+                    previous: "السابق",
+                    next: "التالي",
+                    last: "الأخير"
+                }
+            @else
+                search: "Search:",
+                lengthMenu: "Show _MENU_ products",
+                info: "Page _PAGE_ of _PAGES_",
+                infoEmpty: "Page 0 of 0",
+                infoFiltered: "(filtered from _MAX_ total products)",
+                zeroRecords: "No matching products found",
+                emptyTable: "No products available in table",
+                paginate: {
+                    first: "First",
+                    previous: "Previous",
+                    next: "Next",
+                    last: "Last"
+                }
+            @endif
         },
         responsive: false,
         order: [],
@@ -3961,14 +4073,15 @@ $(document).ready(function() {
         let category_id = btn.data('category-id');
         let has_warranty = btn.data('has-warranty') == 1;
         let warranty_months = btn.data('warranty-months');
+        let warranty_type = btn.data('warranty-type');
         let base_unit_ar = btn.attr('data-base-unit-ar');
         let base_unit_en = btn.attr('data-base-unit-en');
-        let unitsJson = btn.attr('data-units');
+        let unitsJson = btn.data('units');
         let barcode = btn.attr('data-barcode');
         let sku = btn.attr('data-sku');
         let status = btn.attr('data-status') || 'Active';
 
-        editProduct(id, name_ar, name_en, brand_ar, brand_en, desc_ar, desc_en, s_price, min_stock, category_id, has_warranty, warranty_months, base_unit_ar, base_unit_en, unitsJson, barcode, sku, status);
+        editProduct(id, name_ar, name_en, brand_ar, brand_en, desc_ar, desc_en, s_price, min_stock, category_id, has_warranty, warranty_months, warranty_type, base_unit_ar, base_unit_en, unitsJson, barcode, sku, status);
     });
 
     // ── Select All checkbox ──
@@ -4021,10 +4134,14 @@ $(document).ready(function() {
         let salePrice = trigger.attr('data-sale-price');
         let minStock = trigger.attr('data-minimum-stock');
         let curStock = trigger.attr('data-current-stock');
-        let baseUnit = trigger.attr('data-base-unit');
+        let baseUnitAr = trigger.attr('data-base-unit-ar');
+        let baseUnitEn = trigger.attr('data-base-unit-en');
+        let baseUnit = locale === 'ar' 
+            ? (baseUnitAr || trigger.attr('data-base-unit') || '') 
+            : (baseUnitEn || trigger.attr('data-base-unit') || '');
         let hasWarranty = trigger.attr('data-has-warranty') == 1;
         let warrantyMonths = trigger.attr('data-warranty-months');
-        let unitsJson = trigger.attr('data-units');
+        let unitsJson = trigger.data('units');
         let barcode = trigger.attr('data-barcode');
         let sku = trigger.attr('data-sku');
         let createdBy = trigger.attr('data-created-by');
@@ -4091,7 +4208,12 @@ $(document).ready(function() {
         tbody.empty();
         let units = [];
         try {
-            units = JSON.parse(unitsJson || '[]');
+            if (typeof unitsJson === 'object' && unitsJson !== null) {
+                units = unitsJson;
+            } else if (typeof unitsJson === 'string') {
+                let decoded = $('<div/>').html(unitsJson).text();
+                units = JSON.parse(decoded || '[]');
+            }
         } catch(e) {
             console.error(e);
         }
@@ -4101,9 +4223,12 @@ $(document).ready(function() {
                 let pMode = unit.pricing_mode === 'automatic' 
                     ? (locale === 'ar' ? 'تلقائي' : 'Auto') 
                     : (locale === 'ar' ? 'مخصص' : 'Custom');
+                let uName = locale === 'ar' 
+                    ? (unit.unit_name_ar || unit.unit_name || '') 
+                    : (unit.unit_name_en || unit.unit_name || '');
                 tbody.append(`
                     <tr>
-                        <td><strong>${unit.unit_name}</strong></td>
+                        <td><strong>${uName}</strong></td>
                         <td>${parseFloat(unit.conversion_factor)} ${baseUnit}</td>
                         <td>${parseFloat(unit.sale_price).toFixed(2)} ${pMode !== 'Custom' ? ' (' + pMode + ')' : ''}</td>
                         <td class="text-muted">${unit.barcode || '-'}</td>
@@ -4213,7 +4338,7 @@ function safeShowModal(id) {
 }
 
 // ── Edit Product ──
-function editProduct(id, name_ar, name_en, brand_ar, brand_en, desc_ar, desc_en, s_price, min_stock, category_id, has_warranty, warranty_months, base_unit_ar, base_unit_en, unitsJson, barcode, sku, status) {
+function editProduct(id, name_ar, name_en, brand_ar, brand_en, desc_ar, desc_en, s_price, min_stock, category_id, has_warranty, warranty_months, warranty_type, base_unit_ar, base_unit_en, unitsJson, barcode, sku, status) {
     $('#edit_name_ar').val(name_ar);
     $('#edit_name_en').val(name_en);
     $('#edit_brand_ar').val(brand_ar);
@@ -4236,6 +4361,7 @@ function editProduct(id, name_ar, name_en, brand_ar, brand_en, desc_ar, desc_en,
 
     $('#edit_has_warranty').prop('checked', has_warranty);
     $('#edit_warranty_period_months').val(warranty_months);
+    $('#edit_warranty_type').val(warranty_type || 'Manufacturer Warranty');
     if (has_warranty) {
         $('#edit_warranty_period_div').show();
     } else {
@@ -4246,7 +4372,13 @@ function editProduct(id, name_ar, name_en, brand_ar, brand_en, desc_ar, desc_en,
     let tbody = $('#edit-additional-units-tbody');
     tbody.empty();
     try {
-        let units = JSON.parse(unitsJson || '[]');
+        let units = [];
+        if (typeof unitsJson === 'object' && unitsJson !== null) {
+            units = unitsJson;
+        } else if (typeof unitsJson === 'string') {
+            let decoded = $('<div/>').html(unitsJson).text();
+            units = JSON.parse(decoded || '[]');
+        }
         units.forEach(function(unit, idx) {
             let mode = unit.pricing_mode || 'custom';
             let isCustom = (mode === 'custom') ? 'selected' : '';
@@ -4650,14 +4782,14 @@ function viewMovements(id) {
             if (response.movements && response.movements.length > 0) {
                 let rows = '';
                 response.movements.forEach(function(mov) {
-                    let creatorName = mov.creator ? mov.creator.username : 'Unknown';
+                    let creatorName = mov.creator ? (mov.creator.full_name || mov.creator.username || 'Unknown') : 'Unknown';
                     let branchName  = mov.branch ? (mov.branch.name.ar || mov.branch.name.en || mov.branch.name) : '—';
                     let date        = new Date(mov.created_at).toLocaleString();
                     let typeBadge   = mov.type === 'in' ? 'pm-badge-success' : 'pm-badge-danger';
 
                     rows += `<tr>
                         <td style="font-size:.82rem;color:#64748b;">${date}</td>
-                        <td><span class="pm-badge ${typeBadge}">${mov.type.toUpperCase()}</span></td>
+                        <td><span class="pm-badge ${typeBadge}">${mov.type === 'in' ? ("{{ app()->getLocale() }}" === 'ar' ? 'وارد' : 'IN') : ("{{ app()->getLocale() }}" === 'ar' ? 'صادر' : 'OUT')}</span></td>
                         <td style="font-weight:700;color:#0f172a;">${parseFloat(mov.quantity)}</td>
                         <td style="color:#475569;">${branchName}</td>
                         <td style="color:#94a3b8;font-size:.82rem;">${mov.note || '—'}</td>

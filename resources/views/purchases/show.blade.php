@@ -41,17 +41,17 @@
                     <table class="table table-bordered">
                         <thead class="bg-light">
                             <tr>
-                                <th class="py-3">#</th>
-                                <th class="py-3">{{ __('purchases.product') }}</th>
+                                <th class="py-3 text-center">#</th>
+                                <th class="py-3 text-center">{{ __('purchases.product') }}</th>
                                 <th class="py-3 text-center">{{ __('purchases.quantity') }}</th>
-                                <th class="py-3 text-end">{{ __('purchases.purchase_price') }}</th>
-                                <th class="py-3 text-end">{{ __('purchases.total') }}</th>
+                                <th class="py-3 text-center">{{ __('purchases.purchase_price') }}</th>
+                                <th class="py-3 text-center">{{ __('purchases.total') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($purchase->items as $index => $item)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td class="text-center">{{ $index + 1 }}</td>
                                 <td>
                                     <span class="fw-bold">{{ $item->product->name }}</span>
                                     @if($item->batch)

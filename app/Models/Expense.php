@@ -10,12 +10,15 @@ class Expense extends Model
     use HasFactory;
 
     protected $fillable = [
+        'expense_number',
         'type',
         'amount',
         'expense_date',
         'description_ar',
         'description_en',
-        'status',       // العمود الجديد
+        'status',
+        'payment_method',
+        'attachment',
         'user_id',
         'branch_id',
     ];
@@ -37,6 +40,14 @@ class Expense extends Model
      */
     public function getStatusLabelAttribute()
     {
-        return $this->status ? __('pos.active') : __('pos.inactive');
+        return $this->status;
+    }
+
+    public function getAttachmentUrlAttribute()
+    {
+        if ($this->attachment) {
+            return asset('storage/' . $this->attachment);
+        }
+        return null;
     }
 }

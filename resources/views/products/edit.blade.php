@@ -203,6 +203,37 @@
                 </div>
             </div>
 
+            {{-- Warranty Section --}}
+            <div class="mb-3 p-3 border rounded-3" style="background:#f8fafc;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check fs-5 text-primary"></i>
+                        <div class="fw-semibold">{{ __('pos.has_warranty') ?? 'Has Warranty' }}</div>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="has_warranty" name="has_warranty" value="1" {{ old('has_warranty', $product->has_warranty ?? false) ? 'checked' : '' }} style="width:2.5em;height:1.3em;">
+                    </div>
+                </div>
+                <div id="warranty_details_container" class="mt-3" style="display: {{ old('has_warranty', $product->has_warranty ?? false) ? 'block' : 'none' }};">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="warranty_period_months" class="form-label fw-semibold">{{ __('pos.warranty_period_months') ?? 'Warranty Duration (Months)' }}</label>
+                            <input type="number" class="form-control" id="warranty_period_months" name="warranty_period_months" value="{{ old('warranty_period_months', $product->warranty_period_months ?? 0) }}" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="warranty_type" class="form-label fw-semibold">{{ __('pos.warranty_type') ?? 'Warranty Type' }}</label>
+                            <select class="form-select" id="warranty_type" name="warranty_type">
+                                @php $wt = old('warranty_type', $product->warranty_type ?? 'Manufacturer Warranty'); @endphp
+                                <option value="Manufacturer Warranty" {{ $wt === 'Manufacturer Warranty' ? 'selected' : '' }}>Manufacturer Warranty</option>
+                                <option value="Store Warranty" {{ $wt === 'Store Warranty' ? 'selected' : '' }}>Store Warranty</option>
+                                <option value="Extended Warranty" {{ $wt === 'Extended Warranty' ? 'selected' : '' }}>Extended Warranty</option>
+                                <option value="Other" {{ $wt === 'Other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="mb-4">
                 <label for="description" class="form-label fw-semibold">{{ __('pos.description') }}</label>
                 <textarea class="form-control" id="description" name="description" rows="3">Apple MacBook Pro 14-inch</textarea>
@@ -216,3 +247,16 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.getElementById('has_warranty').addEventListener('change', function() {
+    const container = document.getElementById('warranty_details_container');
+    if (this.checked) {
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
+});
+</script>
+@endpush

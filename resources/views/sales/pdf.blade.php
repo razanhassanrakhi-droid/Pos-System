@@ -81,12 +81,14 @@
         }
         .totals-table .label {
             font-weight: bold;
-            text-align: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }};
+            width: 60%;
+            text-align: right !important;
             padding-right: 15px;
+            padding-left: 15px;
         }
         .totals-table .value {
-            text-align: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }};
-            width: 120px;
+            text-align: left !important;
+            width: 40%;
         }
         .totals-wrapper {
             float: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }};
@@ -104,31 +106,42 @@
         <div class="header">
             <table>
                 <tr>
-                    <td>
-                        <div class="title">{{ __('pos.sale_details') }}</div>
-                        <div style="margin-top: 5px; color: #64748b;">#{{ $sale->invoice_number }}</div>
-                    </td>
-                    <td class="text-end">
-                        <div style="font-weight: bold; font-size: 16px;">{{ $sale->branch->name }}</div>
-                        <div style="margin-top: 5px; color: #64748b;">{{ $sale->created_at->format('Y-m-d H:i') }}</div>
-                    </td>
+                    @if(app()->getLocale() == 'ar')
+                        <td style="text-align: right;">
+                            <div class="title">فاتورة مبيعات</div>
+                            <div style="margin-top: 5px; color: #64748b;" dir="ltr">&#x200E;#{{ $sale->invoice_number }}</div>
+                        </td>
+                        <td style="text-align: left;">
+                            <div style="font-weight: bold; font-size: 16px;">{{ $sale->branch->name }}</div>
+                            <div style="margin-top: 5px; color: #64748b;">{{ $sale->created_at->format('Y-m-d H:i') }}</div>
+                        </td>
+                    @else
+                        <td style="text-align: left;">
+                            <div class="title">Sales Invoice</div>
+                            <div style="margin-top: 5px; color: #64748b;" dir="ltr">&#x200E;#{{ $sale->invoice_number }}</div>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="font-weight: bold; font-size: 16px;">{{ $sale->branch->name }}</div>
+                            <div style="margin-top: 5px; color: #64748b;">{{ $sale->created_at->format('Y-m-d H:i') }}</div>
+                        </td>
+                    @endif
                 </tr>
             </table>
         </div>
 
         <table class="info-table">
             <tr>
-                <td>
+                <td style="text-align: right;">
                     <div class="section-title">{{ __('pos.customer') }}</div>
                     <div style="font-weight: bold; font-size: 15px;">{{ $sale->customer->name ?? __('pos.walk_in_customer') }}</div>
                     @if($sale->customer && $sale->customer->phone)
-                        <div style="color: #64748b; margin-top: 3px;">{{ $sale->customer->phone }}</div>
+                        <div style="color: #64748b; margin-top: 3px;" dir="ltr">&#x200E;{{ $sale->customer->phone }}</div>
                     @endif
                     @if($sale->customer && $sale->customer->tax_number)
                         <div style="color: #64748b;">{{ __('pos.tax_number') }}: {{ $sale->customer->tax_number }}</div>
                     @endif
                 </td>
-                <td class="text-end">
+                <td style="text-align: left;">
                     <div class="section-title">{{ __('pos.payment_method') }}</div>
                     <div style="font-weight: bold; font-size: 15px;">{{ __('pos.' . str_replace(' ', '_', strtolower($sale->payment_method))) }}</div>
                     <div style="color: #64748b; margin-top: 3px;">{{ __('pos.user') }}: {{ $sale->user->name }}</div>
@@ -162,13 +175,31 @@
                     $factor = $item->conversion_factor ?: 1;
                     $displayQty = $item->quantity / $factor;
                     $displayPrice = $item->price * $factor;
+                    
+                    $translatedUnit = $item->unit_name;
+                    if (app()->getLocale() === 'ar' && $translatedUnit) {
+                        $translations = [
+                            'piece'  => 'حبة',
+                            'pieces' => 'حبة',
+                            'pices'  => 'حبة',
+                            'psc'    => 'حبة',
+                            'pcs'    => 'حبة',
+                            'box'    => 'علبة',
+                            'pack'   => 'عبوة',
+                            'tape'   => 'شريط',
+                            'tabe'   => 'شريط',
+                            'kg'     => 'كجم',
+                            'gram'   => 'جرام',
+                        ];
+                        $translatedUnit = $translations[strtolower($translatedUnit)] ?? $translatedUnit;
+                    }
                 @endphp
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>
                         <div style="font-weight: bold;">{{ $item->product->name }}</div>
                         @if($item->unit_name)
-                            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">{{ __('pos.unit') ?? 'Unit' }}: {{ $item->unit_name }}</div>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">{{ __('pos.unit') ?? 'Unit' }}: {{ $translatedUnit }}</div>
                         @endif
                     </td>
                     <td class="text-center">
@@ -201,7 +232,7 @@
                         @endif
                         @if($sale->tax > 0)
                         <tr>
-                            <td class="label" style="border: none;">{{ __('pos.tax') ?? 'VAT' }}:</td>
+                            <td class="label" style="border: none;">{{ app()->getLocale() == 'ar' ? 'الضريبة:' : 'Tax:' }}</td>
                             <td class="value" style="border: none;">{{ number_format($sale->tax, 2) }}</td>
                         </tr>
                         @endif

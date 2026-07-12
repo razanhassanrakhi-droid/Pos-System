@@ -185,7 +185,35 @@
                     <input type="file" class="form-control" id="image" name="image" accept="image/*">
                 </div>
             </div>
-
+            {{-- Warranty Section --}}
+            <div class="mb-3 p-3 border rounded-3" style="background:#f8fafc;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check fs-5 text-primary"></i>
+                        <div class="fw-semibold">{{ __('pos.has_warranty') ?? 'Has Warranty' }}</div>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="has_warranty" name="has_warranty" value="1" style="width:2.5em;height:1.3em;">
+                    </div>
+                </div>
+                <div id="warranty_details_container" class="mt-3" style="display:none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="warranty_period_months" class="form-label fw-semibold">{{ __('pos.warranty_period_months') ?? 'Warranty Duration (Months)' }}</label>
+                            <input type="number" class="form-control" id="warranty_period_months" name="warranty_period_months" value="0" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="warranty_type" class="form-label fw-semibold">{{ __('pos.warranty_type') ?? 'Warranty Type' }}</label>
+                            <select class="form-select" id="warranty_type" name="warranty_type">
+                                <option value="Manufacturer Warranty">Manufacturer Warranty</option>
+                                <option value="Store Warranty">Store Warranty</option>
+                                <option value="Extended Warranty">Extended Warranty</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {{-- Product Status --}}
             <div class="mb-3 p-3 border rounded-3" style="background:#f8fafc;">
                 <input type="hidden" name="status" id="page_status_hidden" value="Active">
@@ -235,6 +263,15 @@ document.getElementById('page_status_toggle').addEventListener('change', functio
         : (isAr ? '🚫 مخفي في نقطة البيع ولا يمكن بيعه' : '🚫 Hidden from POS and cannot be sold');
     document.getElementById('page_status_hint').style.color = isActive ? '#10b981' : '#f43f5e';
     document.getElementById('page_status_icon').style.color = isActive ? '#10b981' : '#f43f5e';
+});
+document.getElementById('has_warranty').addEventListener('change', function() {
+    const container = document.getElementById('warranty_details_container');
+    if (this.checked) {
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+        document.getElementById('warranty_period_months').value = 0;
+    }
 });
 </script>
 @endpush

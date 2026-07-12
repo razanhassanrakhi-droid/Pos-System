@@ -525,7 +525,7 @@
                             <div class="p-3 bg-light rounded-3 d-flex align-items-center justify-content-between">
                                 <div>
                                     <div class="fw-bold fs-5" id="prev_prod_name">Product Name</div>
-                                    <div class="text-muted small" id="prev_prod_barcode">Barcode: -</div>
+                                    <div class="text-muted small" id="prev_prod_barcode">{{ app()->getLocale() == 'ar' ? 'الباركود: -' : 'Barcode: -' }}</div>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="text-end">
@@ -637,12 +637,7 @@
                         <!-- Reason -->
                         <div class="mb-4">
                             <label class="form-label fw-bold text-muted">{{ __('purchases.reason') ?? 'Reason' }}</label>
-                            <input type="text" name="reason" id="wizard_reason" class="form-control form-control-lg mb-3" placeholder="{{ __('purchases.type_custom_reason') ?? 'Type custom reason...' }}" required>
-                            
-                            <div class="small text-muted mb-2"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> {{ __('purchases.quick_suggestions') ?? 'Quick Suggestions' }}:</div>
-                            <div class="d-flex flex-wrap gap-2" id="reasons_container">
-                                <!-- Loaded dynamically based on type -->
-                            </div>
+                            <input type="text" name="reason" id="wizard_reason" class="form-control form-control-lg" placeholder="{{ __('purchases.type_custom_reason') ?? 'Type custom reason...' }}" required>
                         </div>
 
                         <!-- Notes -->
@@ -742,13 +737,13 @@
                                     <span class="badge bg-light text-dark border fw-bold">{{ $adj->short_number }}</span>
                                     <h6 class="fw-bold mt-2 mb-1">{{ $adj->product->name }}</h6>
                                     @if($adj->batch)
-                                        <div class="small text-muted mb-1">Batch: <code class="text-primary">{{ $adj->batch->batch_number }}</code></div>
+                                        <div class="small text-muted mb-1">{{ app()->getLocale() == 'ar' ? 'الدفعة:' : 'Batch:' }} <code class="text-primary">{{ $adj->batch->batch_number }}</code></div>
                                     @endif
-                                    <div class="small text-muted">Entered: <span class="fw-bold text-dark">{{ (float)($adj->entered_quantity ?? $adj->quantity) }} {{ $adj->productUnit ? $adj->productUnit->unit_name : ($adj->product->base_unit_name ?? 'Piece') }}</span></div>
+                                    <div class="small text-muted">{{ app()->getLocale() == 'ar' ? 'الكمية المدخلة:' : 'Entered:' }} <span class="fw-bold text-dark">{{ (float)($adj->entered_quantity ?? $adj->quantity) }} {{ $adj->productUnit ? $adj->productUnit->unit_name : ($adj->product->base_unit_name ?? 'Piece') }}</span></div>
                                 </div>
                                 <div class="text-end">
                                     <span class="fw-bold fs-6 {{ $adj->quantity < 0 ? 'text-danger' : 'text-success' }}">
-                                        Impact: {{ $adj->quantity > 0 ? '+' : '' }}{{ (float)$adj->quantity }} {{ $adj->product->base_unit_name ?? 'Piece' }}
+                                        {{ app()->getLocale() == 'ar' ? 'التأثير:' : 'Impact:' }} {{ $adj->quantity > 0 ? '+' : '' }}{{ (float)$adj->quantity }} {{ $adj->product->base_unit_name ?? 'Piece' }}
                                     </span>
                                     <div class="small text-muted mt-1">{{ $daysDiff }}</div>
                                     <div class="small fw-semibold mt-1 {{ $labelColor }}">{{ $typeText }}</div>
@@ -843,10 +838,13 @@
                 success: function(data) {
                     $('#wizard_search_results').empty();
                     if (data.length === 0) {
-                        $('#wizard_search_results').append('<div class="list-group-item text-muted">No products found</div>').show();
+                        const noProductsText = isAr ? 'لم يتم العثور على منتجات' : 'No products found';
+                        $('#wizard_search_results').append(`<div class="list-group-item text-muted">${noProductsText}</div>`).show();
                         return;
                     }
                     data.forEach((prod, i) => {
+                        const barcodeLabel = isAr ? 'الباركود:' : 'Barcode:';
+                        const notAvailable = isAr ? 'غير متوفر' : 'N/A';
                         const itemHtml = `
                             <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center wizard-prod-opt ${i === 0 ? 'active' : ''}" 
                                data-id="${prod.id}" 
@@ -855,7 +853,7 @@
                                data-stock="${prod.stock || 0}">
                                <div>
                                     <div class="fw-bold">${prod.text}</div>
-                                    <small class="text-muted">Barcode: ${prod.barcode || 'N/A'}</small>
+                                    <small class="text-muted">${barcodeLabel} ${prod.barcode || notAvailable}</small>
                                </div>
                                <span class="badge bg-secondary">${prod.stock || 0}</span>
                             </a>
@@ -932,7 +930,7 @@
             selectedProduct = { id, name, barcode, stock };
             $('#wizard_product_id').val(id);
             $('#prev_prod_name').text(name);
-            $('#prev_prod_barcode').text('Barcode: ' + (barcode || 'N/A'));
+            $('#prev_prod_barcode').text((isAr ? 'الباركود: ' : 'Barcode: ') + (barcode || (isAr ? 'غير متوفر' : 'N/A')));
             $('#prev_prod_stock').text(stock);
 
             $('#selected_product_preview').fadeIn();
@@ -1106,17 +1104,19 @@
                 $('#no_batches_alert').hide();
                 let targetBatch = null;
                 data.forEach(batch => {
-                    const exp = batch.expiry_date ? batch.expiry_date.substring(0, 10) : 'N/A';
+                    const exp = batch.expiry_date ? batch.expiry_date.substring(0, 10) : (isAr ? 'غير متوفر' : 'N/A');
                     const isTarget = String(batch.id) === String(prefillBatchId);
+                    const expiryLabel = isAr ? 'تاريخ الانتهاء:' : 'Expiry:';
+                    const stockLabel = isAr ? 'المخزون' : 'Stock';
                     const batchHtml = `
                         <div class="batch-list-item ${isTarget ? 'selected' : ''}" data-batch-id="${batch.id}" data-batch-number="${batch.batch_number}" data-stock="${batch.quantity}" data-expiry="${exp}">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <span class="fw-bold fs-6 text-primary">${batch.batch_number}</span>
-                                    <div class="small text-muted mt-1">Expiry: ${exp}</div>
+                                    <div class="small text-muted mt-1">${expiryLabel} ${exp}</div>
                                 </div>
                                 <div class="text-end">
-                                    <div class="small text-muted">Stock</div>
+                                    <div class="small text-muted">${stockLabel}</div>
                                     <span class="fw-bold text-dark fs-6">${parseInt(batch.quantity)}</span>
                                 </div>
                             </div>
@@ -1161,16 +1161,18 @@
             }
             $('#no_batches_alert').hide();
             data.forEach(batch => {
-                const exp = batch.expiry_date ? batch.expiry_date.substring(0, 10) : 'N/A';
+                const exp = batch.expiry_date ? batch.expiry_date.substring(0, 10) : (isAr ? 'غير متوفر' : 'N/A');
+                const expiryLabel = isAr ? 'تاريخ الانتهاء:' : 'Expiry:';
+                const stockLabel = isAr ? 'المخزون' : 'Stock';
                 const batchHtml = `
                     <div class="batch-list-item" data-batch-id="${batch.id}" data-batch-number="${batch.batch_number}" data-stock="${batch.quantity}" data-expiry="${exp}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="fw-bold fs-6 text-primary">${batch.batch_number}</span>
-                                <div class="small text-muted mt-1">Expiry: ${exp}</div>
+                                <div class="small text-muted mt-1">${expiryLabel} ${exp}</div>
                             </div>
                             <div class="text-end">
-                                <div class="small text-muted">Stock</div>
+                                <div class="small text-muted">${stockLabel}</div>
                                 <span class="fw-bold text-dark fs-6">${parseInt(batch.quantity)}</span>
                             </div>
                         </div>
@@ -1192,17 +1194,7 @@
     };
 
     function buildPredefinedReasons(type) {
-        const container = $('#reasons_container');
-        container.empty();
-
-        const reasons = PREDEFINED_REASONS_TRANSLATED[type] || [];
-        reasons.forEach(reason => {
-            container.append(`<div class="reason-card">${reason}</div>`);
-        });
-
-        // Automatically select the first reason
-        $('.reason-card').first().addClass('selected');
-        $('#wizard_reason').val(reasons[0] || '');
+        // Disabled since quick suggestions are deleted
     }
 
     let productUnits = [];
@@ -1260,14 +1252,14 @@
     function validateStep(step) {
         if (step === 1) {
             if (!selectedProduct) {
-                Swal.fire('Error', 'Please select a product first.', 'error');
+                Swal.fire(isAr ? 'خطأ' : 'Error', isAr ? 'يرجى اختيار منتج أولاً.' : 'Please select a product first.', 'error');
                 return false;
             }
         }
         if (step === 2) {
             const hasBatches = $('.batch-list-item').length > 0;
             if (hasBatches && !selectedBatch) {
-                Swal.fire('Error', 'Please select a batch.', 'error');
+                Swal.fire(isAr ? 'خطأ' : 'Error', isAr ? 'يرجى اختيار رقم الدفعة (Batch).' : 'Please select a batch.', 'error');
                 return false;
             }
         }
@@ -1276,12 +1268,15 @@
             const factor = parseFloat($('#wizard_product_unit_id option:selected').data('factor')) || 1.0;
             const convertedQty = qty * factor;
             if (qty <= 0) {
-                Swal.fire('Error', 'Quantity must be at least 1.', 'error');
+                Swal.fire(isAr ? 'خطأ' : 'Error', isAr ? 'يجب أن تكون الكمية 1 على الأقل.' : 'Quantity must be at least 1.', 'error');
                 return false;
             }
             const currentStock = selectedBatch ? selectedBatch.stock : selectedProduct.stock;
             if (convertedQty > currentStock) {
-                Swal.fire('Error', `Quantity cannot exceed remaining batch stock (${currentStock} ${baseUnitName}).`, 'error');
+                const msg = isAr 
+                    ? `الكمية لا يمكن أن تتجاوز المخزون المتبقي للدفعة (${currentStock} ${baseUnitName}).` 
+                    : `Quantity cannot exceed remaining batch stock (${currentStock} ${baseUnitName}).`;
+                Swal.fire(isAr ? 'خطأ' : 'Error', msg, 'error');
                 return false;
             }
         }
@@ -1344,7 +1339,14 @@
             $('#sum_batch_row').hide();
         }
 
-        $('#sum_type').text(type);
+        const typeTranslations = {
+            'EXPIRED': isAr ? 'منتهي الصلاحية' : 'Expired',
+            'DAMAGED': isAr ? 'تالف' : 'Damaged',
+            'LOST': isAr ? 'مفقود' : 'Lost',
+            'STOCK_COUNT_ADJUSTMENT': isAr ? 'تسوية الجرد' : 'Stock Count Adjustment',
+            'OTHER': isAr ? 'أخرى' : 'Other'
+        };
+        $('#sum_type').text(typeTranslations[type] || type);
         $('#sum_unit').text(unitName);
         $('#sum_entered_qty').text(qty);
         $('#sum_qty').text('-' + convertedQty);
@@ -1361,18 +1363,26 @@
 
         $.get(`/adjustments/${id}`, function(data) {
             const statusClass = matchStatusClass(data.adjustment_type);
+            const typeTranslations = {
+                'EXPIRED': isAr ? 'منتهي الصلاحية' : 'Expired',
+                'DAMAGED': isAr ? 'تالف' : 'Damaged',
+                'LOST': isAr ? 'مفقود' : 'Lost',
+                'STOCK_COUNT_ADJUSTMENT': isAr ? 'تسوية الجرد' : 'Stock Count Adjustment',
+                'OTHER': isAr ? 'أخرى' : 'Other'
+            };
+            const translatedType = typeTranslations[data.adjustment_type] || data.adjustment_type;
             const html = `
                 <div class="mb-4 text-center">
                     <span class="badge bg-light text-dark border fs-6 px-3 py-2 fw-bold">${data.short_number}</span>
                     <h5 class="fw-bold mt-3">${data.product.name}</h5>
-                    <div class="text-muted small">Barcode: ${data.product.barcode}</div>
+                    <div class="text-muted small">${isAr ? 'الباركود:' : 'Barcode:'} ${data.product.barcode || (isAr ? 'غير متوفر' : 'N/A')}</div>
                 </div>
 
                 <div class="p-3 border rounded-3 mb-4 bg-light">
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
                             <td class="text-muted fw-bold">{{ __('purchases.adjustment_type') ?? 'Adjustment Type' }}</td>
-                            <td class="text-end fw-bold ${statusClass}">${data.adjustment_type}</td>
+                            <td class="text-end fw-bold ${statusClass}">${translatedType}</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-bold">{{ __('purchases.entered_quantity') ?? 'Entered Quantity' }}</td>

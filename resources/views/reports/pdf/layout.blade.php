@@ -87,8 +87,12 @@
     </div>
 
     <div class="footer">
-        <p>{{ __('pos.generated_on') ?? 'Generated on' }}: {{ now()->format('Y-m-d H:i') }}</p>
-        <p>&copy; {{ date('Y') }} {{ $setting->name ?? config('app.name') }}</p>
+        <p>{{ __('pos.generated_on') }}: <span dir="ltr" style="unicode-bidi: embed; direction: ltr;">{{ now()->format('Y-m-d H:i') }}</span></p>
+        @if(app()->getLocale() == 'ar')
+            <p>تم الانشاء بواسطة ديجتال أيج 2026</p>
+        @else
+            <p>Powered by Digital Age 2026</p>
+        @endif
     </div>
 </body>
 </html>

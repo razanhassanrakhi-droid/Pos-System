@@ -16,14 +16,18 @@ class DashboardController extends Controller
         $branchId = session('branch_id');
         
         // Base query for products strictly belonging to the current branch
-        $productsQuery = Product::when($branchId, function($query) use ($branchId) {
-            return $query->where('branch_id', $branchId);
-        })->where('is_active', true);
+        $productsQuery = Product::with('batches')
+            ->when($branchId, function($query) use ($branchId) {
+                return $query->where('branch_id', $branchId);
+            })
+            ->where('is_active', true)
+            ->withSum(['batches as current_stock' => function($query) use ($branchId) {
+                if ($branchId) {
+                    $query->where('branch_id', $branchId);
+                }
+            }], 'remaining_quantity');
         
-        $products = $productsQuery->get()->map(function($product) use ($branchId) {
-            $product->current_stock = $branchId ? $product->currentBranchStock($branchId) : $product->totalStock();
-            return $product;
-        });
+        $products = $productsQuery->get();
 
         // Summary Statistics
         $totalProducts = $products->count();

@@ -33,6 +33,7 @@ class NotificationSystem {
             viewBatch: this.isRtl ? 'عرض الدفعة' : 'View Batch',
             createAdjustment: this.isRtl ? 'عمل تسوية' : 'Create Adjustment',
             dismiss: this.isRtl ? 'تجاهل' : 'Dismiss',
+            dismissAll: this.isRtl ? 'تجاهل الكل' : 'Dismiss All',
             types: {
                 low_stock: this.isRtl ? 'نقص المخزون' : 'Low Stock',
                 out_of_stock: this.isRtl ? 'نفد من المخزون' : 'Out of Stock',
@@ -599,8 +600,11 @@ class NotificationSystem {
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <button id="mark-all-read-btn" class="btn btn-sm btn-link text-decoration-none text-info p-0 font-size-sm fw-semibold" style="font-size: 0.78rem;">
-                        <i class="bi bi-check-all"></i> ${this.labels.markAllRead}
+                    <button id="mark-all-read-btn" class="btn btn-sm btn-link text-decoration-none text-info p-0 font-size-sm fw-semibold" style="font-size: 0.78rem;" title="${this.labels.markAllRead}">
+                        <i class="bi bi-check-all fs-6"></i>
+                    </button>
+                    <button id="dismiss-all-btn" class="btn btn-sm btn-link text-decoration-none text-danger p-0 border-0 ms-2" title="${this.labels.dismissAll}">
+                        <i class="bi bi-trash fs-6"></i>
                     </button>
                     <a href="/settings/notifications" class="btn btn-sm btn-link text-muted p-0 border-0 ms-2" title="Settings">
                         <i class="bi bi-gear-fill fs-6"></i>
@@ -712,6 +716,9 @@ class NotificationSystem {
 
         document.getElementById('mark-all-read-btn')
             .addEventListener('click', () => this.markAllAsRead());
+
+        document.getElementById('dismiss-all-btn')
+            .addEventListener('click', () => this.dismissAll());
 
         // Quick Summary Cards filtering triggers
         this.panel.querySelectorAll('.ntf-summary-card').forEach(card => {
@@ -1026,6 +1033,34 @@ class NotificationSystem {
             }
         })
         .catch(e => console.error('Error marking all read:', e));
+    }
+
+    dismissAll() {
+        if (!confirm(this.isRtl ? 'هل أنت متأكد من تجاهل جميع التنبيهات؟' : 'Are you sure you want to dismiss all alerts?')) {
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('/api/notifications/dismiss-all', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                this.allNotifications = { today: [], yesterday: [], last_7_days: [], older: [] };
+                this.unreadCount = 0;
+                this.updateBadge(0);
+                this.fetchNotificationsSilent();
+                this.closeDetailPanel();
+            }
+        })
+        .catch(e => console.error('Error dismissing all:', e));
     }
 
     /* ───────────── UI Layout Rendering ───────────── */

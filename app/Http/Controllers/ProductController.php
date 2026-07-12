@@ -21,21 +21,20 @@ class ProductController extends Controller
         $statusFilter = $request->input('status');
 
         // Always filter products strictly by the current branch_id, unless it's NULL (All Branches view for Admin)
-        $products = Product::with(['units', 'creator', 'updater'])->when($branchId, function($query) use ($branchId) {
+        $products = Product::with(['units', 'creator', 'updater', 'batches'])->when($branchId, function($query) use ($branchId) {
             return $query->where('branch_id', $branchId);
         })->when($statusFilter, function($query) use ($statusFilter) {
             return $query->where('status', $statusFilter);
-        })->latest()->get();
+        })
+        ->withSum(['batches as current_stock' => function($query) use ($branchId) {
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            }
+        }], 'remaining_quantity')
+        ->latest()->get();
 
         // Attach current branch stock to each product
         foreach ($products as $product) {
-            try {
-                // If branchId is null (e.g. admin at all-branches view, though session usually has one), show total stock
-                // Otherwise show branch stock
-                $product->current_stock = $branchId ? $product->currentBranchStock($branchId) : $product->totalStock();
-            } catch (\Exception $e) {
-                $product->current_stock = 0;
-            }
             $product->branch_id = $branchId;
         }
 
@@ -87,16 +86,31 @@ class ProductController extends Controller
 
         $productStatus = $request->status ?? 'Active';
 
+        $nameAr = $request->name_ar ?? $request->name_en;
+        $nameEn = $request->name_en ?? $request->name_ar;
+        $brandAr = $request->brand_ar ?? $request->brand_en;
+        $brandEn = $request->brand_en ?? $request->brand_ar;
+        $descAr = $request->description_ar ?? $request->description_en;
+        $descEn = $request->description_en ?? $request->description_ar;
+        $baseUnitAr = trim($request->base_unit_name_ar ?? '');
+        $baseUnitEn = trim($request->base_unit_name_en ?? '');
+        if (empty($baseUnitAr) && !empty($baseUnitEn)) {
+            $baseUnitAr = $baseUnitEn;
+        }
+        if (!empty($baseUnitAr) && empty($baseUnitEn)) {
+            $baseUnitEn = $baseUnitAr;
+        }
+
         $product = Product::create([
             'branch_id' => $branchId,
-            'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
-            'brand' => ['ar' => $request->brand_ar, 'en' => $request->brand_en],
-            'description' => ['ar' => $request->description_ar, 'en' => $request->description_en],
+            'name' => ['ar' => $nameAr, 'en' => $nameEn],
+            'brand' => ['ar' => $brandAr, 'en' => $brandEn],
+            'description' => ['ar' => $descAr, 'en' => $descEn],
             'category_id' => $request->category_id,
             'barcode' => $request->barcode,
             'sku' => $request->sku,
-            'base_unit_name_ar' => trim($request->base_unit_name_ar ?? ''),
-            'base_unit_name_en' => trim($request->base_unit_name_en ?? ''),
+            'base_unit_name_ar' => $baseUnitAr,
+            'base_unit_name_en' => $baseUnitEn,
             'image' => $imagePath,
             'sale_price' => $request->sale_price,
             'minimum_stock' => $request->minimum_stock,
@@ -104,21 +118,22 @@ class ProductController extends Controller
             'is_active' => $productStatus === 'Active',
             'has_warranty' => $request->has('has_warranty'),
             'warranty_period_months' => $request->warranty_period_months ?? 0,
+            'warranty_type' => $request->warranty_type,
             'created_by' => $user->id,
             'updated_by' => $user->id,
         ]);
 
         // Auto create base unit suggestion
-        if ($request->base_unit_name_ar) {
+        if ($baseUnitAr) {
             \App\Models\Unit::firstOrCreate([
                 'branch_id' => $branchId,
-                'name' => trim($request->base_unit_name_ar),
+                'name' => trim($baseUnitAr),
             ]);
         }
-        if ($request->base_unit_name_en) {
+        if ($baseUnitEn) {
             \App\Models\Unit::firstOrCreate([
                 'branch_id' => $branchId,
-                'name' => trim($request->base_unit_name_en),
+                'name' => trim($baseUnitEn),
             ]);
         }
 
@@ -128,14 +143,21 @@ class ProductController extends Controller
                 $unitNameAr = trim($unitData['unit_name_ar'] ?? '');
                 $unitNameEn = trim($unitData['unit_name_en'] ?? '');
                 
+                if (empty($unitNameAr) && !empty($unitNameEn)) {
+                    $unitNameAr = $unitNameEn;
+                }
+                if (!empty($unitNameAr) && empty($unitNameEn)) {
+                    $unitNameEn = $unitNameAr;
+                }
+                
                 if (empty($unitNameAr) && empty($unitNameEn)) {
                     continue; // Skip if no name provided
                 }
                 
-                $baseUnitAr = strtolower(trim($request->base_unit_name_ar ?? ''));
-                $baseUnitEn = strtolower(trim($request->base_unit_name_en ?? ''));
-                if (($baseUnitAr && strtolower($unitNameAr) === $baseUnitAr) || 
-                    ($baseUnitEn && strtolower($unitNameEn) === $baseUnitEn)) {
+                $baseUnitArLower = strtolower(trim($baseUnitAr));
+                $baseUnitEnLower = strtolower(trim($baseUnitEn));
+                if (($baseUnitArLower && strtolower($unitNameAr) === $baseUnitArLower) || 
+                    ($baseUnitEnLower && strtolower($unitNameEn) === $baseUnitEnLower)) {
                     continue; // Skip duplicate of base unit
                 }
                 
@@ -179,6 +201,7 @@ class ProductController extends Controller
             'minimum_stock' => 'required|numeric|min:0',
             'has_warranty' => 'boolean',
             'warranty_period_months' => 'nullable|integer|min:0',
+            'warranty_type' => 'nullable|string|max:255',
             'base_unit_name_ar' => 'nullable|string|max:255',
             'base_unit_name_en' => 'nullable|string|max:255',
             'additional_units' => 'nullable|array',
@@ -190,10 +213,25 @@ class ProductController extends Controller
             'additional_units.*.pricing_mode' => 'nullable|string|in:automatic,custom',
         ]);
 
+        $nameAr = $request->name_ar ?? $request->name_en;
+        $nameEn = $request->name_en ?? $request->name_ar;
+        $brandAr = $request->brand_ar ?? $request->brand_en;
+        $brandEn = $request->brand_en ?? $request->brand_ar;
+        $descAr = $request->description_ar ?? $request->description_en;
+        $descEn = $request->description_en ?? $request->description_ar;
+        $baseUnitAr = trim($request->base_unit_name_ar ?? '');
+        $baseUnitEn = trim($request->base_unit_name_en ?? '');
+        if (empty($baseUnitAr) && !empty($baseUnitEn)) {
+            $baseUnitAr = $baseUnitEn;
+        }
+        if (!empty($baseUnitAr) && empty($baseUnitEn)) {
+            $baseUnitEn = $baseUnitAr;
+        }
+
         $data = [
-            'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
-            'brand' => ['ar' => $request->brand_ar, 'en' => $request->brand_en],
-            'description' => ['ar' => $request->description_ar, 'en' => $request->description_en],
+            'name' => ['ar' => $nameAr, 'en' => $nameEn],
+            'brand' => ['ar' => $brandAr, 'en' => $brandEn],
+            'description' => ['ar' => $descAr, 'en' => $descEn],
             'category_id' => $request->category_id,
             'barcode' => $request->barcode,
             'sku' => $request->sku,
@@ -201,8 +239,8 @@ class ProductController extends Controller
             'is_active' => ($request->status ?? 'Active') === 'Active',
             'sale_price' => $request->sale_price,
             'minimum_stock' => $request->minimum_stock,
-            'base_unit_name_ar' => trim($request->base_unit_name_ar ?? ''),
-            'base_unit_name_en' => trim($request->base_unit_name_en ?? ''),
+            'base_unit_name_ar' => $baseUnitAr,
+            'base_unit_name_en' => $baseUnitEn,
             'updated_by' => auth()->id(),
         ];
 
@@ -216,22 +254,23 @@ class ProductController extends Controller
 
         $data['has_warranty'] = $request->has('has_warranty');
         $data['warranty_period_months'] = $request->warranty_period_months ?? 0;
+        $data['warranty_type'] = $request->warranty_type;
 
         $product->update($data);
 
         $branchId = session('branch_id') ?: auth()->user()->branches()->first()?->id;
 
         // Auto create base unit suggestion
-        if ($request->base_unit_name_ar) {
+        if ($baseUnitAr) {
             \App\Models\Unit::firstOrCreate([
                 'branch_id' => $branchId,
-                'name' => trim($request->base_unit_name_ar),
+                'name' => trim($baseUnitAr),
             ]);
         }
-        if ($request->base_unit_name_en) {
+        if ($baseUnitEn) {
             \App\Models\Unit::firstOrCreate([
                 'branch_id' => $branchId,
-                'name' => trim($request->base_unit_name_en),
+                'name' => trim($baseUnitEn),
             ]);
         }
 
@@ -242,14 +281,21 @@ class ProductController extends Controller
                 $unitNameAr = trim($unitData['unit_name_ar'] ?? '');
                 $unitNameEn = trim($unitData['unit_name_en'] ?? '');
                 
+                if (empty($unitNameAr) && !empty($unitNameEn)) {
+                    $unitNameAr = $unitNameEn;
+                }
+                if (!empty($unitNameAr) && empty($unitNameEn)) {
+                    $unitNameEn = $unitNameAr;
+                }
+                
                 if (empty($unitNameAr) && empty($unitNameEn)) {
                     continue; // Skip if no name provided
                 }
 
-                $baseUnitAr = strtolower(trim($request->base_unit_name_ar ?? ''));
-                $baseUnitEn = strtolower(trim($request->base_unit_name_en ?? ''));
-                if (($baseUnitAr && strtolower($unitNameAr) === $baseUnitAr) || 
-                    ($baseUnitEn && strtolower($unitNameEn) === $baseUnitEn)) {
+                $baseUnitArLower = strtolower(trim($baseUnitAr));
+                $baseUnitEnLower = strtolower(trim($baseUnitEn));
+                if (($baseUnitArLower && strtolower($unitNameAr) === $baseUnitArLower) || 
+                    ($baseUnitEnLower && strtolower($unitNameEn) === $baseUnitEnLower)) {
                     continue; // Skip duplicate of base unit
                 }
                 
@@ -299,9 +345,9 @@ class ProductController extends Controller
                 'movements' => $movements,
                 'metadata' => [
                     'created_at' => $product->created_at->toDateTimeString(),
-                    'created_by' => $product->creator ? $product->creator->username : 'Unknown',
+                    'created_by' => $product->creator ? ($product->creator->full_name ?: $product->creator->username) : 'Unknown',
                     'updated_at' => $product->updated_at->toDateTimeString(),
-                    'updated_by' => $product->updater ? $product->updater->username : 'Unknown',
+                    'updated_by' => $product->updater ? ($product->updater->full_name ?: $product->updater->username) : 'Unknown',
                 ]
             ]);
         } catch (\Exception $e) {

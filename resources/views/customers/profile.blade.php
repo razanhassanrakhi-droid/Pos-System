@@ -481,7 +481,7 @@
                             @empty
                             <tr>
                                 <td colspan="6" class="text-center py-5">
-                                    <div class="text-muted"><i class="bi bi-inbox fs-1 d-block mb-2"></i> No purchases found</div>
+                                    <div class="text-muted"><i class="bi bi-inbox fs-1 d-block mb-2"></i> {{ app()->getLocale() == 'ar' ? 'لم يتم العثور على مشتريات' : 'No purchases found' }}</div>
                                 </td>
                             </tr>
                             @endforelse

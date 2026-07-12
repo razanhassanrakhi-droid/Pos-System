@@ -20,8 +20,6 @@ class Setting extends Model
         'footer_text',
         'currency',
         'default_tax',
-        'license_key',
-        'license_expires_at',
     ];
 
     protected $casts = [
@@ -30,7 +28,6 @@ class Setting extends Model
         'footer_text' => 'array',
         'currency' => 'array',
         'default_tax' => 'float',
-        'license_expires_at' => 'date',
     ];
 
     public function getTranslation($field, $locale = null)
@@ -76,48 +73,4 @@ class Setting extends Model
         return $value;
     }
 
-    public function isLicenseValid()
-    {
-        // 1. If a license exists, check deep verification
-        if ($this->license_key && $this->license_expires_at) {
-            if ($this->license_expires_at->isPast()) {
-                return false;
-            }
-
-            try {
-                $licenseData = json_decode(base64_decode($this->license_key), true);
-                if (!$licenseData || !isset($licenseData['signature']) || !isset($licenseData['data'])) {
-                    return false;
-                }
-
-                $secret = env('LICENSE_SECRET', 'DigitalAgePosSystemSecretKey2026!#');
-                $expectedSignature = hash_hmac('sha256', json_encode($licenseData['data']), $secret);
-                
-                if (!hash_equals($expectedSignature, $licenseData['signature'])) {
-                    return false;
-                }
-
-                // Check Device ID
-                $storedDeviceId = $licenseData['data']['device_id'] ?? null;
-                
-                // Get Current Device ID (Logic from SettingController)
-                $host = gethostname();
-                $os = php_uname('s');
-                $envKey = env('APP_KEY', 'default-salt');
-                $hash = substr(md5($host . $os . $envKey), 0, 12);
-                $currentDeviceId = strtoupper(implode('-', str_split($hash, 4)));
-
-                return $storedDeviceId === $currentDeviceId;
-            } catch (\Exception $e) {
-                return false;
-            }
-        }
-
-        // 2. Automatic 7-day trial if no license is present
-        $trialDays = 7;
-        $installationDate = $this->created_at ?: now();
-        $trialExpiryDate = $installationDate->copy()->addDays($trialDays);
-
-        return now()->lessThan($trialExpiryDate);
-    }
 }

@@ -513,9 +513,12 @@
                     <i class="bi bi-search cat-search-icon"></i>
                     <input type="text" name="search" class="cat-search-input" placeholder="{{ app()->getLocale() == 'ar' ? 'البحث بالاسم، الهاتف، أو الكود...' : 'Search by Name, Phone, or Code...' }}" value="{{ request('search') }}">
                 </div>
+                @can('create-customers')
                 <button type="button" class="cat-add-btn" data-bs-toggle="modal" data-bs-target="#createCustomerModal">
                     <i class="bi bi-plus-lg"></i> {{ __('pos.add_customer') }}
                 </button>
+                @endcan
+
             </div>
             <div class="cat-toolbar-right">
                 <select name="type" class="cat-select" onchange="this.form.submit()">
@@ -531,10 +534,6 @@
                         <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ __('pos.'.strtolower($status)) ?? $status }}</option>
                     @endforeach
                 </select>
-
-                <button type="submit" class="cat-btn-apply">
-                    <i class="bi bi-funnel-fill"></i> {{ app()->getLocale() == 'ar' ? 'تطبيق' : 'Apply' }}
-                </button>
                 
                 @if(request()->anyFilled(['search', 'type', 'status']))
                 <a href="{{ route('customers.index') }}" class="cat-select text-danger text-decoration-none d-flex align-items-center justify-content-center" title="Clear Filters" style="padding: 9px; width: 38px;">
@@ -598,9 +597,13 @@
                             <a href="{{ route('customers.show', $customer->id) }}" class="btn btn-sm rounded-pill px-3 me-1" style="background-color: #f8f9fa; border: 1px solid #e2e8f0; color: #0d6efd; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8f9fa';" title="{{ __('pos.customer_profile') }}">
                                 <i class="bi bi-person-lines-fill"></i>
                             </a>
+                            @can('edit-customers')
                             <button type="button" class="btn btn-sm rounded-pill px-3" style="background-color: #f8f9fa; border: 1px solid #e2e8f0; color: #64748B; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8f9fa';" onclick="editCustomer({{ $customer->id }})" title="{{ __('pos.edit') }}">
                                 <i class="bi bi-pencil"></i>
                             </button>
+                            @endcan
+
+                            @can('delete-customers')
                             <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('pos.confirm_delete') ?? 'Are you sure you want to delete?' }}');">
                                 @csrf
                                 @method('DELETE')
@@ -608,6 +611,7 @@
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                     @empty
@@ -838,9 +842,7 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        @if($errors->any())
-            new bootstrap.Modal(document.getElementById('createCustomerModal')).show();
-        @endif
+        // Modal is closed on redirect to allow viewing global error alerts clearly
     });
 
     function editCustomer(id) {

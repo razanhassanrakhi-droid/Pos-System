@@ -131,9 +131,11 @@
                 </form>
             </div>
             <div class="col-md-3 text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
+                @can('create-sales')
                 <a href="{{ route('sales.create') }}" class="pm-add-btn">
                     <i class="bi bi-plus-lg"></i> <span>{{ __('pos.add_sale') }}</span>
                 </a>
+                @endcan
             </div>
         </div>
     </div>
@@ -189,22 +191,26 @@
                         </td>
                         <td class="text-center">{{ $sale->created_at->format('Y-m-d H:i') }}</td>
                         <td class="text-center">
-                            <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-outline-info me-1" title="{{ __('pos.view') }}">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{{ route('sales.print', $sale->id) }}" target="_blank" class="btn btn-sm btn-outline-success me-1" title="{{ __('pos.print') }}">
-                                <i class="bi bi-printer"></i>
-                            </a>
-                            <a href="{{ route('sales.pdf', $sale->id) }}" class="btn btn-sm btn-outline-danger me-1" title="{{ __('pos.download_pdf') ?? 'Download PDF' }}">
-                                <i class="bi bi-file-pdf"></i>
-                            </a>
-                            <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('pos.confirm_delete') }}');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ __('pos.delete') }}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
+                            <div class="d-flex align-items-center justify-content-center gap-1 flex-wrap">
+                                <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-outline-info" title="{{ __('pos.view') }}">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ route('sales.print', $sale->id) }}" target="_blank" class="btn btn-sm btn-outline-success" title="{{ __('pos.print') }}">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                <a href="{{ route('sales.pdf', $sale->id) }}" class="btn btn-sm btn-outline-danger" title="{{ __('pos.download_pdf') ?? 'Download PDF' }}">
+                                    <i class="bi bi-file-pdf"></i>
+                                </a>
+                                @can('delete-sales')
+                                <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('pos.confirm_delete') }}');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ __('pos.delete') }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                @endcan
+                            </div>
                         </td>
                     </tr>
                     @endforeach

@@ -39,6 +39,28 @@
         font-size: 14px;
         color: #2b2b2b;
     }
+
+    @media (max-width: 576px) {
+        .invoice-actions-row {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            justify-content: space-between !important;
+            gap: 6px !important;
+        }
+        .invoice-actions-row .btn {
+            flex: 1 !important;
+            padding: 10px 4px !important;
+            font-size: 0.72rem !important;
+            border-radius: 8px !important;
+            white-space: nowrap !important;
+        }
+        .invoice-actions-row .btn i {
+            margin-right: 4px !important;
+            margin-left: 4px !important;
+            font-size: 0.85rem !important;
+        }
+    }
 </style>
 @endpush
 
@@ -46,7 +68,7 @@
 @php
     $setting = \App\Models\Setting::first();
     $isRtl = app()->getLocale() == 'ar';
-    $alignText = $isRtl ? 'text-end' : 'text-start';
+    $alignText = 'text-start';
     $taxRate = $sale->subtotal > 0 ? round(($sale->tax / $sale->subtotal) * 100) : 0;
 @endphp
 <div class="row">
@@ -54,17 +76,6 @@
         <!-- Actions Row -->
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
             <h4 class="mb-0 fw-bold"><i class="bi bi-receipt me-2 text-primary"></i>{{ __('pos.sale_details') }}</h4>
-            <div class="d-flex flex-wrap gap-2 w-100 w-sm-auto">
-                <a href="{{ route('sales.print', $sale->id) }}" target="_blank" class="btn btn-success shadow-sm flex-fill flex-sm-grow-0 d-inline-flex align-items-center justify-content-center">
-                    <i class="bi bi-printer me-1"></i> {{ __('pos.print') }}
-                </a>
-                <a href="{{ route('sales.pdf', $sale->id) }}" class="btn btn-danger shadow-sm flex-fill flex-sm-grow-0 d-inline-flex align-items-center justify-content-center">
-                    <i class="bi bi-file-pdf me-1"></i> {{ __('pos.download_pdf') ?? 'Download PDF' }}
-                </a>
-                <a href="{{ route('sales.index') }}" class="btn btn-outline-secondary shadow-sm flex-fill flex-sm-grow-0 d-inline-flex align-items-center justify-content-center">
-                    <i class="bi bi-arrow-left me-1"></i> {{ __('pos.back') }}
-                </a>
-            </div>
         </div>
 
         <div class="card invoice-card mb-4">
@@ -158,7 +169,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th class="{{ $alignText }}">{{ __('pos.product') }}</th>
+                                <th class="text-center">{{ __('pos.product') }}</th>
                                 <th>{{ __('pos.quantity') }}</th>
                                 <th>{{ __('pos.returned_qty') }}</th>
                                 <th>{{ __('pos.net_qty') }}</th>
@@ -174,13 +185,31 @@
                                 $displayReturnedQty = $item->returned_qty / $factor;
                                 $displayNetQty = $item->net_qty / $factor;
                                 $displayPrice = $item->price * $factor;
+
+                                $translatedUnit = $item->unit_name;
+                                if (app()->getLocale() === 'ar' && $translatedUnit) {
+                                    $translations = [
+                                        'piece'  => 'حبة',
+                                        'pieces' => 'حبة',
+                                        'pices'  => 'حبة',
+                                        'psc'    => 'حبة',
+                                        'pcs'    => 'حبة',
+                                        'box'    => 'علبة',
+                                        'pack'   => 'عبوة',
+                                        'tape'   => 'شريط',
+                                        'tabe'   => 'شريط',
+                                        'kg'     => 'كجم',
+                                        'gram'   => 'جرام',
+                                    ];
+                                    $translatedUnit = $translations[strtolower($translatedUnit)] ?? $translatedUnit;
+                                }
                             @endphp
                             <tr>
                                 <td class="text-muted">{{ $loop->iteration }}</td>
                                 <td class="{{ $alignText }}">
                                     <div class="fw-bold">{{ $item->product->name }}</div>
                                     @if($item->unit_name)
-                                        <small class="text-muted d-block mt-1"><i class="bi bi-box-seam me-1"></i>{{ __('pos.unit') }}: {{ $item->unit_name }}</small>
+                                        <small class="text-muted d-block mt-1"><i class="bi bi-box-seam me-1"></i>{{ __('pos.unit') }}: {{ $translatedUnit }}</small>
                                     @endif
                                     @if($item->product->has_warranty)
                                         <div class="mt-2 p-2 bg-light rounded border border-info border-start-0 border-end-0 border-bottom-0">
@@ -320,7 +349,7 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th>{{ __('pos.date') }}</th>
-                                    <th class="{{ $alignText }}">{{ __('pos.product') }}</th>
+                                    <th class="text-center">{{ __('pos.product') }}</th>
                                     <th>{{ __('pos.quantity') }}</th>
                                     <th>{{ __('pos.reason') }}</th>
                                     <th>{{ __('pos.user') }}</th>
@@ -349,6 +378,19 @@
                 </div>
                 @endif
             </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex flex-wrap gap-2 justify-content-end mb-4 w-100 invoice-actions-row">
+            <a href="{{ route('sales.print', $sale->id) }}" target="_blank" class="btn btn-success shadow-sm px-4 py-2.5 fw-bold rounded-3 d-inline-flex align-items-center justify-content-center">
+                <i class="bi bi-printer me-2"></i> {{ __('pos.print') }}
+            </a>
+            <a href="{{ route('sales.pdf', $sale->id) }}" class="btn btn-danger shadow-sm px-4 py-2.5 fw-bold rounded-3 d-inline-flex align-items-center justify-content-center">
+                <i class="bi bi-file-pdf me-2"></i> {{ __('pos.download_pdf') ?? 'Download PDF' }}
+            </a>
+            <a href="{{ route('sales.index') }}" class="btn btn-outline-secondary shadow-sm px-4 py-2.5 fw-bold rounded-3 d-inline-flex align-items-center justify-content-center">
+                <i class="bi bi-arrow-left me-2"></i> {{ __('pos.back') }}
+            </a>
         </div>
     </div>
 </div>

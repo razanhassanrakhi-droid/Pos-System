@@ -72,6 +72,8 @@ public function login(Request $request)
     $login = $request->input('login'); // حقل login في الفورم
 
     $user = User::where('username', $login)
+                ->orWhere('username->ar', $login)
+                ->orWhere('username->en', $login)
                 ->orWhere('email', $login)
                 ->first();
 
@@ -95,12 +97,17 @@ public function login(Request $request)
             $user->id
         );
 
-        // توجه للداشبورد
-        return redirect()->route('dashboard');
+        // توجه للداشبورد أو شاشة البيع بناءً على الصلاحيات
+        if ($user->can('view-dashboard') || $user->role == 'admin') {
+            return redirect()->route('dashboard');
+        } elseif ($user->can('create-sales')) {
+            return redirect()->route('sales.create');
+        }
+        return redirect()->route('settings.password');
     }
 
     // إذا فشلت عملية تسجيل الدخول
-    return back()->with('error', 'بيانات الدخول غير صحيحة');
+    return back()->with('error', __('login.invalid_credentials'));
 }
     public function logout()
     {
@@ -144,7 +151,7 @@ public function login(Request $request)
         }
 
         if (!$user->email) {
-            return back()->with('error', 'هذا الحساب لا يمتلك بريداً إلكترونياً مسجلاً لإرسال الكود.');
+            return back()->with('error', __('login.no_email_registered'));
         }
 
         // Generate 6-digit OTP
@@ -166,11 +173,11 @@ public function login(Request $request)
         } catch (\Exception $e) {
             // If mail fails, we still keep the OTP in DB for manual check if needed, 
             // but return error to user.
-            return back()->with('error', 'فشل في إرسال البريد الإلكتروني. يرجى المحاولة لاحقاً.');
+            return back()->with('error', __('login.email_send_failed'));
         }
 
         return redirect()->route('password.otp.verify', ['user_id' => $user->id])
-                        ->with('success', 'تم إرسال كود التحقق إلى بريدك الإلكتروني.');
+                        ->with('success', __('login.otp_sent'));
     }
 
     // Password Recovery - Step 3: Show OTP Verification Form
@@ -195,7 +202,7 @@ public function login(Request $request)
                       ->first();
 
         if (!$otp || !$otp->isValid()) {
-            return back()->with('error', 'كود التحقق غير صحيح أو انتهت صلاحيته.');
+            return back()->with('error', __('login.invalid_otp'));
         }
 
         // Mark as used

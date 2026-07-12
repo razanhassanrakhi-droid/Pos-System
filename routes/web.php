@@ -32,7 +32,7 @@ Route::middleware([SetLocale::class])->group(function () {
     Route::post('/reset-password', [AuthController::class, 'updatePassword'])->name('password.reset.update');
 
     // Routes تحتاج تسجيل دخول
-    Route::middleware(['auth', 'branch', 'check.license'])->group(function () {
+    Route::middleware(['auth', 'branch'])->group(function () {
         // Dashboard Route
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -62,14 +62,14 @@ Route::middleware([SetLocale::class])->group(function () {
 
         // Products Routes
         Route::get('/products', [ProductController::class, 'index'])->name('products.index')->middleware('permission:view-products');
-        Route::get('/products/barcode/{barcode}', [ProductController::class, 'getByBarcode'])->name('products.barcode')->middleware('permission:view-products');
-        Route::get('/products/batches/{product}', [ProductController::class, 'getBatches'])->name('products.batches')->middleware('permission:view-products');
-        Route::get('/products/units/{product}', [ProductController::class, 'getUnits'])->name('products.units')->middleware('permission:view-products');
+        Route::get('/products/barcode/{barcode}', [ProductController::class, 'getByBarcode'])->name('products.barcode')->middleware('permission:view-products|create-sales');
+        Route::get('/products/batches/{product}', [ProductController::class, 'getBatches'])->name('products.batches')->middleware('permission:view-products|create-sales');
+        Route::get('/products/units/{product}', [ProductController::class, 'getUnits'])->name('products.units')->middleware('permission:view-products|create-sales');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store')->middleware('permission:create-products');
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update')->middleware('permission:edit-products');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy')->middleware('permission:delete-products');
         Route::post('/products/quick-store', [ProductController::class, 'quickStore'])->name('products.quick_store')->middleware('permission:create-products');
-        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search')->middleware('permission:view-products');
+        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search')->middleware('permission:view-products|create-sales');
         Route::post('/products/bulk-status', [ProductController::class, 'bulkStatus'])->name('products.bulk_status')->middleware('permission:edit-products');
         Route::get('/products/{product}/movements', [ProductController::class, 'movements'])->name('products.movements')->middleware('permission:view-products');
         Route::put('/products/batches/{batch}', [ProductController::class, 'updateBatch'])->name('products.batches.update')->middleware('permission:edit-products');
@@ -97,14 +97,17 @@ Route::middleware([SetLocale::class])->group(function () {
         Route::delete('/purchases/{id}', [PurchaseController::class, 'destroy'])->name('purchases.destroy')->middleware('permission:delete-purchases');
 
         // Sales Routes
+        Route::middleware('permission:view-sales|create-sales')->group(function () {
+            Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
+            Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
+        });
+
         Route::middleware('permission:view-sales')->group(function () {
             Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
-            Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
             Route::get('/sales/{id}', [SaleController::class, 'show'])->name('sales.show');
             Route::get('/sales/{id}/pdf', [SaleController::class, 'downloadPdf'])->name('sales.pdf');
             Route::get('/sales/{id}/print', [SaleController::class, 'print'])->name('sales.print');
             Route::post('/sales/{id}/payments', [SaleController::class, 'addPayment'])->name('sales.payments.store');
-            Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
             Route::delete('/sales/{id}', [SaleController::class, 'destroy'])->name('sales.destroy')->middleware('permission:delete-sales');
 
             // Sales Returns
@@ -125,6 +128,10 @@ Route::middleware([SetLocale::class])->group(function () {
         });
         Route::middleware('permission:create-warranties')->group(function () {
             Route::post('/warranties/upsert', [\App\Http\Controllers\WarrantyController::class, 'upsert'])->name('warranties.upsert');
+            Route::post('/warranties/{id}/claims', [\App\Http\Controllers\WarrantyController::class, 'storeClaim'])->name('warranties.claims.store');
+            Route::put('/warranties/claims/{claim_id}', [\App\Http\Controllers\WarrantyController::class, 'updateClaim'])->name('warranties.claims.update');
+            Route::delete('/warranties/claims/{claim_id}', [\App\Http\Controllers\WarrantyController::class, 'destroyClaim'])->name('warranties.claims.destroy');
+            Route::put('/warranties/{id}', [\App\Http\Controllers\WarrantyController::class, 'update'])->name('warranties.update');
         });
 
         // Settings & License Routes
@@ -132,15 +139,8 @@ Route::middleware([SetLocale::class])->group(function () {
             Route::get('/settings/company', function () { return view('settings.company'); })->name('settings.company');
             Route::post('/settings/company', function () { return redirect()->route('settings.company')->with('success', 'Company settings updated successfully.'); })->name('settings.company.update');
             
-            Route::get('/settings/license', [SettingController::class, 'showLicenseForm'])->name('settings.license')->middleware('permission:view-license');
-            Route::post('/settings/license/request', [SettingController::class, 'generateLicenseRequest'])->name('settings.license.request')->middleware('permission:request-license');
-            Route::post('/settings/license/activate', [SettingController::class, 'activateLicense'])->name('settings.license.activate')->middleware('permission:activate-license');
-            
-            // Admin only: License Management Tool
-            Route::middleware(['admin', 'permission:manage-license'])->group(function () {
-                Route::get('/settings/license-manager', [SettingController::class, 'licenseManager'])->name('settings.license.manager');
-                Route::post('/settings/license-generate', [SettingController::class, 'generateLicense'])->name('settings.license.generate');
-            });
+            // Notification settings and change password routes remain under settings/
+            // (all license request, activation, manager routes removed)
         });
         
         Route::get('/settings/profile', [AuthController::class, 'showProfile'])->name('settings.profile');
@@ -153,6 +153,7 @@ Route::middleware([SetLocale::class])->group(function () {
 
         // Expenses Routes
         Route::middleware(['auth', 'permission:view-expenses'])->group(function () {
+            Route::get('/daily-expenses/{expense}/print', [\App\Http\Controllers\ExpenseController::class, 'print'])->name('expenses.print');
             Route::resource('daily-expenses', \App\Http\Controllers\ExpenseController::class)
                 ->names('expenses')
                 ->parameters(['daily-expenses' => 'expense']);
@@ -173,6 +174,8 @@ Route::middleware([SetLocale::class])->group(function () {
         // Reports
         Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index')->middleware('permission:view-reports');
         Route::get('/reports/export/{type}', [\App\Http\Controllers\ReportController::class, 'export'])->name('reports.export')->middleware('permission:view-reports');
+        Route::get('/reports/top-analytics', [\App\Http\Controllers\ReportController::class, 'apiAnalytics'])->name('reports.top_analytics')->middleware('permission:view-reports');
+        Route::get('/reports/detailed', [\App\Http\Controllers\ReportController::class, 'detailedReport'])->name('reports.detailed')->middleware('permission:view-reports');
 
         // Expense Types
         Route::middleware('permission:manage-expense-types')->group(function () {

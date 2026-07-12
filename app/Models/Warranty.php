@@ -10,6 +10,8 @@ class Warranty extends Model
     use HasFactory;
 
     protected $fillable = [
+        'warranty_number',
+        'warranty_type',
         'sale_id',
         'sale_item_id',
         'product_id',
@@ -21,6 +23,7 @@ class Warranty extends Model
         'warranty_period_months',
         'status',
         'notes',
+        'created_by',
     ];
 
     protected $casts = [
@@ -28,6 +31,8 @@ class Warranty extends Model
         'warranty_end_date' => 'date',
         'warranty_period_months' => 'integer',
     ];
+    
+    protected $appends = ['calculated_status'];
 
     public function product()
     {
@@ -53,9 +58,43 @@ class Warranty extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+    
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    
+    public function claims()
+    {
+        return $this->hasMany(WarrantyClaim::class);
+    }
+
+    public function getCalculatedStatusAttribute()
+    {
+        // Check if there's any active claim
+        $latestClaim = $this->claims()->latest()->first();
+        
+        if ($latestClaim && in_array($latestClaim->status, ['Pending', 'Approved'])) {
+            return $latestClaim->status === 'Pending' ? 'Claim Submitted' : 'Claim Approved';
+        }
+        
+        if ($this->status === 'Cancelled' || $this->status === 'Completed') {
+            return $this->status;
+        }
+
+        if ($this->warranty_end_date->isPast()) {
+            return 'Expired';
+        }
+
+        if (now()->diffInDays($this->warranty_end_date, false) <= 30) {
+            return 'Expiring Soon';
+        }
+
+        return 'Active';
+    }
 
     public function getIsActiveAttribute()
     {
-        return $this->status === 'ACTIVE' && !$this->warranty_end_date->isPast();
+        return $this->calculated_status === 'Active' || $this->calculated_status === 'Expiring Soon';
     }
 }

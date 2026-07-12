@@ -10,8 +10,12 @@
                 <td><strong>{{ __('pos.invoice_count') }}:</strong> {{ $report['invoice_count'] }}</td>
             </tr>
             <tr>
-                <td><strong>{{ __('pos.total_vat') }}:</strong> {{ number_format($report['total_tax'], 2) }} {{ $setting->currency }}</td>
+                <td><strong>{{ __('pos.total_tax') }}:</strong> {{ number_format($report['total_tax'], 2) }} {{ $setting->currency }}</td>
                 <td><strong>{{ __('pos.total_discounts') }}:</strong> {{ number_format($report['total_discount'], 2) }} {{ $setting->currency }}</td>
+            </tr>
+            <tr>
+                <td><strong>{{ __('pos.total_paid') }}:</strong> {{ number_format($report['total_paid'], 2) }} {{ $setting->currency }}</td>
+                <td><strong>{{ __('pos.total_remaining') }}:</strong> {{ number_format($report['total_remaining'], 2) }} {{ $setting->currency }}</td>
             </tr>
         </table>
     </div>

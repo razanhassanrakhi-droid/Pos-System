@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Categories')
+@section('title', app()->getLocale() == 'ar' ? 'الأقسام' : 'Categories')
 
 @section('content')
 <style>
@@ -12,6 +12,31 @@
         min-height: 100vh;
         padding: 2rem;
         color: #0F172A;
+    }
+
+    @media (max-width: 576px) {
+        .saas-page {
+            padding: 12px 0px !important;
+        }
+        .top-stats-row {
+            gap: 10px !important;
+            margin-bottom: 15px !important;
+            grid-template-columns: 1fr !important;
+        }
+        .kpi-card {
+            padding: 12px !important;
+            gap: 12px !important;
+        }
+        .cat-toolbar {
+            padding: 12px 10px !important;
+            gap: 10px !important;
+        }
+        .cat-search-wrap {
+            width: 100% !important;
+        }
+        .cat-toolbar-left {
+            width: 100% !important;
+        }
     }
 
     /* Top Header Section */
@@ -251,7 +276,7 @@
         padding: 1rem 1.5rem;
         border-bottom: none !important;
         white-space: nowrap;
-        text-align: left;
+        text-align: start;
         vertical-align: middle;
     }
 
@@ -263,7 +288,7 @@
         color: #0F172A;
         font-weight: 500;
         white-space: nowrap;
-        text-align: left;
+        text-align: start;
     }
 
     .saas-table tr:hover td {
@@ -279,6 +304,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
+        gap: 0.75rem;
     }
 
     .cat-id-badge {
@@ -292,7 +318,6 @@
         border-radius: 8px;
         font-weight: 700;
         font-size: 0.85rem;
-        margin-right: 0.75rem;
     }
 
     .cat-icon-box {
@@ -302,7 +327,6 @@
         width: 36px;
         height: 36px;
         border-radius: 12px;
-        margin-right: 0.75rem;
         font-size: 1.1rem;
         font-weight: bold;
     }
@@ -765,6 +789,98 @@
         background: #ffffff;
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
     }
+
+    /* Dark Mode Overrides for Categories Index */
+    html[data-app-theme="dark"] .saas-page {
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+    }
+    html[data-app-theme="dark"] .saas-header-text h1 {
+        color: #ffffff !important;
+    }
+    html[data-app-theme="dark"] .saas-header-text p {
+        color: #94a3b8 !important;
+    }
+    html[data-app-theme="dark"] .kpi-card {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+    }
+    html[data-app-theme="dark"] .kpi-card .text-muted {
+        color: #94a3b8 !important;
+    }
+    html[data-app-theme="dark"] .kpi-card h3 {
+        color: #ffffff !important;
+    }
+    html[data-app-theme="dark"] .cat-toolbar {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .cat-search-input {
+        background: #1e293b !important;
+        color: #ffffff !important;
+        border-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .cat-search-input:focus {
+        background: #1e293b !important;
+    }
+    html[data-app-theme="dark"] .cat-length-select {
+        background: #1e293b !important;
+        color: #ffffff !important;
+        border-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .saas-table-card {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .saas-table td {
+        color: #ffffff !important;
+        border-bottom-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .saas-table tr:hover td {
+        background: #0f172a !important;
+    }
+    html[data-app-theme="dark"] .pm-modal-premium .modal-content {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .pm-modal-body-premium {
+        background: #0f172a !important;
+    }
+    html[data-app-theme="dark"] .pm-modal-footer-premium {
+        background: #1e293b !important;
+        border-top-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .pm-form-control {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        color: #ffffff !important;
+    }
+    html[data-app-theme="dark"] .pm-form-control:focus {
+        background: #0f172a !important;
+    }
+    html[data-app-theme="dark"] .pm-form-label {
+        color: #cbd5e1 !important;
+    }
+    html[data-app-theme="dark"] .pm-section-label {
+        color: #818cf8 !important;
+    }
+    html[data-app-theme="dark"] .pm-btn-cancel {
+        background: #1e293b !important;
+        color: #cbd5e1 !important;
+        border-color: #334155 !important;
+    }
+    html[data-app-theme="dark"] .pm-btn-cancel:hover {
+        background: #0f172a !important;
+        color: #ffffff !important;
+    }
+
+    html[data-app-theme="dark"] .saas-table td .text-muted {
+        color: #94a3b8 !important;
+    }
+    html[data-app-theme="dark"] .saas-table td .text-muted i {
+        color: #94a3b8 !important;
+    }
 </style>
 
 <div class="saas-page">
@@ -778,7 +894,7 @@
                 <i class="bi bi-folder2-open fs-3"></i>
             </div>
             <div>
-                <div class="small text-muted fw-bold text-uppercase mb-1">Total Categories</div>
+                <div class="small text-muted fw-bold text-uppercase mb-1">{{ app()->getLocale() == 'ar' ? 'إجمالي الأقسام' : 'Total Categories' }}</div>
                 <h3 class="fw-bold m-0 text-primary">{{ $categories->count() }}</h3>
             </div>
         </div>
@@ -787,7 +903,7 @@
                 <i class="bi bi-check-circle fs-3"></i>
             </div>
             <div>
-                <div class="small text-muted fw-bold text-uppercase mb-1">Active Categories</div>
+                <div class="small text-muted fw-bold text-uppercase mb-1">{{ app()->getLocale() == 'ar' ? 'الأقسام النشطة' : 'Active Categories' }}</div>
                 <h3 class="fw-bold m-0 text-success">{{ $categories->count() }}</h3>
             </div>
         </div>
@@ -796,8 +912,8 @@
                 <i class="bi bi-clock-history fs-3"></i>
             </div>
             <div>
-                <div class="small text-muted fw-bold text-uppercase mb-1">Last Updated</div>
-                <h3 class="fw-bold m-0 text-info fs-4">Just now</h3>
+                <div class="small text-muted fw-bold text-uppercase mb-1">{{ app()->getLocale() == 'ar' ? 'آخر تحديث' : 'Last Updated' }}</div>
+                <h3 class="fw-bold m-0 text-info fs-4">{{ app()->getLocale() == 'ar' ? 'الآن' : 'Just now' }}</h3>
             </div>
         </div>
     </div>
@@ -807,24 +923,14 @@
         <div class="cat-toolbar-left">
             <div class="cat-search-wrap">
                 <i class="bi bi-search cat-search-icon"></i>
-                <input type="text" class="cat-search-input" placeholder="Search categories...">
+                <input type="text" class="cat-search-input" placeholder="{{ app()->getLocale() == 'ar' ? 'البحث عن الأقسام...' : 'Search categories...' }}">
             </div>
+            @can('create-categories')
             <button type="button" class="cat-add-btn" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-                <i class="bi bi-plus-lg"></i> Add New Category
+                <i class="bi bi-plus-lg"></i> {{ app()->getLocale() == 'ar' ? 'إضافة قسم جديد' : 'Add New Category' }}
             </button>
-        </div>
-        
-        <div class="cat-toolbar-right">
-            <select id="statusFilter" class="cat-select" onchange="applyFilters()">
-                <option value="all">{{ app()->getLocale() == 'ar' ? 'كل الحالات' : 'All Status' }}</option>
-                <option value="active">{{ app()->getLocale() == 'ar' ? 'نشط' : 'Active' }}</option>
-                <option value="inactive">{{ app()->getLocale() == 'ar' ? 'غير نشط' : 'Inactive' }}</option>
-            </select>
+            @endcan
 
-            <button type="button" onclick="applyFilters()" class="pm-btn pm-btn-primary" style="background-color: #8b5cf6; border-color: #8b5cf6; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem; font-weight: 600; border-radius: 12px; color: #fff;">
-                <i class="bi bi-funnel-fill"></i>
-                {{ app()->getLocale() == 'ar' ? 'تطبيق' : 'Apply' }}
-            </button>
         </div>
     </div>
 
@@ -834,12 +940,12 @@
             <table class="saas-table">
                 <thead>
                     <tr>
-                        <th>Category <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
-                        <th>Created At <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
-                        <th>Created By <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
-                        <th>Updated At <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
-                        <th>Updated By <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
-                        <th class="text-center">Actions</th>
+                        <th>{{ app()->getLocale() == 'ar' ? 'القسم' : 'Category' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
+                        <th>{{ app()->getLocale() == 'ar' ? 'تاريخ الإنشاء' : 'Created At' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
+                        <th>{{ app()->getLocale() == 'ar' ? 'أنشئ بواسطة' : 'Created By' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
+                        <th>{{ app()->getLocale() == 'ar' ? 'تاريخ التحديث' : 'Updated At' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
+                        <th>{{ app()->getLocale() == 'ar' ? 'حدث بواسطة' : 'Updated By' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
+                        <th class="text-center">{{ app()->getLocale() == 'ar' ? 'الإجراءات' : 'Actions' }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -882,9 +988,6 @@
                         </td>
                         <td>
                             <div class="avatar-wrapper">
-                                @if($createdBy !== '—')
-                                    <div class="avatar-circle {{ $avatarColor1 }}">{{ mb_strtoupper($creatorInitial, 'UTF-8') }}</div>
-                                @endif
                                 <span class="fw-normal text-muted">{{ $createdBy }}</span>
                             </div>
                         </td>
@@ -893,15 +996,13 @@
                         </td>
                         <td>
                             <div class="avatar-wrapper">
-                                @if($updatedBy !== '—')
-                                    <div class="avatar-circle {{ $avatarColor2 }}">{{ mb_strtoupper($updaterInitial, 'UTF-8') }}</div>
-                                @endif
                                 <span class="fw-normal text-muted">{{ $updatedBy }}</span>
                             </div>
                         </td>
                         <td class="text-center">
                             <div class="action-group justify-content-center">
-                                <button type="button" class="btn-icon edit" 
+                                @can('edit-categories')
+                                <button type="button" class="btn-action-edit" 
                                     onclick="editCategory(this)"
                                     data-id="{{ $category->id }}"
                                     data-name-ar="{{ htmlspecialchars($category->getTranslation('name', 'ar'), ENT_QUOTES) }}"
@@ -909,13 +1010,17 @@
                                 >
                                     <i class="bi bi-pencil"></i>
                                 </button>
+                                @endcan
+
+                                @can('delete-categories')
                                 <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('pos.confirm_delete') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-icon delete">
+                                    <button type="submit" class="btn-action-delete">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>
@@ -927,7 +1032,13 @@
         <!-- Footer Pagination -->
         <div class="saas-footer">
             <div class="pagination-wrapper">
-                <span class="showing-text">Showing 1 to {{ $categories->count() }} of {{ $categories->count() }} entries</span>
+                <span class="showing-text">
+                    @if(app()->getLocale() == 'ar')
+                        صفحة 1 من 1
+                    @else
+                        Page 1 of 1
+                    @endif
+                </span>
                 <div class="pagination-pills">
                     <a href="#" class="page-pill"><i class="bi bi-chevron-left"></i></a>
                     <a href="#" class="page-pill active">1</a>
@@ -955,7 +1066,7 @@
                     </div>
                     <div class="flex-grow-1">
                         <h5 class="pm-modal-title-premium" id="createCategoryModalLabel">{{ __('pos.add') . ' ' . __('pos.categories') }}</h5>
-                        <p class="pm-modal-sub-premium">Create and manage product categories</p>
+                        <p class="pm-modal-sub-premium">{{ app()->getLocale() == 'ar' ? 'إنشاء وإدارة أقسام المنتجات' : 'Create and manage product categories' }}</p>
                     </div>
                     <button type="button" class="pm-modal-close-premium" data-bs-dismiss="modal" aria-label="Close">
                         <i class="bi bi-x-lg"></i>
@@ -967,17 +1078,17 @@
             <div class="pm-modal-body-premium modal-body">
                 <div class="row g-3">
                     <div class="col-12">
-                        <div class="pm-section-label"><i class="bi bi-info-circle-fill"></i> Category Information</div>
+                        <div class="pm-section-label"><i class="bi bi-info-circle-fill"></i> {{ app()->getLocale() == 'ar' ? 'معلومات القسم' : 'Category Information' }}</div>
                     </div>
 
                     {{-- Arabic Name --}}
                     <div class="col-md-6">
-                        <label class="pm-form-label">Category Name (Arabic) <span class="text-danger">*</span></label>
+                        <label class="pm-form-label">{{ app()->getLocale() == 'ar' ? 'اسم القسم (عربي)' : 'Category Name (Arabic)' }} <span class="text-danger">*</span></label>
                         <input type="text" name="name_ar" class="pm-form-control" dir="rtl" placeholder="مثال: إلكترونيات">
                     </div>
                     {{-- English Name --}}
                     <div class="col-md-6">
-                        <label class="pm-form-label">Category Name (English) <span class="text-danger">*</span></label>
+                        <label class="pm-form-label">{{ app()->getLocale() == 'ar' ? 'اسم القسم (إنجليزي)' : 'Category Name (English)' }} <span class="text-danger">*</span></label>
                         <input type="text" name="name_en" class="pm-form-control" dir="ltr" placeholder="e.g. Electronics (Optional)">
                     </div>
                 </div>
@@ -986,10 +1097,10 @@
             {{-- Footer --}}
             <div class="pm-modal-footer-premium modal-footer">
                 <button type="button" class="pm-btn-cancel" data-bs-dismiss="modal">
-                    <i class="bi bi-x"></i> Cancel
+                    <i class="bi bi-x"></i> {{ app()->getLocale() == 'ar' ? 'إلغاء' : 'Cancel' }}
                 </button>
                 <button type="submit" class="pm-btn-save">
-                    <i class="bi bi-check2"></i> Save
+                    <i class="bi bi-check2"></i> {{ app()->getLocale() == 'ar' ? 'حفظ' : 'Save' }}
                 </button>
             </div>
         </form>
@@ -1014,7 +1125,7 @@
                     </div>
                     <div class="flex-grow-1">
                         <h5 class="pm-modal-title-premium" id="editCategoryModalLabel">{{ __('pos.edit') . ' ' . __('pos.categories') }}</h5>
-                        <p class="pm-modal-sub-premium">Update product category</p>
+                        <p class="pm-modal-sub-premium">{{ app()->getLocale() == 'ar' ? 'تحديث قسم المنتج' : 'Update product category' }}</p>
                     </div>
                     <button type="button" class="pm-modal-close-premium" data-bs-dismiss="modal" aria-label="Close">
                         <i class="bi bi-x-lg"></i>
@@ -1026,17 +1137,17 @@
             <div class="pm-modal-body-premium modal-body">
                 <div class="row g-3">
                     <div class="col-12">
-                        <div class="pm-section-label"><i class="bi bi-info-circle-fill"></i> Category Information</div>
+                        <div class="pm-section-label"><i class="bi bi-info-circle-fill"></i> {{ app()->getLocale() == 'ar' ? 'معلومات القسم' : 'Category Information' }}</div>
                     </div>
 
                     {{-- Arabic Name --}}
                     <div class="col-md-6">
-                        <label class="pm-form-label">Category Name (Arabic) <span class="text-danger">*</span></label>
+                        <label class="pm-form-label">{{ app()->getLocale() == 'ar' ? 'اسم القسم (عربي)' : 'Category Name (Arabic)' }} <span class="text-danger">*</span></label>
                         <input type="text" id="edit_name_ar" name="name_ar" class="pm-form-control" dir="rtl" placeholder="مثال: إلكترونيات">
                     </div>
                     {{-- English Name --}}
                     <div class="col-md-6">
-                        <label class="pm-form-label">Category Name (English) <span class="text-danger">*</span></label>
+                        <label class="pm-form-label">{{ app()->getLocale() == 'ar' ? 'اسم القسم (إنجليزي)' : 'Category Name (English)' }} <span class="text-danger">*</span></label>
                         <input type="text" id="edit_name_en" name="name_en" class="pm-form-control" dir="ltr" placeholder="e.g. Electronics (Optional)">
                     </div>
                 </div>
@@ -1045,10 +1156,10 @@
             {{-- Footer --}}
             <div class="pm-modal-footer-premium modal-footer">
                 <button type="button" class="pm-btn-cancel" data-bs-dismiss="modal">
-                    <i class="bi bi-x"></i> Cancel
+                    <i class="bi bi-x"></i> {{ app()->getLocale() == 'ar' ? 'إلغاء' : 'Cancel' }}
                 </button>
                 <button type="submit" class="pm-btn-save">
-                    <i class="bi bi-check2"></i> Update
+                    <i class="bi bi-check2"></i> {{ app()->getLocale() == 'ar' ? 'تحديث' : 'Update' }}
                 </button>
             </div>
         </form>
@@ -1102,9 +1213,11 @@
     $('.cat-search-input').on('keyup', applyFilters);
 
     function updateVisibleCount() {
-        var visibleCount = $('.category-row:visible').length;
-        var totalCount = {{ $categories->count() }};
-        $('.showing-text').text('Showing 1 to ' + visibleCount + ' of ' + totalCount + ' entries');
+        if ('{{ app()->getLocale() }}' === 'ar') {
+            $('.showing-text').text('صفحة 1 من 1');
+        } else {
+            $('.showing-text').text('Page 1 of 1');
+        }
     }
 </script>
 @endpush

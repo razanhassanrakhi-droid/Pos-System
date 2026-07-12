@@ -24,6 +24,12 @@
             overflow: hidden;
         }
 
+        /* Hide default browser password reveal eye icon (like in MS Edge) */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+
         /* ═══════════════════════════ MAIN WRAPPER ═══════════════════════════ */
         .login-wrapper {
             position: relative;
@@ -66,18 +72,18 @@
         body.light-mode .glow-blob.pink  { background: rgba(200,0,100,0.07); }
         body.light-mode .glow-blob.blue  { background: rgba(60,80,255,0.06); }
         body.light-mode .welcome-title   { color: #0f172a; }
-        body.light-mode .welcome-sub     { color: rgba(0,0,0,0.45); }
-        body.light-mode .brand-logo-pos  { color: rgba(0,0,0,0.40); }
-        body.light-mode .brand-logo-tagline { color: rgba(0,0,0,0.30); }
+        body.light-mode .welcome-sub     { color: #334155; }
+        body.light-mode .brand-logo-pos  { color: #1e293b; }
+        body.light-mode .brand-logo-tagline { color: #475569; }
         body.light-mode .brand-logo-tagline::before,
-        body.light-mode .brand-logo-tagline::after { color: rgba(0,0,0,0.15); }
+        body.light-mode .brand-logo-tagline::after { color: #94a3b8; }
         body.light-mode .field-input {
             background: #ffffff;
             border-color: rgba(0, 0, 0, 0.20);
             color: #0f172a;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
-        body.light-mode .field-input::placeholder { color: rgba(0, 0, 0, 0.48); }
+        body.light-mode .field-input::placeholder { color: #64748b; }
         body.light-mode .field-input:focus {
             background: #ffffff;
             border-color: rgba(0, 100, 255, 0.65);
@@ -87,10 +93,11 @@
         body.light-mode .field-wrap:focus-within .field-icon { color: rgba(0,100,255,0.75); }
         body.light-mode .pw-toggle  { color: rgba(0,0,0,0.28); }
         body.light-mode .pw-toggle:hover { color: #0066ff; }
-        body.light-mode .remember-label { color: rgba(0,0,0,0.48); }
-        body.light-mode .divider { color: rgba(0,0,0,0.18); }
+        body.light-mode .remember-label { color: #334155; }
+        body.light-mode .forgot-link { color: #c026d3; }
+        body.light-mode .divider { color: #475569; }
         body.light-mode .divider::before,
-        body.light-mode .divider::after { background: rgba(0,0,0,0.08); }
+        body.light-mode .divider::after { background: #cbd5e1; }
         body.light-mode .btn-touch {
             background: rgba(0,0,0,0.04);
             border-color: rgba(0,0,0,0.10);
@@ -101,11 +108,11 @@
             color: #0066ff;
             background: rgba(0,100,255,0.06);
         }
-        body.light-mode .lang-pill:not(.active-lang) { color: rgba(0,0,0,0.3); border-color: rgba(0,0,0,0.10); }
-        body.light-mode .support-btn { color: rgba(0,0,0,0.3); border-color: rgba(0,0,0,0.08); }
+        body.light-mode .lang-pill:not(.active-lang) { color: #475569; border-color: #cbd5e1; }
+        body.light-mode .support-btn { color: #475569; border-color: #cbd5e1; }
         body.light-mode .support-btn:hover { color: #0066ff; border-color: #0066ff; background: rgba(0,100,255,0.05); }
-        body.light-mode .footer-copy { color: rgba(0,0,0,0.2); }
-        body.light-mode .version-badge { color: rgba(0,0,0,0.18); }
+        body.light-mode .footer-copy { color: #64748b; }
+        body.light-mode .version-badge { color: #64748b; }
         body.light-mode .device-neon-ring {
             background:
                 linear-gradient(#eef2ff, #eef2ff) padding-box,
@@ -218,7 +225,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             padding: 70px 56px 40px 56px;
             min-width: 360px;
             width: 55%;
@@ -591,9 +598,8 @@
             width: 45%;
             height: 100%;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
-            padding-bottom: 44px;
             z-index: 5;
             overflow: hidden;
         }
@@ -603,7 +609,7 @@
             position: absolute;
             width: 520px;
             height: 490px;
-            top: 46%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
@@ -767,6 +773,71 @@
             .form-card { padding: 28px 20px; border-radius: 20px; }
             .welcome-title { font-size: 1.35rem; }
         }
+        @media (min-width: 901px) and (max-height: 850px) {
+            .left-section {
+                padding: 30px 40px 20px 40px;
+            }
+            .brand-logo {
+                margin-bottom: 12px;
+            }
+            .brand-logo img {
+                width: 75px;
+                height: 75px;
+                margin-bottom: 8px;
+            }
+            .brand-logo-name {
+                font-size: 1.6rem;
+            }
+            .brand-logo-pos {
+                font-size: 0.65rem;
+                margin-top: 4px;
+            }
+            .brand-logo-tagline {
+                font-size: 0.68rem;
+                margin-top: 4px;
+            }
+            .welcome-title {
+                font-size: 1.3rem;
+                margin-bottom: 2px;
+            }
+            .welcome-sub {
+                font-size: 0.75rem;
+                margin-bottom: 16px;
+            }
+            .field-group {
+                margin-bottom: 10px;
+            }
+            .field-input {
+                padding: 11px 14px;
+                padding-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: 42px;
+                font-size: 0.82rem;
+            }
+            .field-icon {
+                font-size: 0.9rem;
+                {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: 14px;
+            }
+            .pw-toggle {
+                font-size: 0.82rem;
+                {{ app()->getLocale() == 'ar' ? 'left' : 'right' }}: 11px;
+            }
+            .options-row {
+                margin: 8px 0 14px;
+            }
+            .btn-login {
+                padding: 12px;
+                font-size: 0.88rem;
+            }
+            .lang-bar {
+                margin-top: 12px;
+            }
+            .lang-pill {
+                padding: 4px 10px;
+                font-size: 0.68rem;
+            }
+            .login-footer {
+                margin-top: 12px;
+            }
+        }
 
         /* Prevent transitions on page load */
         .no-transition,
@@ -831,7 +902,7 @@
             <img src="{{ asset('images/logo.png') }}" alt="Digital Age Logo"
                  onerror="this.src='{{ asset('images/logo3.png') }}'">
             @if(app()->getLocale() == 'ar')
-                <div class="brand-logo-name"><span class="cyan">ديجيتال</span> <span class="pink">إيج</span></div>
+                <div class="brand-logo-name"><span class="cyan">ديجيتال</span> <span class="pink">أيج</span></div>
                 <div class="brand-logo-pos">نظام نقاط البيع</div>
                 <div class="brand-logo-tagline">ابتكار المستقبل الرقمي</div>
             @else
@@ -857,6 +928,13 @@
                 <div class="alert-modern error">
                     <i class="bi bi-exclamation-circle-fill"></i>
                     <span>{{ $errors->first() }}</span>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert-modern error">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span>{{ session('error') }}</span>
                 </div>
             @endif
 
@@ -945,7 +1023,7 @@
 
             {{-- Footer --}}
             <div class="login-footer" style="justify-content: center;">
-                <div class="footer-copy">© 2026 <span>{{ app()->getLocale() == 'ar' ? 'ديجيتال إيج' : 'Digital Age' }}</span></div>
+                <div class="footer-copy">© 2026 <span>{{ app()->getLocale() == 'ar' ? 'ديجيتال أيج' : 'Digital Age' }}</span></div>
             </div>
         </div>
 

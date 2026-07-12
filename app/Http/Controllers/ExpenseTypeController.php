@@ -17,9 +17,12 @@ class ExpenseTypeController extends Controller
             'name_en' => 'required_without:name_ar|string|max:255|nullable',
         ]);
 
+        $nameAr = $request->name_ar ?: $request->name_en;
+        $nameEn = $request->name_en ?: $request->name_ar;
+
         $type = ExpenseType::create([
-            'name_ar' => $request->name_ar,
-            'name_en' => $request->name_en,
+            'name_ar' => $nameAr,
+            'name_en' => $nameEn,
         ]);
 
         return response()->json([

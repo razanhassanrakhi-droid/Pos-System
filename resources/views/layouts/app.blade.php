@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}" lang="{{ app()->getLocale() }}">
+<html dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}" lang="{{ app()->getLocale() }}" class="notranslate" translate="no">
 <head>
     <script>
         (function() {
@@ -37,6 +37,80 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
+    /* Global Dark Mode Muted Text Corrections */
+    html[data-app-theme="dark"] .text-muted {
+        color: #a0aec0 !important;
+    }
+    html[data-app-theme="dark"] .text-muted h1,
+    html[data-app-theme="dark"] .text-muted h2,
+    html[data-app-theme="dark"] .text-muted h3,
+    html[data-app-theme="dark"] .text-muted h4,
+    html[data-app-theme="dark"] .text-muted h5,
+    html[data-app-theme="dark"] .text-muted h6 {
+        color: #ffffff !important;
+    }
+    html[data-app-theme="dark"] .text-muted i {
+        color: #a0aec0 !important;
+    }
+
+    /* Premium Branch Dropdown Selector Styles */
+    .branch-dropdown-menu {
+        border-radius: 16px !important;
+        padding: 12px !important;
+        min-width: 210px !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        background: #ffffff !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+        margin-top: 8px !important;
+    }
+    html[data-app-theme="dark"] .branch-dropdown-menu {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    }
+    .branch-dropdown-menu .dropdown-header {
+        font-size: 0.7rem !important;
+        font-weight: 800 !important;
+        color: #94a3b8 !important;
+        padding: 4px 12px 8px !important;
+        letter-spacing: 0.5px !important;
+        text-transform: uppercase !important;
+    }
+    .branch-dropdown-menu .dropdown-item {
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        color: #475569 !important;
+        padding: 8px 16px !important;
+        transition: all 0.2s !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    html[data-app-theme="dark"] .branch-dropdown-menu .dropdown-item {
+        color: #cbd5e1 !important;
+    }
+    .branch-dropdown-menu .dropdown-item:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        transform: translateX(2px);
+    }
+    html[dir="rtl"] .branch-dropdown-menu .dropdown-item:hover {
+        transform: translateX(-2px);
+    }
+    html[data-app-theme="dark"] .branch-dropdown-menu .dropdown-item:hover {
+        background: #1e293b !important;
+        color: #ffffff !important;
+    }
+    .branch-dropdown-menu .dropdown-item.active {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+        color: #ffffff !important;
+    }
+    .branch-dropdown-menu .dropdown-divider {
+        margin: 8px 0 !important;
+        opacity: 0.08 !important;
+    }
+
         :root {
             --primary-color: #1E88E5;
             --sidebar-bg: #1F2937;
@@ -72,12 +146,47 @@
             transition: none !important;
         }
 
+        /* Hide default browser password reveal eye icon (like in MS Edge) */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+
         body {
             font-family: {{ app()->getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif" }};
             background-color: var(--bg-color);
             color: var(--text-color);
             overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Disable Double-tap Zoom & iOS tap highlight color across all buttons/links globally */
+        .btn, button, a, .pm-icon-btn {
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        /* Center modal close button vertically in premium headers globally */
+        .pm-modal-close-premium {
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+        }
+        .pm-modal-close-premium:hover {
+            transform: translateY(-50%) scale(1.08) !important;
+        }
+
+        /* Stack action buttons vertically on mobile */
+        @media (max-width: 576px) {
+            .action-buttons-flex {
+                flex-direction: column !important;
+            }
+            .action-buttons-flex > .btn,
+            .action-buttons-flex > a {
+                width: 100% !important;
+                display: inline-flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
         }
 
         /* Top Navbar */
@@ -93,8 +202,32 @@
         }
         @media (max-width: 576px) {
             .top-navbar {
-                padding: 10px 15px;
+                padding: 8px 12px !important;
                 margin-bottom: 15px;
+            }
+            .top-navbar .container-fluid {
+                display: flex !important;
+                flex-flow: row nowrap !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                padding: 0 !important;
+            }
+            .top-navbar .d-flex.ms-auto {
+                gap: 6px !important;
+            }
+            .top-navbar .btn,
+            .top-navbar .dropdown button,
+            .top-navbar #sidebarCollapse {
+                padding: 6px 10px !important;
+                font-size: 0.78rem !important;
+                height: 34px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .top-navbar #bell-btn {
+                width: 34px !important;
+                height: 34px !important;
             }
         }
         .top-navbar h4 {
@@ -164,6 +297,63 @@
         }
         html[data-app-theme="dark"] .dropdown-item:hover {
             background-color: rgba(255,255,255,0.05) !important;
+        }
+
+        /* ═══════════════════ GLOBAL ACTION BUTTONS STYLES (AS REQUESTED) ═══════════════════ */
+        /* Soft Red trash button & Soft Blue edit button styling with 12px rounded borders */
+        .btn-action-edit,
+        .saas-table td a .bi-eye,
+        .saas-table td button .bi-pencil-square,
+        .btn-icon-action-only {
+            /* Styling for Edit / View Action Buttons (Icons Only) */
+            background-color: #eff6ff !important; /* Soft Blue */
+            color: #3b82f6 !important; /* Deep Blue icon/text */
+            border: 1px solid #dbeafe !important;
+            border-radius: 12px !important;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-action-edit:hover,
+        .saas-table td a .bi-eye:parent:hover {
+            background-color: #dbeafe !important;
+            transform: scale(1.05);
+        }
+
+        .btn-action-delete,
+        .btn-icon-delete-only {
+            /* Styling for Delete Action Buttons */
+            background-color: #fef2f2 !important; /* Soft Red */
+            color: #ef4444 !important; /* Deep Red icon/text */
+            border: 1px solid #fee2e2 !important;
+            border-radius: 12px !important;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-action-delete:hover {
+            background-color: #fee2e2 !important;
+            transform: scale(1.05);
+        }
+
+        /* Dark Mode overrides for Action Buttons */
+        html[data-app-theme="dark"] .btn-action-edit {
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            color: #60a5fa !important;
+            border-color: rgba(59, 130, 246, 0.3) !important;
+        }
+        html[data-app-theme="dark"] .btn-action-delete {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            color: #fca5a5 !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
         }
 
         /* 2026 Modern Sidebar Design */
@@ -340,34 +530,85 @@
             box-shadow: none;
         }
 
-        /* Inventory Health Widget */
-        .inventory-health-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
+        /* Inventory Health Widget / User Profile Widget */
+        .sidebar-profile-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
             padding: 16px;
             margin-top: 24px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
         }
-        .inventory-health-card::before {
+        .sidebar-profile-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent);
         }
-        .ih-header {
-            display: flex; align-items: center; gap: 8px; color: #fff; font-size: 0.9rem; font-weight: 600; margin-bottom: 12px;
+        .sidebar-profile-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
         }
-        .ih-header i { color: #a78bfa; font-size: 1.1rem; }
-        .ih-item {
-            display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;
+        .sp-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            flex-shrink: 0;
+            border: 1.5px solid rgba(255,255,255,0.15);
         }
-        .ih-item-left { display: flex; align-items: center; gap: 8px; }
-        .ih-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        .ih-dot.orange { background: #fb923c; box-shadow: 0 0 8px rgba(251, 146, 60, 0.4); }
-        .ih-dot.red { background: #f87171; box-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }
-        .ih-count { font-weight: 700; color: #fff; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px;}
-        .ih-link { display: block; text-align: center; color: #8b5cf6; font-size: 0.8rem; font-weight: 600; text-decoration: none; margin-top: 12px; transition: color 0.2s;}
-        .ih-link:hover { color: #a78bfa; }
+        .sp-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .sp-name {
+            color: #f8fafc;
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sp-role {
+            color: #94a3b8;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .sp-arrow {
+            margin-left: auto;
+            color: #64748b;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+        html[dir="rtl"] .sp-arrow {
+            margin-left: 0;
+            margin-right: auto;
+            transform: scaleX(-1);
+        }
+        .sidebar-profile-card:hover .sp-arrow {
+            color: #fff;
+            transform: translateX(3px);
+        }
+        html[dir="rtl"] .sidebar-profile-card:hover .sp-arrow {
+            transform: scaleX(-1) translateX(3px);
+        }
 
         /* Collapse Bottom Bar */
         .sidebar-footer {
@@ -407,6 +648,9 @@
         body.sidebar-collapsed #sidebar ul li a { justify-content: center; padding: 12px; }
         body.sidebar-collapsed #sidebar ul li a i.main-icon { margin: 0; font-size: 1.3rem; }
         body.sidebar-collapsed #sidebar .sidebar-footer { justify-content: center; padding: 16px 0; }
+        body.sidebar-collapsed #sidebar .sidebar-profile-card { justify-content: center; padding: 12px; margin-top: 16px; }
+        body.sidebar-collapsed #sidebar .sidebar-profile-card .sp-info,
+        body.sidebar-collapsed #sidebar .sidebar-profile-card .sp-arrow { display: none !important; }
 
         /* Main Content Styling */
         #content {
@@ -465,17 +709,90 @@
         /* Responsive */
         @media (max-width: 768px) {
             #sidebar {
-                margin-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: -260px;
+                margin-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: -280px !important;
             }
             #sidebar.active {
-                margin-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: 0;
+                margin-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: 0 !important;
             }
+            
+            /* Force sidebar to be large (280px) on mobile */
+            body.sidebar-collapsed #sidebar,
+            #sidebar {
+                width: 280px !important;
+            }
+            
+            /* Show all text elements on mobile */
+            body.sidebar-collapsed #sidebar .sidebar-header h4 span,
+            body.sidebar-collapsed #sidebar .sidebar-branch-card .branch-info,
+            body.sidebar-collapsed #sidebar .sidebar-branch-card .bi-chevron-down,
+            body.sidebar-collapsed #sidebar .nav-category-header,
+            body.sidebar-collapsed #sidebar ul li a span,
+            body.sidebar-collapsed #sidebar ul li a .nav-chevron,
+            body.sidebar-collapsed #sidebar .inventory-health-card,
+            body.sidebar-collapsed #sidebar .sidebar-footer span,
+            body.sidebar-collapsed #sidebar .sidebar-profile-card .sp-info,
+            body.sidebar-collapsed #sidebar .sidebar-profile-card .sp-arrow {
+                display: inline !important;
+            }
+            
+            body.sidebar-collapsed #sidebar ul li a span {
+                display: inline-block !important;
+            }
+            
+            body.sidebar-collapsed #sidebar .sidebar-profile-card {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            
+            body.sidebar-collapsed #sidebar ul li a {
+                justify-content: flex-start !important;
+                padding: 12px 24px !important;
+            }
+            
+            body.sidebar-collapsed #sidebar ul li a i.main-icon {
+                margin-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }}: 12px !important;
+            }
+            
+            body.sidebar-collapsed #sidebar .sidebar-branch-card {
+                justify-content: space-between !important;
+                padding: 16px !important;
+            }
+            
+            body.sidebar-collapsed #sidebar .sidebar-branch-card .icon-box {
+                margin-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }}: 12px !important;
+            }
+            
+            body.sidebar-collapsed #sidebar .sidebar-footer {
+                justify-content: flex-start !important;
+                padding: 16px 20px !important;
+            }
+            
+            /* Hide collapsed sidebar off-screen on mobile */
+            body.sidebar-collapsed #sidebar {
+                margin-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: -280px !important;
+            }
+            
+            body.sidebar-collapsed #sidebar.active {
+                margin-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: 0 !important;
+            }
+            
+            body.sidebar-collapsed #content,
+            html[dir="rtl"] body.sidebar-collapsed #content,
             #content {
-                width: 100%;
-                margin: 0;
+                width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                margin: 0 !important;
             }
             #sidebar .close-sidebar {
                 display: block !important;
+            }
+            .top-navbar .container-fluid {
+                flex-wrap: nowrap !important;
+            }
+            .container-fluid.px-4 {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
             }
         }
 
@@ -697,6 +1014,41 @@
             max-width: none !important;
         }
 
+        /* Mobile Responsive DataTables Footer overrides */
+        @media (max-width: 768px) {
+            .dataTables_wrapper .row:last-child {
+                flex-direction: column !important;
+                gap: 12px !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 1.25rem 1rem !important;
+            }
+            .dataTables_wrapper .row:last-child [class*="col-"] {
+                width: 100% !important;
+                flex: 1 1 auto !important;
+                display: flex !important;
+                justify-content: center !important;
+                text-align: center !important;
+            }
+            .dataTables_wrapper .dataTables_info {
+                margin-bottom: 4px !important;
+            }
+            .dataTables_wrapper .dataTables_paginate {
+                justify-content: center !important;
+                width: 100% !important;
+                flex-wrap: wrap !important;
+                gap: 4px !important;
+            }
+            /* Make pagination buttons slightly smaller on mobile to fit nicely */
+            .page-item .page-link, 
+            .dataTables_wrapper .dataTables_paginate .paginate_button:not(.page-item) {
+                min-width: 32px !important;
+                height: 32px !important;
+                font-size: 0.8rem !important;
+                border-radius: 8px !important;
+            }
+        }
+
         /* Global Table Header Styling (SaaS Style) */
         .table thead th,
         table.dataTable thead th,
@@ -746,6 +1098,38 @@
             border-collapse: separate;
             border-spacing: 0;
         }
+    
+        /* ===== intl-tel-input Dark Mode ===== */
+        html[data-app-theme="dark"] .iti__country-list {
+            background: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
+        }
+        html[data-app-theme="dark"] .iti__country {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+        html[data-app-theme="dark"] .iti__country:hover,
+        html[data-app-theme="dark"] .iti__country.iti__highlight {
+            background-color: rgba(255,255,255,0.06) !important;
+        }
+        html[data-app-theme="dark"] .iti__country-name {
+            color: var(--text-color) !important;
+        }
+        html[data-app-theme="dark"] .iti__dial-code {
+            color: var(--text-muted) !important;
+        }
+        html[data-app-theme="dark"] .iti__selected-dial-code {
+            color: var(--text-color) !important;
+        }
+        html[data-app-theme="dark"] .iti__divider {
+            border-bottom-color: var(--border-color) !important;
+        }
+        html[data-app-theme="dark"] .iti__search-input {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
     </style>
     @stack('styles')
 </head>
@@ -756,9 +1140,11 @@
         <nav id="sidebar">
             <div class="sidebar-header">
                 <div class="d-flex align-items-center gap-2">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.outerHTML='<i class=\'bi bi-shop fs-3 text-primary\'></i>'">
-                    <h4 class="fw-bold m-0" style="font-family: {{ app()->getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif" }};">
-                        <span style="color: #46bfa3;">{{ __('pos.company_name_part1') }}</span><span style="color: #c21460;">{{ __('pos.company_name_part2') }}</span>
+                    @if(isset($setting) && $setting->company_logo)
+                        <img src="{{ asset('storage/' . $setting->company_logo) }}" alt="Logo" style="width: 48px; height: 48px; object-fit: contain; border-radius: 10px; background: rgba(255,255,255,0.08); padding: 4px; border: 1px solid rgba(255,255,255,0.15);">
+                    @endif
+                    <h4 class="fw-bold m-0" style="font-family: {{ app()->getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif" }}; color: #f8fafc; font-size: 1.15rem; letter-spacing: -0.5px;">
+                        <span>{{ isset($setting) ? $setting->getTranslation('company_name') : __('pos.company_name') }}</span>
                     </h4>
                 </div>
                 <div class="sidebar-collapse-icon" onclick="toggleSidebar()">
@@ -785,9 +1171,8 @@
                 
                 <ul class="components">
                     <!-- OVERVIEW -->
-                    <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'نظرة عامة' : 'OVERVIEW' }}</div>
-                    
                     @can('view-dashboard')
+                    <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'نظرة عامة' : 'OVERVIEW' }}</div>
                     <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <a href="{{ route('dashboard') }}">
                             <i class="bi bi-house-door main-icon"></i>
@@ -797,7 +1182,19 @@
                     </li>
                     @endcan
 
+                    <!-- CASHIER / POS -->
+                    @can('create-sales')
+                    <li class="{{ request()->routeIs('sales.create') ? 'active' : '' }}">
+                        <a href="{{ route('sales.create') }}" style="color: #ff7a00 !important;">
+                            <i class="bi bi-cash-coin main-icon" style="color: #ff7a00 !important;"></i>
+                            <span class="fw-bold">{{ app()->getLocale() == 'ar' ? 'واجهة الكاشير (POS)' : 'Cashier Interface (POS)' }}</span>
+                            <i class="bi bi-chevron-right nav-chevron" style="color: #ff7a00 !important;"></i>
+                        </a>
+                    </li>
+                    @endcan
+
                     <!-- INVENTORY -->
+                    @if(auth()->user()->can('view-products') || auth()->user()->can('view-categories') || auth()->user()->can('view-warranties') || auth()->user()->can('view-purchases') || auth()->user()->can('view-adjustments'))
                     <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'المخزون' : 'INVENTORY' }}</div>
 
                     @can('view-products')
@@ -805,6 +1202,26 @@
                         <a href="{{ route('products.index') }}">
                             <i class="bi bi-box-seam main-icon"></i>
                             <span>{{ __('pos.products') }}</span>
+                            <i class="bi bi-chevron-right nav-chevron"></i>
+                        </a>
+                    </li>
+                    @endcan
+
+                    @can('view-categories')
+                    <li class="{{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                        <a href="{{ route('categories.index') }}">
+                            <i class="bi bi-tags main-icon"></i>
+                            <span>{{ __('pos.categories') }}</span>
+                            <i class="bi bi-chevron-right nav-chevron"></i>
+                        </a>
+                    </li>
+                    @endcan
+
+                    @can('view-warranties')
+                    <li class="{{ request()->routeIs('warranties.*') ? 'active' : '' }}">
+                        <a href="{{ route('warranties.index') }}">
+                            <i class="bi bi-shield-check main-icon"></i>
+                            <span>{{ __('pos.warranty_management') }}</span>
                             <i class="bi bi-chevron-right nav-chevron"></i>
                         </a>
                     </li>
@@ -829,11 +1246,12 @@
                         </a>
                     </li>
                     @endcan
+                    @endif
 
                     <!-- SALES -->
+                    @can('view-sales')
                     <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'المبيعات' : 'SALES' }}</div>
 
-                    @can('view-sales')
                     <li class="{{ request()->routeIs('sales.*', 'sales_returns.*') ? 'active' : '' }}">
                         <a href="javascript:void(0)" data-bs-target="#salesSubmenu" data-bs-toggle="collapse" aria-expanded="{{ request()->routeIs('sales.*', 'sales_returns.*') ? 'true' : 'false' }}">
                             <i class="bi bi-shop-window main-icon"></i>
@@ -844,9 +1262,7 @@
                             <li class="{{ request()->routeIs('sales.index') ? 'active' : '' }}">
                                 <a href="{{ route('sales.index') }}"><i class="bi bi-list-ul me-2"></i> <span>{{ __('pos.sales_history') }}</span></a>
                             </li>
-                            <li class="{{ request()->routeIs('sales.create') ? 'active' : '' }}">
-                                <a href="{{ route('sales.create') }}"><i class="bi bi-plus-circle me-2"></i> <span>{{ __('pos.add_sale') }}</span></a>
-                            </li>
+                            
                             @can('view-sales-returns')
                             <li class="{{ request()->routeIs('sales_returns.*') ? 'active' : '' }}">
                                 <a href="{{ route('sales_returns.index') }}"><i class="bi bi-arrow-return-left me-2"></i> <span>{{ __('pos.sales_returns') }}</span></a>
@@ -857,6 +1273,7 @@
                     @endcan
 
                     <!-- PEOPLE -->
+                    @if(auth()->user()->can('view-suppliers') || auth()->user()->can('view-customers'))
                     <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'الأشخاص' : 'PEOPLE' }}</div>
 
                     @can('view-suppliers')
@@ -878,7 +1295,36 @@
                         </a>
                     </li>
                     @endcan
-                    
+                    @endif
+                    <!-- FINANCE -->
+                    @if(auth()->user()->can('view-expenses') || auth()->user()->can('view-reports'))
+                    <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'المالية' : 'FINANCE' }}</div>
+
+                    @can('view-expenses')
+                    <li class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}">
+                        <a href="{{ route('expenses.index') }}">
+                            <i class="bi bi-wallet2 main-icon"></i>
+                            <span>{{ __('pos.daily_expenses') }}</span>
+                            <i class="bi bi-chevron-right nav-chevron"></i>
+                        </a>
+                    </li>
+                    @endcan
+
+                    @can('view-reports')
+                    <li>
+                        <a href="{{ route('reports.index') }}">
+                            <i class="bi bi-bar-chart main-icon"></i>
+                            <span>{{ __('pos.reports') }}</span>
+                            <i class="bi bi-chevron-right nav-chevron"></i>
+                        </a>
+                    </li>
+                    @endcan
+                    @endif
+
+                    @if(auth()->user()->can('view-users') || auth()->user()->can('manage-permissions') || auth()->user()->can('manage-settings'))
+                    <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'الإعدادات' : 'SETTINGS' }}</div>
+                    @endif
+
                     @canany(['view-users', 'manage-permissions'])
                     <li>
                         <a href="javascript:void(0)" data-bs-target="#userManagementSubmenu" data-bs-toggle="collapse" aria-expanded="{{ request()->routeIs('users.*', 'permissions.*') ? 'true' : 'false' }}">
@@ -901,52 +1347,6 @@
                     </li>
                     @endcanany
 
-                    <!-- FINANCE -->
-                    <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'المالية' : 'FINANCE' }}</div>
-
-                    @can('view-expenses')
-                    <li class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}">
-                        <a href="{{ route('expenses.index') }}">
-                            <i class="bi bi-wallet2 main-icon"></i>
-                            <span>{{ __('pos.daily_expenses') }}</span>
-                            <i class="bi bi-chevron-right nav-chevron"></i>
-                        </a>
-                    </li>
-                    @endcan
-
-                    @can('view-reports')
-                    <li>
-                        <a href="{{ route('reports.index') }}">
-                            <i class="bi bi-bar-chart main-icon"></i>
-                            <span>{{ __('pos.reports') }}</span>
-                            <i class="bi bi-chevron-right nav-chevron"></i>
-                        </a>
-                    </li>
-                    @endcan
-
-                    <!-- SETTINGS -->
-                    <div class="nav-category-header">{{ app()->getLocale() == 'ar' ? 'الإعدادات' : 'SETTINGS' }}</div>
-
-                    @can('view-categories')
-                    <li class="{{ request()->request->get('path') == 'categories' ? 'active' : '' }}">
-                        <a href="{{ route('categories.index') }}">
-                            <i class="bi bi-tags main-icon"></i>
-                            <span>{{ __('pos.categories') }}</span>
-                            <i class="bi bi-chevron-right nav-chevron"></i>
-                        </a>
-                    </li>
-                    @endcan
-                    
-                    @can('view-warranties')
-                    <li class="{{ request()->routeIs('warranties.*') ? 'active' : '' }}">
-                        <a href="{{ route('warranties.index') }}">
-                            <i class="bi bi-shield-check main-icon"></i>
-                            <span>{{ __('pos.warranty_management') }}</span>
-                            <i class="bi bi-chevron-right nav-chevron"></i>
-                        </a>
-                    </li>
-                    @endcan
-
                     @can('manage-settings')
                     <li>
                         <a href="javascript:void(0)" data-bs-target="#settingsSubmenu" data-bs-toggle="collapse" aria-expanded="false">
@@ -956,12 +1356,6 @@
                         </a>
                         <ul class="collapse" id="settingsSubmenu">
                             <li><a href="{{ route('settings.index') }}"><i class="bi bi-building me-2"></i> <span>{{ __('pos.company_information') }}</span></a></li>
-                            @can('view-license')
-                            <li><a href="{{ route('settings.license') }}"><i class="bi bi-shield-check me-2"></i> <span>{{ __('pos.license_information') }}</span></a></li>
-                            @endcan
-                            @can('manage-license')
-                            <li><a href="{{ route('settings.license.manager') }}"><i class="bi bi-shield-lock me-2"></i> <span>{{ __('pos.license_manager') }}</span></a></li>
-                            @endcan
                             <li><a href="{{ route('settings.notifications') }}"><i class="bi bi-bell me-2"></i> <span>{{ __('pos.notification_settings') }}</span></a></li>
                             <li><a href="{{ route('settings.password') }}"><i class="bi bi-key me-2"></i> <span>{{ __('pos.change_password') }}</span></a></li>
                         </ul>
@@ -987,28 +1381,27 @@
                     </li>
                 </ul>
 
-                <!-- Inventory Health -->
-                <div class="inventory-health-card">
-                    <div class="ih-header">
-                        <i class="bi bi-activity"></i>
-                        <span>Inventory Health</span>
+                <!-- User Profile Card -->
+                @auth
+                @php
+                    $names = explode(' ', auth()->user()->full_name);
+                    $initials = '';
+                    foreach ($names as $name) {
+                        $initials .= mb_strtoupper(mb_substr($name, 0, 1));
+                    }
+                    $displayInitials = mb_substr($initials, 0, 2);
+                @endphp
+                <a href="{{ route('settings.profile') }}" class="sidebar-profile-card">
+                    <div class="sp-avatar">
+                        {{ $displayInitials }}
                     </div>
-                    <div class="ih-item">
-                        <div class="ih-item-left">
-                            <span class="ih-dot orange"></span>
-                            <span>Low Stock</span>
-                        </div>
-                        <span class="ih-count">3</span>
+                    <div class="sp-info">
+                        <span class="sp-name">{{ auth()->user()->full_name }}</span>
+                        <span class="sp-role">{{ auth()->user()->role == 'admin' ? __('pos.admin') : __('pos.employee') }}</span>
                     </div>
-                    <div class="ih-item">
-                        <div class="ih-item-left">
-                            <span class="ih-dot red"></span>
-                            <span>Expired</span>
-                        </div>
-                        <span class="ih-count">2</span>
-                    </div>
-                    <a href="{{ route('products.index') }}" class="ih-link">View All Alerts &rarr;</a>
-                </div>
+                    <i class="bi bi-chevron-right sp-arrow"></i>
+                </a>
+                @endauth
             </div>
 
             <div class="sidebar-footer">
@@ -1032,67 +1425,72 @@
                     
                     <div class="d-flex ms-auto align-items-center gap-2 gap-md-3">
                         <!-- Branch Selector -->
-@if(isset($current_branch) && isset($user_branches))
-<div class="dropdown">
-    <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        <i class="bi bi-building"></i> {{ $current_branch->getTranslation('name') }}
-    </button>
+                        @if(isset($current_branch) && isset($user_branches))
+                        <div class="dropdown">
+                            <button class="btn btn-sm d-flex align-items-center gap-2 dropdown-toggle px-3 py-2" type="button" data-bs-toggle="dropdown" style="border-radius: 12px; background: rgba(99, 102, 241, 0.08); border: 1.5px solid rgba(99, 102, 241, 0.2); color: #6366f1; font-weight: 700; font-size: 0.82rem; transition: all 0.2s;">
+                                <i class="bi bi-building"></i> {{ $current_branch->getTranslation('name') }}
+                            </button>
+                        
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg branch-dropdown-menu">
+                                <li><h6 class="dropdown-header">{{ __('pos.select_branch') ?? 'Select Branch' }}</h6></li>
+                        
+                                @if(auth()->user()->isAdmin())
+                                    <li>
+                                        <a class="dropdown-item {{ is_null(session('branch_id')) ? 'active' : '' }}" href="{{ route('branches.switch', 0) }}">
+                                            <i class="bi bi-globe"></i>
+                                            {{ __('pos.all_branches') ?? 'All Branches' }}
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                @endif
+                        
+                                @foreach($user_branches as $branch)
+                                    <li>
+                                        <a class="dropdown-item {{ $branch->id == $current_branch->id ? 'active' : '' }}" href="{{ route('branches.switch', $branch->id) }}">
+                                            <i class="bi bi-shop"></i>
+                                            {{ $branch->getTranslation('name') }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                        
+                                @if(auth()->user()->isAdmin())
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('branches.index') }}" style="color: #6366f1 !important;">
+                                        <i class="bi bi-gear"></i>
+                                        {{ __('pos.manage_branches') }}
+                                    </a>
+                                </li>
+                                @endif
+                            </ul>
+                        </div>
+                        @endif
 
-    <ul class="dropdown-menu dropdown-menu-start dropdown-menu-md-end">
-        <li><h6 class="dropdown-header">{{ __('pos.select_branch') ?? 'Select Branch' }}</h6></li>
-
-        @if(auth()->user()->isAdmin())
-            <li>
-                <a class="dropdown-item {{ is_null(session('branch_id')) ? 'active' : '' }}" href="{{ route('branches.switch', 0) }}">
-                    <i class="bi bi-globe me-2"></i>
-                    {{ __('pos.all_branches') ?? 'All Branches' }}
-                </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-        @endif
-
-        @foreach($user_branches as $branch)
-            <li>
-                <a class="dropdown-item {{ $branch->id == $current_branch->id ? 'active' : '' }}" href="{{ route('branches.switch', $branch->id) }}">
-                    {{ $branch->getTranslation('name') }}
-                </a>
-            </li>
-        @endforeach
-
-        @if(auth()->user()->isAdmin())
-        <li><hr class="dropdown-divider"></li>
-        <li>
-            <a class="dropdown-item" href="{{ route('branches.index') }}">
-                <i class="bi bi-gear me-2"></i>
-                {{ __('pos.manage_branches') }}
-            </a>
-        </li>
-        @endif
-    </ul>
-</div>
-@endif                        <!-- Theme Switcher -->
-                        <button class="btn btn-light btn-sm d-flex align-items-center gap-2" id="globalThemeToggle" onclick="toggleGlobalTheme()" type="button" style="border-radius: 8px; padding: 6px 12px; font-weight: 600;">
-                            <i class="bi bi-moon-stars-fill" id="globalThemeIcon"></i>
+                        <!-- Theme Switcher -->
+                        <button class="btn btn-sm d-flex align-items-center gap-2 px-3 py-2" id="globalThemeToggle" onclick="toggleGlobalTheme()" type="button" style="border-radius: 12px; background: rgba(99, 102, 241, 0.04); border: 1.5px solid rgba(226, 232, 240, 0.8); color: var(--text-color); font-weight: 700; font-size: 0.82rem; transition: all 0.2s;">
+                            <i class="bi bi-moon-stars-fill" id="globalThemeIcon" style="color: #6366f1;"></i>
                             <span class="d-none d-md-inline" id="globalThemeLabel">{{ app()->getLocale() == 'ar' ? 'الوضع الداكن' : 'Dark Mode' }}</span>
                         </button>
-
+                        
                         <!-- Language Switch -->
                         <div class="dropdown">
-                            <button class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-globe"></i> <span class="d-none d-sm-inline">{{ app()->getLocale() == 'ar' ? 'العربية' : 'English' }}</span>
+                            <button class="btn btn-sm dropdown-toggle d-flex align-items-center gap-2 px-3 py-2" type="button" data-bs-toggle="dropdown" style="border-radius: 12px; background: rgba(99, 102, 241, 0.04); border: 1.5px solid rgba(226, 232, 240, 0.8); color: var(--text-color); font-weight: 700; font-size: 0.82rem; transition: all 0.2s;">
+                                <i class="bi bi-globe" style="color: #6366f1;"></i> <span class="d-none d-sm-inline">{{ app()->getLocale() == 'ar' ? 'العربية' : 'English' }}</span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-start dropdown-menu-md-end">
-                                <li><a class="dropdown-item" href="{{ url('/change-language/ar') }}">العربية</a></li>
-                                <li><a class="dropdown-item" href="{{ url('/change-language/en') }}">English</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="border-radius: 16px; padding: 8px;">
+                                <li><a class="dropdown-item py-2 px-3" href="{{ url('/change-language/ar') }}" style="border-radius: 10px; font-weight: 600; font-size: 0.85rem;">العربية</a></li>
+                                <li><a class="dropdown-item py-2 px-3" href="{{ url('/change-language/en') }}" style="border-radius: 10px; font-weight: 600; font-size: 0.85rem;">English</a></li>
                             </ul>
                         </div>
                         
                         <!-- Notifications -->
+                        @can('view-notifications')
                         <button id="bell-btn"
-                            class="btn btn-light btn-sm position-relative"
+                            class="btn btn-sm position-relative d-flex align-items-center justify-content-center"
                             data-label="{{ __('pos.notifications') ?? 'Notifications' }}"
-                            data-no-alerts="{{ __('pos.no_notifications') ?? 'No notifications' }}">
-                            <i class="bi bi-bell-fill text-primary"></i>
+                            data-no-alerts="{{ __('pos.no_notifications') ?? 'No notifications' }}"
+                            style="width: 38px; height: 38px; border-radius: 12px; background: rgba(99, 102, 241, 0.04); border: 1.5px solid rgba(226, 232, 240, 0.8); color: var(--text-color); transition: all 0.2s;">
+                            <i class="bi bi-bell-fill" style="color: #6366f1;"></i>
                             <span id="bell-badge" style="
                                 display:none;
                                 position:absolute;
@@ -1111,67 +1509,50 @@
                                 border:2px solid #fff;
                             ">0</span>
                         </button>
+                        @endcan
                         
-                        <!-- User Dropdown -->
-                        @auth
-                        <div class="dropdown">
-                            <button class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-                                <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 0.8rem;">
-                                    @php
-                                        $names = explode(' ', auth()->user()->full_name);
-                                        $initials = '';
-                                        foreach ($names as $name) {
-                                            $initials .= mb_strtoupper(mb_substr($name, 0, 1));
-                                        }
-                                    @endphp
-                                    {{ mb_substr($initials, 0, 2) }}
-                                </div>
-                                <span class="d-none d-md-inline">{{ auth()->user()->full_name }}</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{ route('settings.profile') }}"><i class="bi bi-person me-2"></i>{{ __('pos.profile') }}</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i>{{ __('pos.logout') }}
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                        @else
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-sm px-4 rounded-pill">Login</a>
-                        @endauth
+
                     </div>
                 </div>
             </nav>
 
             <!-- Main Content Area -->
             <div class="container-fluid px-4 pb-4">
+                {{-- Global Premium Alerts --}}
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2) !important; color: #10b981; backdrop-filter: blur(8px);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill fs-5"></i>
+                            <div class="fw-semibold">{{ session('success') }}</div>
+                        </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close" style="filter: invert(0.4);"></button>
                     </div>
                 @endif
                 
                 @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 14px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2) !important; color: #ef4444; backdrop-filter: blur(8px);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                            <div class="fw-semibold">{{ session('error') }}</div>
+                        </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close" style="filter: invert(0.4);"></button>
                     </div>
                 @endif
-
+                
                 @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <ul class="mb-0">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 14px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2) !important; color: #ef4444; backdrop-filter: blur(8px);">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-exclamation-octagon-fill fs-5 mt-0.5"></i>
+                            <div>
+                                <div class="fw-bold mb-1">{{ app()->getLocale() == 'ar' ? 'يرجى تصحيح الأخطاء التالية:' : 'Please correct the following errors:' }}</div>
+                                <ul class="mb-0 ps-3">
+                                    @foreach($errors->all() as $error)
+                                        <li class="fw-semibold small">{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close" style="filter: invert(0.4);"></button>
                     </div>
                 @endif
 
@@ -1184,7 +1565,9 @@
     <div id="sidebarOverlay"></div>
 
     <!-- Notification System Container -->
+    @can('view-notifications')
     <div id="notification-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+    @endcan
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -1194,7 +1577,9 @@
     
     <!-- Real-time Alerts JS -->
     @auth
+        @can('view-notifications')
         <script src="{{ asset('js/alerts.js') }}?v=20260617_v4"></script>
+        @endcan
     @endauth
 
     
@@ -1203,16 +1588,6 @@
     
     <script>
         $(document).ready(function () {
-            function toggleSidebar() {
-                $('#sidebar').toggleClass('active');
-                $('#sidebarOverlay').toggleClass('active');
-                
-                if ($('#sidebar').hasClass('active')) {
-                    $('body').css('overflow', 'hidden');
-                } else {
-                    $('body').css('overflow', 'auto');
-                }
-            }
 
             $('#sidebarCollapse, #sidebarOverlay, .close-sidebar').on('click', function () {
                 toggleSidebar();
@@ -1220,7 +1595,7 @@
 
             // Close sidebar when clicking outside on mobile devices
             $(document).on('click', function (event) {
-                if ($(window).width() <= 768 && $('#sidebar').hasClass('active')) {
+                if (window.matchMedia("(max-width: 768px)").matches && $('#sidebar').hasClass('active')) {
                     if (!$(event.target).closest('#sidebar').length && 
                         !$(event.target).closest('#sidebarCollapse').length && 
                         !$(event.target).closest('#sidebarOverlay').length) {
@@ -1258,7 +1633,6 @@
             @endif
         });
     </script>
-    @stack('scripts')
     <script>
         const APP_THEME_KEY = 'da_app_theme';
         const globalThemeLabels = {
@@ -1315,25 +1689,76 @@
         const SIDEBAR_STATE_KEY = 'da_sidebar_collapsed';
         
         function toggleSidebar() {
-            document.body.classList.toggle('sidebar-collapsed');
-            const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-            localStorage.setItem(SIDEBAR_STATE_KEY, isCollapsed ? 'true' : 'false');
+            if (window.matchMedia("(max-width: 768px)").matches) {
+                // Mobile behavior: toggle active drawer
+                $('#sidebar').toggleClass('active');
+                $('#sidebarOverlay').toggleClass('active');
+                if ($('#sidebar').hasClass('active')) {
+                    $('body').css('overflow', 'hidden');
+                } else {
+                    $('body').css('overflow', 'auto');
+                }
+            } else {
+                // Desktop behavior: toggle collapse
+                document.body.classList.toggle('sidebar-collapsed');
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                localStorage.setItem(SIDEBAR_STATE_KEY, isCollapsed ? 'true' : 'false');
+            }
         }
 
         // Auto-load sidebar state
         (function() {
             const savedState = localStorage.getItem(SIDEBAR_STATE_KEY);
-            if (savedState === 'true') {
+            if (savedState === 'true' && !window.matchMedia("(max-width: 768px)").matches) {
                 document.body.classList.add('sidebar-collapsed');
             }
         })();
+
+        // Sidebar click behaviors
+        $(document).ready(function() {
+            // Automatically expand collapsed sidebar when clicking a submenu toggle link
+            $(document).on('click', '#sidebar ul li a[data-bs-toggle="collapse"]', function() {
+                if (!window.matchMedia("(max-width: 768px)").matches && document.body.classList.contains('sidebar-collapsed')) {
+                    toggleSidebar();
+                }
+            });
+
+            // Automatically close mobile sidebar drawer immediately when clicking any navigation link to prevent transition delay flash
+            $(document).on('click', '#sidebar ul li a:not([data-bs-toggle="collapse"]):not([href="#"])', function() {
+                if (window.matchMedia("(max-width: 768px)").matches && $('#sidebar').hasClass('active')) {
+                    $('#sidebar').removeClass('active');
+                    $('#sidebarOverlay').removeClass('active');
+                    $('body').css('overflow', 'auto');
+                }
+            });
+        });
 
         // Remove no-transition class after layout/theme is applied to prevent transition flash on load
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(function() {
                 document.body.classList.remove('no-transition');
             }, 50);
+
+            // Sidebar Scroll State Retention Logic
+            const sidebarScrollContainer = document.querySelector('.sidebar-content-scroll');
+            if (sidebarScrollContainer) {
+                // Restore scroll position
+                const savedScrollTop = localStorage.getItem('sidebar_scroll_position');
+                if (savedScrollTop) {
+                    sidebarScrollContainer.scrollTop = parseInt(savedScrollTop, 10);
+                }
+
+                // Save scroll position on scroll
+                let scrollTimeout;
+                sidebarScrollContainer.addEventListener('scroll', function() {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(function() {
+                        localStorage.setItem('sidebar_scroll_position', sidebarScrollContainer.scrollTop);
+                    }, 100);
+                });
+            }
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

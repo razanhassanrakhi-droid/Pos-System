@@ -16,17 +16,26 @@ class NotificationController extends Controller
     public function getNotifications(Request $request)
     {
         $user = auth()->user();
-        if (!$user) {
+        if (!$user || !$user->can('view-notifications')) {
             return response()->json(['unread_count' => 0, 'notifications' => []]);
         }
 
         $branchId = session('branch_id');
 
-        // Check for expiring batches and update notifications dynamically
-        \App\Services\NotificationService::checkExpiries($branchId);
-        
-        // Check for out of stock and low stock dynamically
-        \App\Services\NotificationService::checkStockLevels($branchId);
+        // Throttle background notification checks to once per 60 seconds during page loads to improve navigation performance
+        $lastChecked = session('last_notification_check');
+        if (!$lastChecked || \Carbon\Carbon::parse($lastChecked)->diffInSeconds(now()) > 60) {
+            // Check for expiring batches and update notifications dynamically
+            \App\Services\NotificationService::checkExpiries($branchId);
+            
+            // Check for out of stock and low stock dynamically
+            \App\Services\NotificationService::checkStockLevels($branchId);
+            
+            // Check for warranties dynamically
+            \App\Services\NotificationService::checkWarranties($branchId);
+
+            session(['last_notification_check' => now()]);
+        }
 
         // Fetch active (unresolved) notifications for the branch (admins can see all if no branch selected)
         $query = Notification::active()->latest();
@@ -35,8 +44,8 @@ class NotificationController extends Controller
         }
 
         // Only display Critical and Important (Warning) notifications
-        $query->whereIn('priority', ['Critical', 'Important']);
-        $query->where('category', 'Inventory');
+        $query->whereIn('priority', ['Critical', 'Important', 'Activity']);
+        $query->whereIn('category', ['Inventory', 'System']);
 
         $notifications = $query->get()->filter(function ($n) use ($user) {
             return $user->isNotificationEnabled($n->category, $n->type);
@@ -99,8 +108,8 @@ class NotificationController extends Controller
     public function markAsRead(Request $request, $id = null)
     {
         $user = auth()->user();
-        if (!$user) {
-            return response()->json(['success' => false], 401);
+        if (!$user || !$user->can('view-notifications')) {
+            return response()->json(['success' => false], 403);
         }
 
         $branchId = session('branch_id');
@@ -139,10 +148,37 @@ class NotificationController extends Controller
      */
     public function dismiss(Request $request, $id)
     {
+        $user = auth()->user();
+        if (!$user || !$user->can('view-notifications')) {
+            return response()->json(['success' => false], 403);
+        }
+
         $notification = Notification::findOrFail($id);
         $notification->update([
             'resolved_at' => now()
         ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Dismiss (resolve) all active notifications.
+     */
+    public function dismissAll(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || !$user->can('view-notifications')) {
+            return response()->json(['success' => false], 403);
+        }
+
+        $branchId = session('branch_id');
+
+        $query = Notification::active()->where('category', 'Inventory');
+        if (!$user->isAdmin() || $branchId) {
+            $query->where('branch_id', $branchId);
+        }
+
+        $query->update(['resolved_at' => now()]);
 
         return response()->json(['success' => true]);
     }
@@ -153,6 +189,9 @@ class NotificationController extends Controller
     public function showSettings()
     {
         $user = auth()->user();
+        if (!$user || !$user->can('view-notifications')) {
+            abort(403);
+        }
         $settings = $user->notification_settings ?? $this->getDefaultSettings();
         
         return view('settings.notifications', compact('settings'));
@@ -164,8 +203,8 @@ class NotificationController extends Controller
     public function saveSettings(Request $request)
     {
         $user = auth()->user();
-        if (!$user) {
-            return redirect()->back()->with('error', 'Unauthorized');
+        if (!$user || !$user->can('view-notifications')) {
+            abort(403);
         }
 
         $user->update([
@@ -181,6 +220,9 @@ class NotificationController extends Controller
     public function activityFeed(Request $request)
     {
         $user = auth()->user();
+        if (!$user || !$user->can('view-notifications')) {
+            abort(403);
+        }
         $branchId = session('branch_id');
 
         $query = Notification::latest();

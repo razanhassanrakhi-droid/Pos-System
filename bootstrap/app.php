@@ -20,14 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-            'check.license' => \App\Http\Middleware\CheckLicense::class,
         ]);
 
         $middleware->trustProxies(at: '*');
 
         // إضافة SetLocale
-        // $middleware->append(\App\Http\Middleware\SetLocale::class);
-        // $middleware->append(\App\Http\Middleware\BranchMiddleware::class);
+        $middleware->append(\App\Http\Middleware\SetLocale::class);
         $middleware->append(\App\Http\Middleware\NormalizeMultilingualInput::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

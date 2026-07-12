@@ -36,6 +36,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'full_name' => 'array',
+        'username' => 'array',
         'notification_settings' => 'array',
         'is_active' => 'boolean',
     ];
@@ -71,10 +72,20 @@ class User extends Authenticatable
              return $value[$locale] ?? $value['en'] ?? $value['ar'] ?? '';
         }
         
-        return $value;
+        return $raw; // Fallback to raw string if not an array/JSON
     }
 
     public function getFullNameAttribute($value)
+    {
+        if (empty($value)) return '';
+        $decoded = is_array($value) ? $value : json_decode($value, true);
+        if (is_array($decoded)) {
+            return $decoded[app()->getLocale()] ?? $decoded['en'] ?? $decoded['ar'] ?? '';
+        }
+        return $value;
+    }
+
+    public function getUsernameAttribute($value)
     {
         if (empty($value)) return '';
         $decoded = is_array($value) ? $value : json_decode($value, true);

@@ -210,6 +210,22 @@
                         $displayNetQty = $item->net_qty / $factor;
                         $displayPrice = $item->price * $factor;
                         $unitLabel = $item->unit_name ?: ($item->product->base_unit_name ?: 'Piece');
+                        if (app()->getLocale() === 'ar' && $unitLabel) {
+                            $translations = [
+                                'piece'  => 'حبة',
+                                'pieces' => 'حبة',
+                                'pices'  => 'حبة',
+                                'psc'    => 'حبة',
+                                'pcs'    => 'حبة',
+                                'box'    => 'علبة',
+                                'pack'   => 'عبوة',
+                                'tape'   => 'شريط',
+                                'tabe'   => 'شريط',
+                                'kg'     => 'كجم',
+                                'gram'   => 'جرام',
+                            ];
+                            $unitLabel = $translations[strtolower($unitLabel)] ?? $unitLabel;
+                        }
                     @endphp
                     <tr>
                         <td class="{{ $alignText }} fw-semibold">{{ $item->product->name }}</td>

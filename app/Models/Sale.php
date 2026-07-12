@@ -19,7 +19,7 @@ class Sale extends Model
 
     public function getShortNumberAttribute()
     {
-        $num = preg_replace('/^INV(-[a-zA-Z]{2}\d{2})?-?/i', '', $this->invoice_number);
+        $num = preg_replace('/^INV(-[a-zA-Z]{2}\d{2})?-?/i', '', $this->invoice_number ?? '');
         $label = app()->getLocale() == 'ar' ? 'فاتورة' : 'Invoice';
         return $label . ' #' . $num;
     }

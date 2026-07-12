@@ -146,9 +146,11 @@
                 </form>
             </div>
             <div class="col-md-3 text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
+                @can('create-purchases')
                 <a href="{{ route('purchases.create') }}" class="pm-add-btn">
                     <i class="bi bi-plus-lg"></i> <span>{{ __('purchases.add_purchase') }}</span>
                 </a>
+                @endcan
             </div>
         </div>
     </div>
@@ -196,6 +198,7 @@
                                 <a href="{{ route('purchases.pdf', $purchase->id) }}" class="btn btn-sm btn-outline-danger" title="{{ __('pos.download_pdf') ?? 'Download PDF' }}">
                                     <i class="bi bi-file-earmark-pdf"></i>
                                 </a>
+                                @can('delete-purchases')
                                 <form action="{{ route('purchases.destroy', $purchase->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('pos.confirm_delete') }}');">
                                     @csrf
                                     @method('DELETE')
@@ -203,6 +206,7 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>

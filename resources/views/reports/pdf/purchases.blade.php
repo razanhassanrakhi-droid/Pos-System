@@ -7,11 +7,19 @@
         <table class="info-table">
             <tr>
                 <td><strong>{{ __('pos.total_purchases') }}:</strong> {{ number_format($report['total_purchases'], 2) }} {{ $setting->currency }}</td>
-                <td><strong>{{ __('pos.total_paid') }}:</strong> {{ number_format($report['total_paid'], 2) }} {{ $setting->currency }}</td>
+                <td><strong>{{ __('pos.total_purchased_qty') }}:</strong> {{ number_format($report['total_qty'], 0) }}</td>
             </tr>
             <tr>
-                <td><strong>{{ __('pos.total_remaining') }}:</strong> {{ number_format($report['total_remaining'], 2) }} {{ $setting->currency }}</td>
+                <td><strong>{{ __('pos.total_discounts') }}:</strong> {{ number_format($report['total_discount'], 2) }} {{ $setting->currency }}</td>
+                <td><strong>{{ __('pos.purchase_vat') }}:</strong> {{ number_format($report['total_tax'], 2) }} {{ $setting->currency }}</td>
+            </tr>
+            <tr>
+                <td><strong>{{ __('pos.total_purchase_orders') }}:</strong> {{ $report['invoice_count'] }}</td>
                 <td></td>
+            </tr>
+            <tr>
+                <td><strong>{{ __('pos.total_paid') }}:</strong> {{ number_format($report['total_paid'], 2) }} {{ $setting->currency }}</td>
+                <td><strong>{{ __('pos.total_remaining') }}:</strong> {{ number_format($report['total_remaining'], 2) }} {{ $setting->currency }}</td>
             </tr>
         </table>
     </div>

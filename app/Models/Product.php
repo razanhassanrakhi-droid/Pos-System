@@ -19,19 +19,44 @@ class Product extends Model
 
     protected $appends = ['short_number', 'current_stock', 'base_unit_name'];
 
+    protected $dynamicCache = [];
+
     public function getBaseUnitNameAttribute()
     {
         $locale = app()->getLocale();
-        if ($locale === 'ar') {
-            return $this->base_unit_name_ar ?: $this->base_unit_name_en;
+        $val = $locale === 'ar'
+            ? ($this->base_unit_name_ar ?: $this->base_unit_name_en)
+            : ($this->base_unit_name_en ?: $this->base_unit_name_ar);
+
+        if ($locale === 'ar' && $val) {
+            $translations = [
+                'piece'  => 'حبة',
+                'pieces' => 'حبة',
+                'pices'  => 'حبة',
+                'psc'    => 'حبة',
+                'pcs'    => 'حبة',
+                'box'    => 'علبة',
+                'pack'   => 'عبوة',
+                'tape'   => 'شريط',
+                'tabe'   => 'شريط',
+                'kg'     => 'كجم',
+                'gram'   => 'جرام',
+            ];
+            return $translations[strtolower($val)] ?? $val;
         }
-        return $this->base_unit_name_en ?: $this->base_unit_name_ar;
+        return $val;
     }
 
     public function getCurrentStockAttribute()
     {
+        if (array_key_exists('current_stock', $this->attributes)) {
+            return (float) $this->attributes['current_stock'];
+        }
+        if (array_key_exists('current_stock', $this->dynamicCache)) {
+            return $this->dynamicCache['current_stock'];
+        }
         $branchId = session('branch_id');
-        return (float) ($branchId ? $this->currentBranchStock($branchId) : $this->totalStock());
+        return $this->dynamicCache['current_stock'] = (float) ($branchId ? $this->currentBranchStock($branchId) : $this->totalStock());
     }
 
     public function getShortNumberAttribute()
@@ -63,6 +88,7 @@ class Product extends Model
         'is_active',
         'has_warranty',
         'warranty_period_months',
+        'warranty_type',
         'created_by',
         'updated_by',
     ];
@@ -108,13 +134,26 @@ class Product extends Model
      */
     public function getExpiryDateAttribute()
     {
+        if (array_key_exists('expiry_date', $this->dynamicCache)) {
+            return $this->dynamicCache['expiry_date'];
+        }
+
+        if ($this->relationLoaded('batches')) {
+            $batch = $this->batches
+                ->where('remaining_quantity', '>', 0)
+                ->whereNotNull('expiry_date')
+                ->sortBy('expiry_date')
+                ->first();
+            return $this->dynamicCache['expiry_date'] = ($batch ? \Carbon\Carbon::parse($batch->expiry_date) : null);
+        }
+
         $dateStr = $this->batches()
             ->where('remaining_quantity', '>', 0)
             ->whereNotNull('expiry_date')
             ->orderBy('expiry_date', 'asc')
             ->value('expiry_date');
 
-        return $dateStr ? \Carbon\Carbon::parse($dateStr) : null;
+        return $this->dynamicCache['expiry_date'] = ($dateStr ? \Carbon\Carbon::parse($dateStr) : null);
     }
 
     /**
@@ -122,7 +161,16 @@ class Product extends Model
      */
     public function getPurchasePriceAttribute()
     {
-        return (float) ($this->batches()->latest()->value('purchase_price') ?? 0);
+        if (array_key_exists('purchase_price', $this->dynamicCache)) {
+            return $this->dynamicCache['purchase_price'];
+        }
+
+        if ($this->relationLoaded('batches')) {
+            $latestBatch = $this->batches->sortByDesc('created_at')->first();
+            return $this->dynamicCache['purchase_price'] = (float) ($latestBatch ? $latestBatch->purchase_price : 0);
+        }
+
+        return $this->dynamicCache['purchase_price'] = (float) ($this->batches()->latest()->value('purchase_price') ?? 0);
     }
 
     /**
@@ -228,7 +276,12 @@ class Product extends Model
      */
     public function currentBranchStock($branchId)
     {
-        return $this->batches()
+        if ($this->relationLoaded('batches')) {
+            return (float) $this->batches
+                ->where('branch_id', $branchId)
+                ->sum('remaining_quantity');
+        }
+        return (float) $this->batches()
             ->where('branch_id', $branchId)
             ->sum('remaining_quantity');
     }
@@ -238,7 +291,10 @@ class Product extends Model
      */
     public function totalStock()
     {
-        return $this->batches()->sum('remaining_quantity');
+        if ($this->relationLoaded('batches')) {
+            return (float) $this->batches->sum('remaining_quantity');
+        }
+        return (float) $this->batches()->sum('remaining_quantity');
     }
 
     public function warranties()

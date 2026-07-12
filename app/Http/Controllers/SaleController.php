@@ -166,6 +166,8 @@ class SaleController extends Controller
                     $product = Product::findOrFail($productId);
                     if ($product->has_warranty) {
                         Warranty::create([
+                            'warranty_number' => \App\Services\DocumentNumberService::generateDailyNumber('WAR', Warranty::class, 'created_at', 'warranty_number'),
+                            'warranty_type' => $product->warranty_type ?? 'Other',
                             'sale_id' => $sale->id,
                             'sale_item_id' => $saleItem->id,
                             'product_id' => $productId,
@@ -175,7 +177,8 @@ class SaleController extends Controller
                             'warranty_start_date' => now(),
                             'warranty_end_date' => now()->addMonths((int)$product->warranty_period_months),
                             'warranty_period_months' => $product->warranty_period_months,
-                            'status' => 'ACTIVE',
+                            'status' => 'Active',
+                            'created_by' => $userId,
                         ]);
                     }
 

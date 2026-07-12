@@ -573,7 +573,7 @@
                     </div>
                     <div class="summary-info-item">
                         <div class="lbl">{{ __('pos.payment_method') }}</div>
-                        <div class="val" id="summary_payment">Cash</div>
+                        <div class="val" id="summary_payment">{{ app()->getLocale() == 'ar' ? 'غير محدد' : 'Not Selected' }}</div>
                     </div>
                 </div>
             </div>
@@ -731,6 +731,25 @@
         let itemsToReturn = {}; // Map of batch_id/product_id keys to return options
         let activeItem = null; // The item currently being configured in the drawer
 
+        function translateUnit(unit) {
+            if (!unit) return '';
+            if (!isArLocale) return unit;
+            const translations = {
+                'piece': 'حبة',
+                'pieces': 'حبة',
+                'pices': 'حبة',
+                'psc': 'حبة',
+                'pcs': 'حبة',
+                'box': 'علبة',
+                'pack': 'عبوة',
+                'tape': 'شريط',
+                'tabe': 'شريط',
+                'kg': 'كجم',
+                'gram': 'جرام'
+            };
+            return translations[unit.toLowerCase()] || unit;
+        }
+
         // Instant search / search triggers
         $('#btn_search').click(triggerInvoiceSearch);
         $('#invoice_search').on('keypress', function(e) {
@@ -769,7 +788,14 @@
                         
                         const currency = "{{ $setting->currency ?? 'SAR' }}";
                         $('#summary_total').text(parseFloat(currentSale.total || 0).toFixed(2) + ' ' + currency);
-                        $('#summary_payment').text(currentSale.payment_method.toUpperCase());
+                        const isAr = "{{ app()->getLocale() }}" === 'ar';
+                        let pmMethod = currentSale.payment_method.toUpperCase();
+                        if (isAr) {
+                            if (pmMethod === 'CASH') pmMethod = 'نقداً';
+                            else if (pmMethod === 'BANK') pmMethod = 'بنك';
+                            else if (pmMethod === 'CARD') pmMethod = 'بطاقة';
+                        }
+                        $('#summary_payment').text(pmMethod);
 
                         // Populate Step 3 cards
                         let cardsHtml = '';
@@ -786,25 +812,26 @@
                                 let soldQtyInUnit = parseFloat(item.quantity) / factor;
                                 let availableQtyInUnit = parseFloat(item.available_to_return) / factor;
                                 let alreadyReturnedInUnit = (parseFloat(item.quantity) - parseFloat(item.available_to_return)) / factor;
+                                let displayUnit = translateUnit(item.unit_name);
 
                                 cardsHtml += `
                                     <div class="product-return-card" data-index="${index}">
                                         <div class="prod-image-wrapper">
                                             ${imgHtml}
                                         </div>
-                                        <div class="prod-name">${item.product.name} (${item.unit_name || ''})</div>
+                                        <div class="prod-name">${item.product.name} (${displayUnit})</div>
                                         <div class="prod-stats">
                                             <div class="stat-row">
                                                 <span class="stat-lbl">{{ app()->getLocale() == 'ar' ? 'الكمية المباعة' : 'Sold Quantity' }}</span>
-                                                <span class="stat-val">${soldQtyInUnit.toFixed(0)} ${item.unit_name || ''}</span>
+                                                <span class="stat-val">${soldQtyInUnit.toFixed(0)} ${displayUnit}</span>
                                             </div>
                                             <div class="stat-row">
                                                 <span class="stat-lbl">{{ app()->getLocale() == 'ar' ? 'تم إرجاعه مسبقاً' : 'Already Returned' }}</span>
-                                                <span class="stat-val text-warning">${alreadyReturnedInUnit.toFixed(0)} ${item.unit_name || ''}</span>
+                                                <span class="stat-val text-warning">${alreadyReturnedInUnit.toFixed(0)} ${displayUnit}</span>
                                             </div>
                                             <div class="stat-row">
                                                 <span class="stat-lbl">{{ app()->getLocale() == 'ar' ? 'المتاح للإرجاع' : 'Available To Return' }}</span>
-                                                <span class="stat-val text-primary fw-bold">${availableQtyInUnit.toFixed(0)} ${item.unit_name || ''}</span>
+                                                <span class="stat-val text-primary fw-bold">${availableQtyInUnit.toFixed(0)} ${displayUnit}</span>
                                             </div>
                                         </div>
                                         <button type="button" class="btn-action-return btn_trigger_item_drawer" data-index="${index}">
@@ -848,11 +875,12 @@
             let availableQtyInUnit = parseFloat(activeItem.available_to_return) / factor;
 
             // Set drawer information
-            $('#drawer_product_name').text(activeItem.product.name + ' (' + (activeItem.unit_name || '') + ')');
-            $('#drawer_sold_qty').text(soldQtyInUnit.toFixed(0) + ' ' + (activeItem.unit_name || ''));
+            let displayUnit = translateUnit(activeItem.unit_name);
+            $('#drawer_product_name').text(activeItem.product.name + ' (' + displayUnit + ')');
+            $('#drawer_sold_qty').text(soldQtyInUnit.toFixed(0) + ' ' + displayUnit);
             
-            $('#drawer_returned_qty').text(alreadyReturnedInUnit.toFixed(0) + ' ' + (activeItem.unit_name || ''));
-            $('#drawer_available_qty').text(availableQtyInUnit.toFixed(0) + ' ' + (activeItem.unit_name || ''));
+            $('#drawer_returned_qty').text(alreadyReturnedInUnit.toFixed(0) + ' ' + displayUnit);
+            $('#drawer_available_qty').text(availableQtyInUnit.toFixed(0) + ' ' + displayUnit);
             
             // Reset quantity to 1 (or max available if max available is less than 1)
             let defaultVal = Math.min(1, availableQtyInUnit);

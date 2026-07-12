@@ -2,6 +2,34 @@
 
 @section('title', __('pos.sales_returns'))
 
+@push('styles')
+<style>
+    .pm-add-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: #fff !important;
+        border: none;
+        border-radius: 14px;
+        padding: 12px 24px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);
+        white-space: nowrap;
+        font-family: inherit;
+        text-decoration: none;
+    }
+    .pm-add-btn:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+        color: #fff;
+    }
+    .pm-add-btn:active { transform: translateY(0); }
+</style>
+@endpush
+
 @section('content')
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3">
@@ -10,8 +38,8 @@
                 <h5 class="mb-0 fw-bold"><i class="bi bi-arrow-return-left me-2 text-primary"></i>{{ __('pos.sales_returns') }}</h5>
             </div>
             <div class="col-md-6 text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                <a href="{{ route('sales_returns.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i> {{ __('pos.add') }} {{ __('pos.sales_returns') }}
+                <a href="{{ route('sales_returns.create') }}" class="pm-add-btn">
+                    <i class="bi bi-plus-lg"></i> <span>{{ __('pos.add') }} {{ __('pos.sales_returns') }}</span>
                 </a>
             </div>
         </div>

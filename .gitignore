@@ -34,3 +34,13 @@ pos_backup_final.sql
 salvaged_*.json
 data_rescue.sql
 rescue_data.json
+
+# Temporary / utility files and scratch folders
+restyle_*.php
+scratch/
+scratch_*.php
+seed_*.php
+temp_*.js
+update_*_style.php
+public/storage_backup/
+reports_compiled.html

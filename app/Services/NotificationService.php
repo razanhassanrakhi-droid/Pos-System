@@ -108,15 +108,14 @@ class NotificationService
         // Auto-resolve notifications for batches that no longer have remaining quantity
         $emptyBatchIds = \App\Models\Batch::where('remaining_quantity', '<=', 0)->pluck('id');
         if ($emptyBatchIds->isNotEmpty()) {
-            Notification::active()
-                ->where('category', 'Inventory')
+            Notification::where('category', 'Inventory')
                 ->whereIn('type', ['expired', 'expiring_soon'])
                 ->whereIn('batch_id', $emptyBatchIds)
-                ->update(['resolved_at' => now()]);
+                ->delete();
         }
         
         // 1. Check Expired Batches
-        $expiredBatches = \App\Models\Batch::where('remaining_quantity', '>', 0)
+        $expiredBatches = \App\Models\Batch::with('product')->where('remaining_quantity', '>', 0)
             ->whereNotNull('expiry_date')
             ->whereDate('expiry_date', '<', $now)
             ->when($branchId, function($q) use ($branchId) {
@@ -127,17 +126,15 @@ class NotificationService
             
         $expiredBatchIds = $expiredBatches->pluck('id');
         if ($expiredBatchIds->isNotEmpty()) {
-            // Resolve 'expiring_soon' since they are now 'expired'
-            Notification::active()
-                ->where('category', 'Inventory')
+            // Delete 'expiring_soon' since they are now 'expired'
+            Notification::where('category', 'Inventory')
                 ->where('type', 'expiring_soon')
                 ->whereIn('batch_id', $expiredBatchIds)
-                ->update(['resolved_at' => now()]);
+                ->delete();
         }
             
         foreach ($expiredBatches as $batch) {
-            $exists = Notification::active()
-                ->where('category', 'Inventory')
+            $exists = Notification::where('category', 'Inventory')
                 ->where('type', 'expired')
                 ->where('batch_id', $batch->id)
                 ->exists();
@@ -167,7 +164,7 @@ class NotificationService
         $days = (int) ($settings['inventory']['expiry_warning_period'] ?? 30);
         
         $targetDate = $now->copy()->addDays($days)->endOfDay();
-        $expiringBatches = \App\Models\Batch::where('remaining_quantity', '>', 0)
+        $expiringBatches = \App\Models\Batch::with('product')->where('remaining_quantity', '>', 0)
             ->whereNotNull('expiry_date')
             ->whereDate('expiry_date', '>=', $now)
             ->whereDate('expiry_date', '<=', $targetDate)
@@ -181,8 +178,7 @@ class NotificationService
             $daysLeft = (int) round($now->diffInDays($batch->expiry_date, false));
             if ($daysLeft <= 0 || $daysLeft > $days) continue;
             
-            $exists = Notification::active()
-                ->where('category', 'Inventory')
+            $exists = Notification::where('category', 'Inventory')
                 ->where('type', 'expiring_soon')
                 ->where('batch_id', $batch->id)
                 ->exists();
@@ -212,7 +208,7 @@ class NotificationService
      */
     public static function checkStockLevels($branchId = null)
     {
-        $products = \App\Models\Product::where('is_active', true)
+        $products = \App\Models\Product::with('batches')->where('is_active', true)
             ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
             ->get();
         
@@ -223,8 +219,7 @@ class NotificationService
             
             // Check out of stock
             if ($currentStock <= 0) {
-                $exists = Notification::active()
-                    ->where('category', 'Inventory')
+                $exists = Notification::where('category', 'Inventory')
                     ->where('type', 'out_of_stock')
                     ->where('product_id', $product->id)
                     ->where('branch_id', $notifBranchId)
@@ -247,18 +242,16 @@ class NotificationService
                     );
                 }
                 
-                // Auto-resolve low stock if it's now out of stock
-                Notification::active()
-                    ->where('category', 'Inventory')
+                // Auto-delete low stock if it's now out of stock
+                Notification::where('category', 'Inventory')
                     ->where('type', 'low_stock')
                     ->where('product_id', $product->id)
                     ->where('branch_id', $notifBranchId)
-                    ->update(['resolved_at' => now()]);
+                    ->delete();
             } 
             // Check low stock
             elseif ($currentStock <= $minStock) {
-                $exists = Notification::active()
-                    ->where('category', 'Inventory')
+                $exists = Notification::where('category', 'Inventory')
                     ->where('type', 'low_stock')
                     ->where('product_id', $product->id)
                     ->where('branch_id', $notifBranchId)
@@ -281,21 +274,86 @@ class NotificationService
                     );
                 }
                 
-                // Auto-resolve out of stock if it's now low stock
-                Notification::active()
-                    ->where('category', 'Inventory')
+                // Auto-delete out of stock if it's now low stock
+                Notification::where('category', 'Inventory')
                     ->where('type', 'out_of_stock')
                     ->where('product_id', $product->id)
                     ->where('branch_id', $notifBranchId)
-                    ->update(['resolved_at' => now()]);
+                    ->delete();
             } else {
-                // Stock is healthy, resolve both low stock and out of stock
-                Notification::active()
-                    ->where('category', 'Inventory')
+                // Stock is healthy, delete both low stock and out of stock
+                Notification::where('category', 'Inventory')
                     ->whereIn('type', ['low_stock', 'out_of_stock'])
                     ->where('product_id', $product->id)
                     ->where('branch_id', $notifBranchId)
-                    ->update(['resolved_at' => now()]);
+                    ->delete();
+            }
+        }
+    }
+
+    public static function checkWarranties($branchId = null)
+    {
+        $now = \Carbon\Carbon::now()->startOfDay();
+        
+        // 1. Check Expired Warranties
+        $expiredWarranties = \App\Models\Warranty::with(['product', 'customer'])->where('status', '!=', 'Expired')
+            ->where('warranty_end_date', '<', $now)
+            ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+            ->get();
+            
+        foreach ($expiredWarranties as $warranty) {
+            $exists = Notification::active()
+                ->where('category', 'System')
+                ->where('type', 'warranty_expired')
+                ->where('reference_id', $warranty->id)
+                ->where('reference_type', \App\Models\Warranty::class)
+                ->exists();
+                
+            if (!$exists) {
+                self::send(
+                    'System',
+                    'warranty_expired',
+                    'Important',
+                    'ضمان منتهي',
+                    'Warranty Expired',
+                    'انتهت فترة الضمان للمنتج "' . ($warranty->product->name ?? '') . '" للعميل ' . ($warranty->customer->name ?? ''),
+                    'Warranty for product "' . ($warranty->product->name ?? '') . '" expired for customer ' . ($warranty->customer->name ?? ''),
+                    \App\Models\Warranty::class,
+                    $warranty->id,
+                    $warranty->branch_id
+                );
+            }
+        }
+        
+        // 2. Check Expiring Soon (30 days)
+        $targetDate = $now->copy()->addDays(30)->endOfDay();
+        $expiringWarranties = \App\Models\Warranty::with(['product', 'customer'])->whereNotIn('status', ['Expired', 'Cancelled', 'Completed'])
+            ->whereBetween('warranty_end_date', [$now, $targetDate])
+            ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+            ->get();
+            
+        foreach ($expiringWarranties as $warranty) {
+            $exists = Notification::active()
+                ->where('category', 'System')
+                ->where('type', 'warranty_expiring_soon')
+                ->where('reference_id', $warranty->id)
+                ->where('reference_type', \App\Models\Warranty::class)
+                ->exists();
+                
+            if (!$exists) {
+                $daysLeft = (int) round($now->diffInDays($warranty->warranty_end_date, false));
+                self::send(
+                    'System',
+                    'warranty_expiring_soon',
+                    'Activity',
+                    'ضمان يقترب من الانتهاء',
+                    'Warranty Expiring Soon',
+                    'ينتهي ضمان المنتج "' . ($warranty->product->name ?? '') . '" للعميل ' . ($warranty->customer->name ?? '') . ' خلال ' . $daysLeft . ' أيام.',
+                    'Warranty for product "' . ($warranty->product->name ?? '') . '" expires in ' . $daysLeft . ' days for customer ' . ($warranty->customer->name ?? ''),
+                    \App\Models\Warranty::class,
+                    $warranty->id,
+                    $warranty->branch_id
+                );
             }
         }
     }

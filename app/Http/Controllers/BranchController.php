@@ -21,7 +21,9 @@ class BranchController extends Controller
      */
     public function create()
     {
-        return view('branches.create');
+        $nextId = (\App\Models\Branch::max('id') ?? 0) + 1;
+        $nextCode = 'BR-' . sprintf('%04d', $nextId);
+        return view('branches.create', compact('nextCode'));
     }
 
     /**
@@ -39,6 +41,8 @@ public function store(Request $request)
         'address_en' => 'nullable|string|max:255',
         'city_ar' => 'nullable|string|max:100',
         'city_en' => 'nullable|string|max:100',
+        'manager_ar' => 'nullable|string|max:255',
+        'manager_en' => 'nullable|string|max:255',
         'is_active' => 'nullable',
     ]);
 
@@ -46,6 +50,7 @@ public function store(Request $request)
         'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
         'code' => $request->code,
         'phone' => $request->phone,
+        'manager' => ['ar' => $request->manager_ar, 'en' => $request->manager_en],
         'address' => ['ar' => $request->address_ar, 'en' => $request->address_en],
         'city' => ['ar' => $request->city_ar, 'en' => $request->city_en],
         'is_active' => $request->has('is_active'),
@@ -84,6 +89,8 @@ public function store(Request $request)
         'address_en' => 'nullable|string|max:255',
         'city_ar' => 'nullable|string|max:100',
         'city_en' => 'nullable|string|max:100',
+        'manager_ar' => 'nullable|string|max:255',
+        'manager_en' => 'nullable|string|max:255',
         'is_active' => 'nullable',
     ]);
 
@@ -91,6 +98,7 @@ public function store(Request $request)
         'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
         'code' => $request->code,
         'phone' => $request->phone,
+        'manager' => ['ar' => $request->manager_ar, 'en' => $request->manager_en],
         'address' => ['ar' => $request->address_ar, 'en' => $request->address_en],
         'city' => ['ar' => $request->city_ar, 'en' => $request->city_en],
         'is_active' => $request->has('is_active'),

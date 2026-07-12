@@ -716,8 +716,8 @@
                                 <div>
                                     <h6 class="mb-0 fw-bold product-name-display">[Product Name]</h6>
                                     <small class="text-muted">
-                                        SKU: <code class="product-sku-display">[SKU]</code> | 
-                                        Brand: <span class="product-brand-display">[Brand]</span>
+                                        {{ app()->getLocale() == 'ar' ? 'الرمز الكودي (SKU):' : 'SKU:' }} <code class="product-sku-display">[SKU]</code> | 
+                                        {{ app()->getLocale() == 'ar' ? 'الماركة:' : 'Brand:' }} <span class="product-brand-display">[Brand]</span>
                                     </small>
                                 </div>
                             </div>
@@ -790,8 +790,8 @@
                 
                 <div class="text-center py-5 text-muted pm-card" id="emptyState">
                     <i class="bi bi-cart-x fs-1 mb-3 text-muted"></i>
-                    <h5>No products added yet</h5>
-                    <p class="small text-muted mb-0">Use the smart search above or quick add a product to populate the purchase card list.</p>
+                    <h5>{{ app()->getLocale() == 'ar' ? 'لم يتم إضافة منتجات بعد' : 'No products added yet' }}</h5>
+                    <p class="small text-muted mb-0">{{ app()->getLocale() == 'ar' ? 'استخدم البحث الذكي أعلاه أو الإضافة السريعة لملء قائمة بطاقات الشراء.' : 'Use the smart search above or quick add a product to populate the purchase card list.' }}</p>
                 </div>
             </div>
 
@@ -877,7 +877,7 @@
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <label class="pm-form-label mb-0">{{ __('purchases.paid_amount') }} <span class="text-danger">*</span></label>
-                                    <span class="badge badge-unpaid py-1 px-2 rounded" id="paidBadge">Unpaid</span>
+                                    <span class="badge badge-unpaid py-1 px-2 rounded" id="paidBadge">{{ app()->getLocale() == 'ar' ? 'غير مدفوع' : 'Unpaid' }}</span>
                                 </div>
                                 <input type="number" name="paid_amount" id="paidAmountInput" class="pm-form-control text-end font-monospace" step="0.01" value="0" required>
                             </div>
@@ -1085,6 +1085,7 @@
 
         let cardCount = 0;
         let activeSearchIndex = -1;
+        const locale = "{{ app()->getLocale() }}";
 
         // Initialize Select2 Supplier
         $('.select2-supplier').select2({
@@ -1113,12 +1114,13 @@
             $.get('{{ route("products.search") }}', { term: term, for_purchase: 1 }, function(data) {
                 searchResults.empty();
                 if (data.length === 0) {
-                    searchResults.append('<div class="p-3 text-muted text-center">No products found.</div>').show();
+                    const noProductsText = locale === 'ar' ? 'لم يتم العثور على منتجات.' : 'No products found.';
+                    searchResults.append(`<div class="p-3 text-muted text-center">${noProductsText}</div>`).show();
                     return;
                 }
 
                 data.forEach((product, idx) => {
-                    const brand = product.brand || 'No Brand';
+                    const brand = product.brand || (locale === 'ar' ? 'بدون ماركة' : 'No Brand');
                     const sku = product.sku || 'N/A';
                     
                     let unitButtonsHtml = `<button type="button" class="unit-btn add-unit-trigger" data-unit-id="base" data-index="${idx}">${product.base_unit_name}</button>`;
@@ -1133,11 +1135,15 @@
                         unitBadge = ` <span class="badge bg-warning text-dark ms-2">${product.matched_unit_name}</span>`;
                     }
                     
+                    const skuLabel = locale === 'ar' ? 'الرمز الكودي (SKU):' : 'SKU:';
+                    const brandLabel = locale === 'ar' ? 'الماركة:' : 'Brand:';
+                    const stockLabel = locale === 'ar' ? 'المخزون:' : 'Stock:';
+                    
                     const itemHtml = $(`
                         <div class="search-result-item d-flex justify-content-between align-items-center" data-index="${idx}">
                             <div>
                                 <strong class="text-primary">${product.text}</strong>${unitBadge}<br>
-                                <small class="text-muted">SKU: ${sku} | Brand: ${brand} | Stock: ${product.stock} ${product.base_unit_name}</small>
+                                <small class="text-muted">${skuLabel} ${sku} | ${brandLabel} ${brand} | ${stockLabel} ${product.stock} ${product.base_unit_name}</small>
                             </div>
                             <div class="d-flex align-items-center">
                                 <div class="unit-options-pane d-flex me-3">
@@ -1440,13 +1446,14 @@
 
             remainingBalanceDisplay.text(balance.toFixed(2));
 
+            const isAr = "{{ app()->getLocale() }}" === 'ar';
             paidBadge.removeClass('badge-paid badge-partial badge-unpaid');
             if (paid === 0) {
-                paidBadge.addClass('badge-unpaid').text('Unpaid');
+                paidBadge.addClass('badge-unpaid').text(isAr ? 'غير مدفوع' : 'Unpaid');
             } else if (paid >= netTotal && netTotal > 0) {
-                paidBadge.addClass('badge-paid').text('Fully Paid');
+                paidBadge.addClass('badge-paid').text(isAr ? 'مدفوع بالكامل' : 'Fully Paid');
             } else {
-                paidBadge.addClass('badge-partial').text('Partially Paid');
+                paidBadge.addClass('badge-partial').text(isAr ? 'مدفوع جزئياً' : 'Partially Paid');
             }
         }
 
