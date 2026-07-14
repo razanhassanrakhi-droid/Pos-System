@@ -81,8 +81,12 @@ class SettingController extends Controller
             $data['company_logo'] = null;
         }
 
-        $setting->update($data);
+        $setting->fill($data);
+        if ($setting->isDirty()) {
+            $setting->save();
+            return redirect()->back()->with('success', __('pos.settings_updated_successfully'));
+        }
 
-        return redirect()->back()->with('success', __('pos.settings_updated_successfully'));
+        return redirect()->back()->with('info', __('pos.no_changes_made'));
     }
 }

@@ -9,6 +9,7 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
+        session(['customers_index_url' => request()->fullUrl()]);
         $branchId = session('branch_id');
         $user = auth()->user();
 
@@ -19,9 +20,10 @@ class CustomerController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name->ar', 'like', "%{$search}%")
-                  ->orWhere('name->en', 'like', "%{$search}%")
+            $searchLower = mb_strtolower($search);
+            $query->where(function($q) use ($search, $searchLower) {
+                $q->whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.ar"))) LIKE ?', ["%{$searchLower}%"])
+                  ->orWhereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.en"))) LIKE ?', ["%{$searchLower}%"])
                   ->orWhere('phone', 'like', "%{$search}%")
                   ->orWhere('customer_number', 'like', "%{$search}%");
             });
@@ -70,8 +72,8 @@ class CustomerController extends Controller
 
         Customer::create([
             'name' => [
-                'ar' => $request->name_ar,
-                'en' => $request->name_en,
+                'ar' => $request->name_ar ?: $request->name_en,
+                'en' => $request->name_en ?: $request->name_ar,
             ],
             'phone'         => $request->phone,
             'email'         => $request->email,
@@ -148,10 +150,10 @@ class CustomerController extends Controller
             'dob'           => 'nullable|date',
         ]);
 
-        $customer->update([
+        $customer->fill([
             'name' => [
-                'ar' => $request->name_ar,
-                'en' => $request->name_en,
+                'ar' => $request->name_ar ?: $request->name_en,
+                'en' => $request->name_en ?: $request->name_ar,
             ],
             'phone'         => $request->phone,
             'email'         => $request->email,
@@ -162,8 +164,14 @@ class CustomerController extends Controller
             'dob'           => $request->dob,
         ]);
 
-        return redirect()->route('customers.index')
-            ->with('success', __('pos.customer_updated_successfully'));
+        if ($customer->isDirty()) {
+            $customer->save();
+            $indexUrl = session('customers_index_url', route('customers.index'));
+            return redirect()->to($indexUrl)->with('success', __('pos.customer_updated_successfully'));
+        }
+
+        $indexUrl = session('customers_index_url', route('customers.index'));
+        return redirect()->to($indexUrl)->with('info', __('pos.no_changes_made'));
     }
 
     public function destroy(Customer $customer)

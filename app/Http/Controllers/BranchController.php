@@ -12,6 +12,7 @@ class BranchController extends Controller
      */
     public function index()
 {
+    session(['branches_index_url' => request()->fullUrl()]);
     $branches = Branch::all(); // جلب كل الفروع
     return view('branches.index', compact('branches'));
 }
@@ -46,13 +47,22 @@ public function store(Request $request)
         'is_active' => 'nullable',
     ]);
 
+    $nameAr = $request->name_ar ?: $request->name_en;
+    $nameEn = $request->name_en ?: $request->name_ar;
+    $managerAr = $request->manager_ar ?: $request->manager_en;
+    $managerEn = $request->manager_en ?: $request->manager_ar;
+    $addressAr = $request->address_ar ?: $request->address_en;
+    $addressEn = $request->address_en ?: $request->address_ar;
+    $cityAr = $request->city_ar ?: $request->city_en;
+    $cityEn = $request->city_en ?: $request->city_ar;
+
     Branch::create([
-        'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
+        'name' => ['ar' => $nameAr, 'en' => $nameEn],
         'code' => $request->code,
         'phone' => $request->phone,
-        'manager' => ['ar' => $request->manager_ar, 'en' => $request->manager_en],
-        'address' => ['ar' => $request->address_ar, 'en' => $request->address_en],
-        'city' => ['ar' => $request->city_ar, 'en' => $request->city_en],
+        'manager' => ['ar' => $managerAr, 'en' => $managerEn],
+        'address' => ['ar' => $addressAr, 'en' => $addressEn],
+        'city' => ['ar' => $cityAr, 'en' => $cityEn],
         'is_active' => $request->has('is_active'),
     ]);
 
@@ -94,17 +104,33 @@ public function store(Request $request)
         'is_active' => 'nullable',
     ]);
 
-    $branch->update([
-        'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
+    $nameAr = $request->name_ar ?: $request->name_en;
+    $nameEn = $request->name_en ?: $request->name_ar;
+    $managerAr = $request->manager_ar ?: $request->manager_en;
+    $managerEn = $request->manager_en ?: $request->manager_ar;
+    $addressAr = $request->address_ar ?: $request->address_en;
+    $addressEn = $request->address_en ?: $request->address_ar;
+    $cityAr = $request->city_ar ?: $request->city_en;
+    $cityEn = $request->city_en ?: $request->city_ar;
+
+    $branch->fill([
+        'name' => ['ar' => $nameAr, 'en' => $nameEn],
         'code' => $request->code,
         'phone' => $request->phone,
-        'manager' => ['ar' => $request->manager_ar, 'en' => $request->manager_en],
-        'address' => ['ar' => $request->address_ar, 'en' => $request->address_en],
-        'city' => ['ar' => $request->city_ar, 'en' => $request->city_en],
+        'manager' => ['ar' => $managerAr, 'en' => $managerEn],
+        'address' => ['ar' => $addressAr, 'en' => $addressEn],
+        'city' => ['ar' => $cityAr, 'en' => $cityEn],
         'is_active' => $request->has('is_active'),
     ]);
 
-    return redirect()->route('branches.index')->with('success', __('pos.branch_updated_successfully'));
+    if ($branch->isDirty()) {
+        $branch->save();
+        $indexUrl = session('branches_index_url', route('branches.index'));
+        return redirect()->to($indexUrl)->with('success', __('pos.branch_updated_successfully'));
+    }
+
+    $indexUrl = session('branches_index_url', route('branches.index'));
+    return redirect()->to($indexUrl)->with('info', __('pos.no_changes_made'));
 }
 
     /**

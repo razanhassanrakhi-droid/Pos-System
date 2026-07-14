@@ -3407,7 +3407,6 @@
                                 <th>{{ app()->getLocale() == 'ar' ? 'الكمية المشتراة' : 'Purchased' }}</th>
                                 <th>{{ app()->getLocale() == 'ar' ? 'الكمية المتبقية' : 'Remaining' }}</th>
                                 <th>{{ app()->getLocale() == 'ar' ? 'رقم الدفعة' : 'Batch' }}</th>
-                                <th class="text-end"></th>
                             </tr>
                         </thead>
                         <tbody id="batchesTableBody"></tbody>
@@ -3415,7 +3414,7 @@
                             <tr style="background:#f8fafc;border-top:2px solid var(--pm-border);">
                                 <td colspan="3" class="text-end fw-bold" style="color:#94a3b8;font-size:.82rem;">{{ __('pos.total_inventory_value') }}</td>
                                 <td id="batchesTotalAmount" class="fw-bold" style="color:var(--pm-success);font-size:.95rem;"></td>
-                                <td colspan="3"></td>
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -4667,22 +4666,10 @@ function viewBatches(id) {
                     <td>${purchasedHtml}</td>
                     <td style="font-weight:700; color: var(--pm-text-1);">${remainingHtml}</td>
                     <td><span style="font-family:monospace; font-weight: 700; color: var(--pm-info); background: var(--pm-info-soft); border: 1px solid rgba(6, 182, 212, 0.25); padding: 4px 10px; border-radius: 6px; font-size: 0.82rem;">${batch.batch_number}</span></td>
-                    <td class="text-end">
-                        <button type="button"
-                            class="pm-batch-btn edit-batch-btn"
-                            style="background: var(--pm-surface-2); color:#d97706; border-color:rgba(217,119,6,0.3);"
-                            data-id="${batch.id}"
-                            data-number="${batch.batch_number}"
-                            data-qty="${batch.quantity}"
-                            data-expiry="${batch.expiry_date ? batch.expiry_date.substring(0,10) : ''}"
-                            data-price="${batch.purchase_price}">
-                            <i class="bi bi-pencil" style="font-size:.8rem;"></i>
-                        </button>
-                    </td>
                 </tr>`;
             });
         } else {
-            rows = '<tr><td colspan="6" class="pm-empty" style="padding: 40px; text-align: center; color: #94a3b8;"><i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px;"></i>{{ __("purchases.no_batches_found") }}</td></tr>';
+            rows = '<tr><td colspan="5" class="pm-empty" style="padding: 40px; text-align: center; color: #94a3b8;"><i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px;"></i>{{ __("purchases.no_batches_found") }}</td></tr>';
         }
 
         $('#batchesTableBody').html(rows);
@@ -4966,5 +4953,16 @@ function applyStatusFilter(status) {
         table.column(8).search('').draw();
     }
 }
+
+$(document).ready(function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('add_product')) {
+        var barcode = urlParams.get('barcode');
+        if (barcode) {
+            $('#createProductModal input[name="barcode"]').val(barcode);
+        }
+        safeShowModal('createProductModal');
+    }
+});
 </script>
 @endpush

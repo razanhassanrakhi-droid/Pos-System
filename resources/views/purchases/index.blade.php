@@ -166,6 +166,7 @@
                         <th class="text-center">{{ __('purchases.net_total') }}</th>
                         <th class="text-center">{{ __('purchases.paid_amount') }}</th>
                         <th class="text-center">{{ __('purchases.remaining_balance') }}</th>
+                        <th class="text-center">{{ __('pos.status') }}</th>
                         <th class="text-center">{{ __('purchases.payment_method') }}</th>
                         <th class="text-center">{{ __('pos.actions') }}</th>
                     </tr>
@@ -180,6 +181,16 @@
                         <td class="fw-bold">{{ number_format($purchase->total_amount, 2) }}</td>
                         <td class="text-success fw-bold">{{ number_format($purchase->paid_amount, 2) }}</td>
                         <td class="text-danger fw-bold">{{ number_format($purchase->remaining_amount, 2) }}</td>
+                        <td>
+                            @php
+                                $statusClass = [
+                                    'paid' => 'bg-success',
+                                    'partial' => 'bg-warning',
+                                    'pending' => 'bg-danger'
+                                ][$purchase->status] ?? 'bg-secondary';
+                            @endphp
+                            <span class="badge {{ $statusClass }}">{{ __('pos.' . $purchase->status) }}</span>
+                        </td>
                         <td>
                             @php
                                 $pm = str_replace(' ', '_', strtolower($purchase->payment_method));

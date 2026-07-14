@@ -1245,10 +1245,6 @@
         }
 
         let existing = cart.find(item => String(item.id) === String(productId) && String(item.selected_unit_id) === String(scanned_unit_id));
-        
-        if (existing && (existing.has_warranty == 1 || existing.has_warranty === true || existing.has_warranty === "1")) {
-            existing = undefined; 
-        }
 
         if (existing) { existing.quantity++; } 
         else {

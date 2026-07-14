@@ -29,8 +29,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'full_name_ar' => 'required|string|max:150',
-            'full_name_en' => 'required|string|max:150',
+            'full_name_ar' => 'required_without:full_name_en|string|max:150|nullable',
+            'full_name_en' => 'required_without:full_name_ar|string|max:150|nullable',
             'username' => 'required|string|max:50|unique:users',
             'email' => 'required|email|max:150|unique:users',
             'phone' => 'nullable|string|max:20',
@@ -39,8 +39,8 @@ class AuthController extends Controller
 
         $user = User::create([
             'full_name' => [
-                'ar' => $request->full_name_ar,
-                'en' => $request->full_name_en,
+                'ar' => $request->full_name_ar ?: $request->full_name_en,
+                'en' => $request->full_name_en ?: $request->full_name_ar,
             ],
             'username' => $request->username,
             'email' => $request->email,
@@ -259,15 +259,10 @@ public function login(Request $request)
     public function changePassword(Request $request)
     {
         $request->validate([
-            'old_password' => 'required',
             'new_password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::find(Auth::id());
-
-        if (!Hash::check($request->old_password, $user->password)) {
-            return back()->with('error', __('pos.incorrect_old_password'));
-        }
 
         $user->password = $request->new_password;
         $user->save();

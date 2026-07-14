@@ -169,7 +169,7 @@
                     <p class="pm-modal-sub-premium mb-0">{{ __('pos.edit_permissions') }}</p>
                 </div>
                 <div class="ms-custom">
-                    <a href="{{ route('permissions.index') }}" class="btn-premium-back text-decoration-none">
+                    <a href="{{ session('permissions_index_url', route('permissions.index')) }}" class="btn-premium-back text-decoration-none">
                         <i class="bi bi-arrow-left"></i> {{ __('pos.back') }}
                     </a>
                 </div>

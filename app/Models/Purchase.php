@@ -16,11 +16,26 @@ class Purchase extends Model
         });
     }
 
+    protected $appends = ['short_number', 'status'];
+
     public function getShortNumberAttribute()
     {
         $num = preg_replace('/^PUR(-[a-zA-Z]{2}\d{2})?-?/i', '', $this->invoice_number);
         $label = app()->getLocale() == 'ar' ? 'مشتريات' : 'Purchase';
         return $label . ' #' . $num;
+    }
+
+    public function getStatusAttribute()
+    {
+        $paid = (float) $this->paid_amount;
+        $total = (float) $this->total_amount;
+        
+        if ($paid >= $total) {
+            return 'paid';
+        } elseif ($paid > 0) {
+            return 'partial';
+        }
+        return 'pending';
     }
 
     protected $fillable = [

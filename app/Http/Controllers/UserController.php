@@ -14,6 +14,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        session(['users_index_url' => request()->fullUrl()]);
         $users = User::with('branches')->paginate(10);
         return view('users.index', compact('users'));
     }
@@ -62,8 +63,8 @@ class UserController extends Controller
 
         $user = User::create([
             'full_name' => [
-                'ar' => $request->full_name_ar,
-                'en' => $request->full_name_en,
+                'ar' => $request->full_name_ar ?: $request->full_name_en,
+                'en' => $request->full_name_en ?: $request->full_name_ar,
             ],
             'username' => [
                 'ar' => $usernameAr,
@@ -159,8 +160,8 @@ class UserController extends Controller
 
         $userData = [
             'full_name' => [
-                'ar' => $request->full_name_ar,
-                'en' => $request->full_name_en,
+                'ar' => $request->full_name_ar ?: $request->full_name_en,
+                'en' => $request->full_name_en ?: $request->full_name_ar,
             ],
             'username' => [
                 'ar' => $usernameAr,
@@ -176,40 +177,55 @@ class UserController extends Controller
             $userData['password'] = $request->password; // Mutator handles hashing
         }
 
-        $user->update($userData);
+        $user->fill($userData);
 
-        if ($request->has('branches')) {
-            $user->branches()->sync($request->branches);
-        } else {
-            // If no branches selected (e.g. unchecked all), sync empty array
-            $user->branches()->sync([]);
-        }
-
+        $avatarChanged = false;
         if ($request->hasFile('avatar')) {
             if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
                 \Storage::disk('public')->delete($user->avatar);
             }
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $user->update(['avatar' => $avatarPath]);
+            $user->avatar = $avatarPath;
+            $avatarChanged = true;
         }
 
-        // Sync Spatie Role
+        $isDirty = $user->isDirty() || $avatarChanged;
+
+        if ($isDirty) {
+            $user->save();
+        }
+
+        if ($request->has('branches')) {
+            $branchesSync = $user->branches()->sync($request->branches);
+        } else {
+            $branchesSync = $user->branches()->sync([]);
+        }
+        $branchesChanged = !empty($branchesSync['attached']) || !empty($branchesSync['detached']) || !empty($branchesSync['updated']);
+
+        $hasRole = $user->hasRole($request->role);
         $user->syncRoles([$request->role]);
+        $roleChanged = !$hasRole;
 
-        // Dispatch Role Updated notification
-        \App\Services\NotificationService::send(
-            'Administration',
-            'role_updated',
-            'Activity',
-            'تم تعديل دور المستخدم',
-            'User Role Updated',
-            'تم تعديل دور/صلاحيات حساب المستخدم "' . $user->full_name . '" إلى ' . $request->role . '.',
-            'User account role for "' . $user->full_name . '" was updated to ' . $request->role . '.',
-            User::class,
-            $user->id
-        );
+        if ($isDirty || $branchesChanged || $roleChanged) {
+            // Dispatch Role Updated notification
+            \App\Services\NotificationService::send(
+                'Administration',
+                'role_updated',
+                'Activity',
+                'تم تعديل دور المستخدم',
+                'User Role Updated',
+                'تم تعديل دور/صلاحيات حساب المستخدم "' . $user->full_name . '" إلى ' . $request->role . '.',
+                'User account role for "' . $user->full_name . '" was updated to ' . $request->role . '.',
+                User::class,
+                $user->id
+            );
 
-        return redirect()->route('users.index')->with('success', __('pos.user_updated_successfully'));
+            $indexUrl = session('users_index_url', route('users.index'));
+            return redirect()->to($indexUrl)->with('success', __('pos.user_updated_successfully'));
+        }
+
+        $indexUrl = session('users_index_url', route('users.index'));
+        return redirect()->to($indexUrl)->with('info', __('pos.no_changes_made'));
     }
 
     /**

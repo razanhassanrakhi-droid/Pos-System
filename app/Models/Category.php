@@ -39,13 +39,17 @@ class Category extends Model
     public function getTranslation($field, $locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-        $value = $this->$field;
+        $value = $this->getAttributes()[$field] ?? null;
+        
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
         
         if (is_array($value)) {
              return $value[$locale] ?? $value['en'] ?? $value['ar'] ?? '';
         }
         
-        return $value;
+        return $value ?? '';
     }
 
     public function getNameAttribute($value)

@@ -182,7 +182,7 @@
 
     {{-- Top Back Nav Row --}}
     <div class="d-flex justify-content-end align-items-center mb-3">
-        <a href="{{ route('warranties.index') }}" class="btn btn-sm btn-light border" style="border-radius:10px; font-weight:600;">
+        <a href="{{ session('warranties_index_url', route('warranties.index')) }}" class="btn btn-sm btn-light border" style="border-radius:10px; font-weight:600;">
             {{ __('pos.back_to_registry') }} ←
         </a>
     </div>

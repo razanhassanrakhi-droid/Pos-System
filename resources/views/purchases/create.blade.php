@@ -689,9 +689,9 @@
                         <div class="pm-input-group">
                             <span class="pm-input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text" id="smartSearch" class="pm-form-control" placeholder="{{ app()->getLocale() == 'ar' ? 'ابحث باسم المنتج، الباركود، العلامة التجارية، أو رمز SKU...' : 'Search by product name, barcode, brand, or SKU...' }}" autocomplete="off">
-                            <button type="button" class="btn btn-primary px-4 border-0" style="border-radius: 0 12px 12px 0;" data-bs-toggle="modal" data-bs-target="#quickProductModal">
+                            <a href="{{ route('products.index') }}?add_product=1" target="_blank" class="btn btn-primary px-4 border-0 d-inline-flex align-items-center justify-content-center" style="border-radius: 0 12px 12px 0;">
                                 <i class="bi bi-plus-circle me-1"></i> {{ __('purchases.quick_add_product') }}
-                            </button>
+                            </a>
                         </div>
                         <!-- Dropdown Results list -->
                         <div class="search-results" id="searchResults">
@@ -1001,7 +1001,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('pos.barcode') }} <span class="text-danger">*</span></label>
-                        <input type="text" name="barcode" id="quickBarcode" class="pm-form-control bg-light" readonly required>
+                        <input type="text" name="barcode" id="quickBarcode" class="pm-form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label class="pm-form-label">{{ __('pos.category') }} <span class="text-danger">*</span></label>
@@ -1106,7 +1106,7 @@
         // Smart Search functionality
         smartSearch.on('input', function() {
             const term = $(this).val().trim();
-            if (term.length < 2) {
+            if (term.length < 1) {
                 searchResults.hide().empty();
                 return;
             }
@@ -1204,8 +1204,7 @@
                             cancelButtonText: '{{ __("purchases.no_cancel") }}'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                $('#quickBarcode').val(barcode);
-                                $('#quickProductModal').modal('show');
+                                window.open("{{ route('products.index') }}?add_product=1&barcode=" + encodeURIComponent(barcode), '_blank');
                             }
                         });
                     });

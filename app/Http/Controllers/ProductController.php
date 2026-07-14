@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -244,38 +245,34 @@ class ProductController extends Controller
             'updated_by' => auth()->id(),
         ];
 
+        $product->fill($data);
+        $product->has_warranty = $request->has('has_warranty');
+        $product->warranty_period_months = $request->warranty_period_months ?? 0;
+        $product->warranty_type = $request->warranty_type;
+
+        $imageChanged = false;
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($product->image && \Storage::disk('public')->exists($product->image)) {
                 \Storage::disk('public')->delete($product->image);
             }
-            $data['image'] = $request->file('image')->store('products', 'public');
+            $product->image = $request->file('image')->store('products', 'public');
+            $imageChanged = true;
         }
 
-        $data['has_warranty'] = $request->has('has_warranty');
-        $data['warranty_period_months'] = $request->warranty_period_months ?? 0;
-        $data['warranty_type'] = $request->warranty_type;
+        // Compare additional units to see if they changed
+        $currentUnits = $product->units->map(function($u) {
+            return [
+                'unit_name_ar' => $u->unit_name_ar,
+                'unit_name_en' => $u->unit_name_en,
+                'barcode' => $u->barcode,
+                'conversion_factor' => (float)$u->conversion_factor,
+                'sale_price' => (float)$u->sale_price,
+                'pricing_mode' => $u->pricing_mode,
+            ];
+        })->toArray();
 
-        $product->update($data);
-
-        $branchId = session('branch_id') ?: auth()->user()->branches()->first()?->id;
-
-        // Auto create base unit suggestion
-        if ($baseUnitAr) {
-            \App\Models\Unit::firstOrCreate([
-                'branch_id' => $branchId,
-                'name' => trim($baseUnitAr),
-            ]);
-        }
-        if ($baseUnitEn) {
-            \App\Models\Unit::firstOrCreate([
-                'branch_id' => $branchId,
-                'name' => trim($baseUnitEn),
-            ]);
-        }
-
-        // Recreate additional selling units
-        $product->units()->delete();
+        $newUnits = [];
         if ($request->has('additional_units')) {
             foreach ($request->additional_units as $unitData) {
                 $unitNameAr = trim($unitData['unit_name_ar'] ?? '');
@@ -304,18 +301,49 @@ class ProductController extends Controller
                 if ($pricingMode === 'automatic') {
                     $salePrice = $request->sale_price * $unitData['conversion_factor'];
                 }
-                $product->units()->create([
+
+                $newUnits[] = [
                     'unit_name_ar' => $unitNameAr ?: null,
                     'unit_name_en' => $unitNameEn ?: null,
                     'barcode' => isset($unitData['barcode']) ? trim($unitData['barcode']) : null,
-                    'conversion_factor' => $unitData['conversion_factor'],
-                    'sale_price' => $salePrice,
+                    'conversion_factor' => (float)$unitData['conversion_factor'],
+                    'sale_price' => (float)$salePrice,
                     'pricing_mode' => $pricingMode,
-                ]);
-                
-                if ($unitNameAr) \App\Models\Unit::firstOrCreate(['branch_id' => $branchId, 'name' => $unitNameAr]);
-                if ($unitNameEn) \App\Models\Unit::firstOrCreate(['branch_id' => $branchId, 'name' => $unitNameEn]);
+                ];
             }
+        }
+
+        $unitsChanged = (serialize($currentUnits) !== serialize($newUnits));
+        $isDirty = $product->isDirty() || $imageChanged || $unitsChanged;
+
+        if (!$isDirty) {
+            return redirect()->route('products.index')->with('info', __('pos.no_changes_made'));
+        }
+
+        $product->save();
+
+        $branchId = session('branch_id') ?: auth()->user()->branches()->first()?->id;
+
+        // Auto create base unit suggestion
+        if ($baseUnitAr) {
+            \App\Models\Unit::firstOrCreate([
+                'branch_id' => $branchId,
+                'name' => trim($baseUnitAr),
+            ]);
+        }
+        if ($baseUnitEn) {
+            \App\Models\Unit::firstOrCreate([
+                'branch_id' => $branchId,
+                'name' => trim($baseUnitEn),
+            ]);
+        }
+
+        // Recreate additional selling units
+        $product->units()->delete();
+        foreach ($newUnits as $u) {
+            $product->units()->create($u);
+            if ($u['unit_name_ar']) \App\Models\Unit::firstOrCreate(['branch_id' => $branchId, 'name' => $u['unit_name_ar']]);
+            if ($u['unit_name_en']) \App\Models\Unit::firstOrCreate(['branch_id' => $branchId, 'name' => $u['unit_name_en']]);
         }
 
         return redirect()->route('products.index')->with('success', trans('product.updated_successfully'));
@@ -369,6 +397,7 @@ class ProductController extends Controller
                       $uq->where('barcode', $barcode);
                   });
             })
+            ->orderByRaw("CASE WHEN barcode = ? THEN 0 WHEN sku = ? THEN 1 ELSE 2 END ASC", [$barcode, $barcode])
             ->first();
 
 
@@ -528,8 +557,6 @@ class ProductController extends Controller
                     ->orWhere('sku', 'LIKE', "%$term%")
                     ->orWhere('name->ar', 'LIKE', "%$term%")
                     ->orWhere('name->en', 'LIKE', "%$term%")
-                    ->orWhere('brand->ar', 'LIKE', "%$term%")
-                    ->orWhere('brand->en', 'LIKE', "%$term%")
                     ->orWhereHas('units', function($uq) use ($term) {
                         $uq->where('barcode', 'LIKE', "%$term%");
                     });

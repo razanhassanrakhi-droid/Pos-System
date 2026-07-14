@@ -215,7 +215,7 @@
                             <label for="name_ar" class="erp-label" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;">{{ __('pos.branch_name_ar') }} <span class="text-danger">*</span></label>
                             <div class="erp-input-wrapper">
                                 <span class="erp-input-icon"><i class="bi bi-translate"></i></span>
-                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar', $branch->getTranslation('name', 'ar')) }}" required>
+                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar', $branch->getTranslation('name', 'ar')) }}">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -238,7 +238,7 @@
                             <label for="name_ar" class="erp-label" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;">{{ __('pos.branch_name_ar') }} <span class="text-danger">*</span></label>
                             <div class="erp-input-wrapper">
                                 <span class="erp-input-icon"><i class="bi bi-translate"></i></span>
-                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar', $branch->getTranslation('name', 'ar')) }}" required>
+                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar', $branch->getTranslation('name', 'ar')) }}">
                             </div>
                         </div>
                     @endif
@@ -434,7 +434,7 @@
 
             {{-- Footer Buttons --}}
             <div class="erp-footer">
-                <a href="{{ route('branches.index') }}" class="btn-erp-secondary"><i class="bi bi-x-circle me-1"></i> {{ __('pos.cancel') }}</a>
+                <a href="{{ session('branches_index_url', route('branches.index')) }}" class="btn-erp-secondary"><i class="bi bi-x-circle me-1"></i> {{ __('pos.cancel') }}</a>
                 <button type="submit" class="btn-erp-primary"><i class="bi bi-check-circle-fill"></i> {{ __('pos.update') }}</button>
             </div>
         </form>

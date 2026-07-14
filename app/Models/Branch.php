@@ -75,6 +75,16 @@ class Branch extends Model
         return $value;
     }
 
+    public function getManagerAttribute($value)
+    {
+        if (empty($value)) return '';
+        $decoded = is_array($value) ? $value : json_decode($value, true);
+        if (is_array($decoded)) {
+            return $decoded[app()->getLocale()] ?? $decoded['en'] ?? $decoded['ar'] ?? '';
+        }
+        return $value;
+    }
+
     public function returns()
     {
         return $this->hasMany(SalesReturn::class);

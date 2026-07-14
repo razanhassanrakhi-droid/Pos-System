@@ -31,7 +31,7 @@
                     </div>
                     <div class="col-md-6 text-md-end">
                         <h6 class="text-uppercase fw-bold text-muted mb-3">{{ __('purchases.payment_method') }}</h6>
-                        <h5 class="fw-bold mb-1">{{ __('pos.' . strtolower($purchase->payment_method)) }}</h5>
+                        <h5 class="fw-bold mb-1">{{ __('pos.' . str_replace(' ', '_', strtolower($purchase->payment_method))) ?? $purchase->payment_method }}</h5>
                         <p class="mb-0 text-muted">{{ __('pos.user') }}: {{ $purchase->user->full_name }}</p>
                     </div>
                 </div>

@@ -41,9 +41,9 @@ Route::middleware([SetLocale::class])->group(function () {
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 
-        // Notification System Routes
         Route::get('/api/notifications', [\App\Http\Controllers\NotificationController::class, 'getNotifications'])->name('notifications.api');
         Route::post('/api/notifications/read/{id?}', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/api/notifications/dismiss-all', [\App\Http\Controllers\NotificationController::class, 'dismissAll'])->name('notifications.dismiss_all');
         Route::post('/api/notifications/dismiss/{id}', [\App\Http\Controllers\NotificationController::class, 'dismiss'])->name('notifications.dismiss');
         Route::get('/settings/notifications', [\App\Http\Controllers\NotificationController::class, 'showSettings'])->name('settings.notifications');
         Route::post('/settings/notifications', [\App\Http\Controllers\NotificationController::class, 'saveSettings'])->name('settings.notifications.save');
@@ -184,9 +184,7 @@ Route::middleware([SetLocale::class])->group(function () {
         });
 
         // Logout Route
-        Route::post('/logout', function () {
-            return redirect()->route('login');
-        })->name('logout');
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         
     });
 });

@@ -11,6 +11,7 @@ class WarrantyController extends Controller
 {
     public function index(Request $request)
     {
+        session(['warranties_index_url' => request()->fullUrl()]);
         $branchId = session('branch_id');
         $search = $request->input('search');
         $status = $request->input('status');
@@ -177,12 +178,17 @@ class WarrantyController extends Controller
         ]);
 
         $warranty = Warranty::findOrFail($id);
-        $warranty->update([
+        $warranty->fill([
             'serial_number' => $request->serial_number,
             'warranty_type' => $request->warranty_type,
         ]);
 
-        return redirect()->route('warranties.show', $id)->with('success', __('product.updated_successfully') ?? 'تم تحديث الضمان بنجاح');
+        if ($warranty->isDirty()) {
+            $warranty->save();
+            return redirect()->route('warranties.show', $id)->with('success', __('product.updated_successfully') ?? 'تم تحديث الضمان بنجاح');
+        }
+
+        return redirect()->route('warranties.show', $id)->with('info', __('pos.no_changes_made'));
     }
 
     public function updateClaim(Request $request, $claim_id)

@@ -214,7 +214,7 @@
                             <label for="name_ar" class="erp-label" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;">{{ __('pos.branch_name_ar') }} <span class="text-danger">*</span></label>
                             <div class="erp-input-wrapper">
                                 <span class="erp-input-icon"><i class="bi bi-translate"></i></span>
-                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar') }}" required placeholder="مثال: فرع الرياض">
+                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar') }}" placeholder="مثال: فرع الرياض">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -237,7 +237,7 @@
                             <label for="name_ar" class="erp-label" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;">{{ __('pos.branch_name_ar') }} <span class="text-danger">*</span></label>
                             <div class="erp-input-wrapper">
                                 <span class="erp-input-icon"><i class="bi bi-translate"></i></span>
-                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar') }}" required placeholder="مثال: فرع الرياض">
+                                <input type="text" id="name_ar" name="name_ar" class="erp-input" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} !important;" dir="rtl" value="{{ old('name_ar') }}" placeholder="مثال: فرع الرياض">
                             </div>
                         </div>
                     @endif

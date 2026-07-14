@@ -518,7 +518,7 @@
             <div class="saas-card mb-0" style="padding: 20px 28px; background: var(--saas-surface); border: 1px solid var(--saas-border); border-radius: var(--saas-radius-lg); box-shadow: var(--saas-shadow-sm);">
                 <div class="d-flex gap-2 action-buttons-flex">
                     <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i> {{ app()->getLocale() == 'ar' ? 'حفظ التعديلات' : 'Save Changes' }}</button>
-                    <a href="{{ route('users.index') }}" class="btn btn-light"><i class="bi bi-x-circle me-1"></i> {{ app()->getLocale() == 'ar' ? 'إلغاء' : 'Cancel' }}</a>
+                    <a href="{{ session('users_index_url', route('users.index')) }}" class="btn btn-light"><i class="bi bi-x-circle me-1"></i> {{ app()->getLocale() == 'ar' ? 'إلغاء' : 'Cancel' }}</a>
                 </div>
             </div>
 

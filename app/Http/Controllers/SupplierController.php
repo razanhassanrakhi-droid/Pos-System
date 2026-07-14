@@ -10,6 +10,7 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
+        session(['suppliers_index_url' => request()->fullUrl()]);
         $user = auth()->user();
         $branchId = session('branch_id');
 
@@ -118,12 +119,12 @@ class SupplierController extends Controller
 
         $supplier = Supplier::create([
             'name' => [
-                'ar' => $request->name_ar,
-                'en' => $request->name_en,
+                'ar' => $request->name_ar ?: $request->name_en,
+                'en' => $request->name_en ?: $request->name_ar,
             ],
             'contact_person' => [
-                'ar' => $request->contact_person_ar,
-                'en' => $request->contact_person_en,
+                'ar' => $request->contact_person_ar ?: $request->contact_person_en,
+                'en' => $request->contact_person_en ?: $request->contact_person_ar,
             ],
             'email' => $request->email,
             'phone' => $request->phone,
@@ -204,28 +205,35 @@ class SupplierController extends Controller
             'status' => 'nullable|in:active,inactive,blocked',
         ]);
 
-        $supplier->update([
+        $supplier->fill([
             'name' => [
-                'ar' => $request->name_ar,
-                'en' => $request->name_en,
+                'ar' => $request->name_ar ?: $request->name_en,
+                'en' => $request->name_en ?: $request->name_ar,
             ],
             'contact_person' => [
-                'ar' => $request->contact_person_ar,
-                'en' => $request->contact_person_en,
+                'ar' => $request->contact_person_ar ?: $request->contact_person_en,
+                'en' => $request->contact_person_en ?: $request->contact_person_ar,
             ],
             'email' => $request->email,
             'phone' => $request->phone,
             'alternative_phone' => $request->alternative_phone,
             'address' => [
-                'ar' => $request->address_ar,
-                'en' => $request->address_en,
+                'ar' => $request->address_ar ?: $request->address_en,
+                'en' => $request->address_en ?: $request->address_ar,
             ],
             'notes' => $request->notes,
             'status' => $request->status ?? 'active',
             'updated_by' => $user->id,
         ]);
 
-        return redirect()->route('suppliers.index')->with('success', __('pos.supplier_updated_successfully'));
+        if ($supplier->isDirty()) {
+            $supplier->save();
+            $indexUrl = session('suppliers_index_url', route('suppliers.index'));
+            return redirect()->to($indexUrl)->with('success', __('pos.supplier_updated_successfully'));
+        }
+
+        $indexUrl = session('suppliers_index_url', route('suppliers.index'));
+        return redirect()->to($indexUrl)->with('info', __('pos.no_changes_made'));
     }
 
     public function destroy($id)

@@ -344,7 +344,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <a href="{{ route('suppliers.index') }}" class="text-decoration-none text-muted mb-2 d-inline-block">
+            <a href="{{ session('suppliers_index_url', route('suppliers.index')) }}" class="text-decoration-none text-muted mb-2 d-inline-block">
                 <i class="bi bi-arrow-left me-1"></i> {{ __('pos.back') ?? 'Back' }}
             </a>
         </div>

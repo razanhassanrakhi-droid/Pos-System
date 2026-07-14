@@ -1180,6 +1180,17 @@
                 `;
                 $('#batch_selection_list').append(batchHtml);
             });
+
+            if (data.length === 1) {
+                const batch = data[0];
+                const exp = batch.expiry_date ? batch.expiry_date.substring(0, 10) : (isAr ? 'غير متوفر' : 'N/A');
+                selectedBatch = { id: batch.id, number: batch.batch_number, stock: batch.quantity, expiry: exp };
+                $('#wizard_batch_id').val(batch.id);
+                $('#wizard_quantity').attr('max', batch.quantity);
+                setTimeout(() => {
+                    $('.batch-list-item').first().addClass('selected');
+                }, 50);
+            }
         });
     }
 

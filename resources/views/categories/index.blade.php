@@ -311,7 +311,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
+        min-width: 28px;
+        width: auto;
+        padding: 0 6px;
         height: 28px;
         background: #F1F5F9;
         color: #6D5DFC;
@@ -940,6 +942,7 @@
             <table class="saas-table">
                 <thead>
                     <tr>
+                        <th>ID <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
                         <th>{{ app()->getLocale() == 'ar' ? 'القسم' : 'Category' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
                         <th>{{ app()->getLocale() == 'ar' ? 'تاريخ الإنشاء' : 'Created At' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
                         <th>{{ app()->getLocale() == 'ar' ? 'أنشئ بواسطة' : 'Created By' }} <i class="bi bi-chevron-expand ms-1 text-white-50"></i></th>
@@ -975,8 +978,10 @@
                     @endphp
                     <tr class="category-row" data-status="{{ $category->is_active ? 'active' : 'inactive' }}">
                         <td>
+                            <span class="cat-id-badge">{{ $category->id }}</span>
+                        </td>
+                        <td>
                             <div class="cat-wrapper">
-                                <span class="cat-id-badge">{{ $category->id }}</span>
                                 <div class="cat-icon-box" style="background-color: {{ $iconBg }}; color: {{ $iconText }};">
                                     {{ mb_strtoupper($firstLetter, 'UTF-8') }}
                                 </div>
@@ -1193,12 +1198,16 @@
     }
 
     function applyFilters() {
-        var status = $('#statusFilter').val();
-        var searchVal = $('.cat-search-input').val().toLowerCase();
+        var statusFilter = $('#statusFilter');
+        var status = statusFilter.length ? statusFilter.val() : 'all';
+        var searchVal = $('.cat-search-input').val().toLowerCase().trim();
 
         $('.category-row').each(function() {
             var matchesStatus = (status === 'all') || ($(this).data('status') === status);
-            var matchesSearch = $(this).text().toLowerCase().indexOf(searchVal) > -1;
+            
+            var catName = $(this).find('.cat-wrapper').text().toLowerCase();
+            var catId = $(this).find('.cat-id-badge').text().toLowerCase();
+            var matchesSearch = (catName.indexOf(searchVal) > -1) || (catId.indexOf(searchVal) > -1);
             
             if (matchesStatus && matchesSearch) {
                 $(this).show();

@@ -192,17 +192,7 @@
                             </div>
                         @endif
 
-                        <div class="mb-4">
-                            <label class="saas-label">{{ __('pos.old_password') }} <span class="text-danger">*</span></label>
-                            <div class="input-group-saas">
-                                <div class="input-group-text-saas border-end-0 bg-transparent"><i class="bi bi-shield-lock-fill"></i></div>
-                                <input type="password" class="saas-input border-start-0 border-end-0 ps-0" id="old_password" name="old_password" required placeholder="{{ app()->getLocale() == 'ar' ? 'أدخل كلمة المرور القديمة' : 'Enter old password' }}">
-                                <div class="input-group-text-saas border-start-0 bg-transparent" style="cursor: pointer;" onclick="togglePassword('old_password')"><i class="bi bi-eye text-muted" id="old_password-icon"></i></div>
-                            </div>
-                            @error('old_password') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
-                        </div>
 
-                        <hr class="my-4 opacity-25">
 
                         <div class="mb-4">
                             <label class="saas-label">{{ __('pos.new_password') }} <span class="text-danger">*</span></label>

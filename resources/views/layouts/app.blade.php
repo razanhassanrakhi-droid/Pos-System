@@ -1217,21 +1217,21 @@
                     </li>
                     @endcan
 
-                    @can('view-warranties')
-                    <li class="{{ request()->routeIs('warranties.*') ? 'active' : '' }}">
-                        <a href="{{ route('warranties.index') }}">
-                            <i class="bi bi-shield-check main-icon"></i>
-                            <span>{{ __('pos.warranty_management') }}</span>
-                            <i class="bi bi-chevron-right nav-chevron"></i>
-                        </a>
-                    </li>
-                    @endcan
-                    
                     @can('view-purchases')
                     <li class="{{ request()->routeIs('purchases.*') ? 'active' : '' }}">
                         <a href="{{ route('purchases.index') }}">
                             <i class="bi bi-cart3 main-icon"></i>
                             <span>{{ __('pos.purchases') }}</span>
+                            <i class="bi bi-chevron-right nav-chevron"></i>
+                        </a>
+                    </li>
+                    @endcan
+
+                    @can('view-warranties')
+                    <li class="{{ request()->routeIs('warranties.*') ? 'active' : '' }}">
+                        <a href="{{ route('warranties.index') }}">
+                            <i class="bi bi-shield-check main-icon"></i>
+                            <span>{{ __('pos.warranty_management') }}</span>
                             <i class="bi bi-chevron-right nav-chevron"></i>
                         </a>
                     </li>
@@ -1529,6 +1529,16 @@
                     </div>
                 @endif
                 
+                @if(session('info'))
+                    <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 14px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2) !important; color: #3b82f6; backdrop-filter: blur(8px);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-info-circle-fill fs-5"></i>
+                            <div class="fw-semibold">{{ session('info') }}</div>
+                        </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close" style="filter: invert(0.4);"></button>
+                    </div>
+                @endif
+                
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 14px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2) !important; color: #ef4444; backdrop-filter: blur(8px);">
                         <div class="d-flex align-items-center gap-2">
@@ -1716,6 +1726,51 @@
 
         // Sidebar click behaviors
         $(document).ready(function() {
+            // Real-time Bilingual Fields Mirroring/Autofill
+            $(document).on('input', 'input, textarea', function() {
+                const currentInput = $(this);
+                const currentName = currentInput.attr('name');
+                if (!currentName) return;
+
+                let targetName;
+                if (currentName.endsWith('_ar')) {
+                    targetName = currentName.replace(/_ar$/, '_en');
+                } else if (currentName.endsWith('_en')) {
+                    targetName = currentName.replace(/_en$/, '_ar');
+                } else {
+                    return;
+                }
+
+                const form = currentInput.closest('form');
+                if (!form.length) return;
+                
+                const targetInput = form.find(`[name="${targetName}"]`);
+                if (!targetInput.length) return;
+
+                const currentVal = currentInput.val();
+                
+                // Mirror the value if the target hasn't been manually typed in, or if it is currently cleared
+                if (!targetInput.data('manual-change') || targetInput.val().trim() === '') {
+                    targetInput.val(currentVal);
+                    targetInput.trigger('change');
+                }
+            });
+
+            // Mark when user typed manually in a field
+            $(document).on('keyup change', 'input, textarea', function(e) {
+                const name = $(this).attr('name');
+                if (!name || (!name.endsWith('_ar') && !name.endsWith('_en'))) return;
+                
+                // If this is a direct user event (e.g. keyup/change triggered by typing/pasting)
+                if (e.originalEvent) {
+                    if ($(this).val().trim() !== '') {
+                        $(this).data('manual-change', true);
+                    } else {
+                        $(this).data('manual-change', false);
+                    }
+                }
+            });
+
             // Automatically expand collapsed sidebar when clicking a submenu toggle link
             $(document).on('click', '#sidebar ul li a[data-bs-toggle="collapse"]', function() {
                 if (!window.matchMedia("(max-width: 768px)").matches && document.body.classList.contains('sidebar-collapsed')) {

@@ -255,6 +255,7 @@ return array (
   'footer_text' => 'نص التذييل',
   'update_settings' => 'تحديث الإعدادات',
   'settings_updated_successfully' => 'تم تحديث الإعدادات بنجاح',
+  'no_changes_made' => 'لم يتم إجراء أي تغييرات',
   'address_en_label' => 'العنوان (EN)',
   'address_ar_label' => 'العنوان (AR)',
   'footer_en_label' => 'تذييل الفاتورة (EN)',

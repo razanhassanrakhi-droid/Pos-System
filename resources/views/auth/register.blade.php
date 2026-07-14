@@ -277,11 +277,11 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">{{ __('pos.full_name') }} (AR) <span class="text-danger">*</span></label>
-                        <input type="text" name="full_name_ar" class="form-control" value="{{ old('full_name_ar') }}" required placeholder="{{ __('massage.contact.placeholder.name') }}">
+                        <input type="text" name="full_name_ar" class="form-control" value="{{ old('full_name_ar') }}" placeholder="{{ __('massage.contact.placeholder.name') }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">{{ __('pos.full_name') }} (EN) <span class="text-danger">*</span></label>
-                        <input type="text" name="full_name_en" class="form-control" value="{{ old('full_name_en') }}" required placeholder="{{ __('massage.contact.placeholder.name') }}">
+                        <input type="text" name="full_name_en" class="form-control" value="{{ old('full_name_en') }}" placeholder="{{ __('massage.contact.placeholder.name') }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">{{ __('massage.username') }}</label>

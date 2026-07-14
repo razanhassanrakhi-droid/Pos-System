@@ -151,7 +151,7 @@ class ExpenseController extends Controller
             $expense->attachment = $request->file('attachment')->store('expenses', 'public');
         }
 
-        $expense->update([
+        $expense->fill([
             'type' => $request->type,
             'amount' => $request->amount,
             'payment_method' => $request->payment_method,
@@ -161,7 +161,12 @@ class ExpenseController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('expenses.index')->with('success', 'Expense updated successfully.');
+        if ($expense->isDirty()) {
+            $expense->save();
+            return redirect()->route('expenses.index')->with('success', 'Expense updated successfully.');
+        }
+
+        return redirect()->route('expenses.index')->with('info', __('pos.no_changes_made'));
     }
 
     public function destroy(Expense $expense)

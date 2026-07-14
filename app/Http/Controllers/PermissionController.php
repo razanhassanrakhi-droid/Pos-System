@@ -11,6 +11,7 @@ class PermissionController extends Controller
 {
     public function index()
     {
+        session(['permissions_index_url' => request()->fullUrl()]);
         $users = User::with('permissions', 'roles')->paginate(10);
         return view('permissions.index', compact('users'));
     }
@@ -40,6 +41,7 @@ class PermissionController extends Controller
         // Clear Spatie cache
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        return redirect()->route('permissions.index')->with('success', __('pos.permissions_updated_successfully'));
+        $indexUrl = session('permissions_index_url', route('permissions.index'));
+        return redirect()->to($indexUrl)->with('success', __('pos.permissions_updated_successfully'));
     }
 }

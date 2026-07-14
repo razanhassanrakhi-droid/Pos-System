@@ -255,6 +255,7 @@ return array (
   'footer_text' => 'Footer Text',
   'update_settings' => 'Update Settings',
   'settings_updated_successfully' => 'Settings updated successfully',
+  'no_changes_made' => 'No changes were made.',
   'address_en_label' => 'Address (EN)',
   'address_ar_label' => 'Address (AR)',
   'footer_en_label' => 'Footer Text (EN)',

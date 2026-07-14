@@ -1361,12 +1361,7 @@ class ReportService
         $collectionRate = $totalPurchases > 0 ? ($totalPaid / $totalPurchases) * 100 : 0;
 
         $activeCustomers = Customer::when($branchId, fn($q) => $q->where('branch_id', $branchId))
-            ->whereHas('sales', function($q) use ($branchId, $filters) {
-            if ($branchId) $q->where('branch_id', $branchId);
-            if (isset($filters['from_date']) && isset($filters['to_date'])) {
-                $q->whereBetween('created_at', [$filters['from_date'].' 00:00:00', $filters['to_date'].' 23:59:59']);
-            }
-        })->count();
+            ->where('status', 'Active')->count();
 
         $newCustomers = Customer::when($branchId, fn($q) => $q->where('branch_id', $branchId))
             ->whereBetween('created_at', [

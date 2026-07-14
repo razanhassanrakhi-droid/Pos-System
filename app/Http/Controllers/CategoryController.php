@@ -47,9 +47,12 @@ class CategoryController extends Controller
 
         $isActive = $request->has('is_active') ? (bool) $request->is_active : true;
 
+        $nameAr = $request->name_ar ?: $request->name_en;
+        $nameEn = $request->name_en ?: $request->name_ar;
+
         Category::create([
             'branch_id' => $branchId,
-            'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
+            'name' => ['ar' => $nameAr, 'en' => $nameEn],
             'is_active' => $isActive,
             'created_by' => $user->id,
         ]);
@@ -77,13 +80,21 @@ class CategoryController extends Controller
 
         $isActive = $request->has('is_active') ? (bool) $request->is_active : true;
 
-        $category->update([
-            'name' => ['ar' => $request->name_ar, 'en' => $request->name_en],
+        $nameAr = $request->name_ar ?: $request->name_en;
+        $nameEn = $request->name_en ?: $request->name_ar;
+
+        $category->fill([
+            'name' => ['ar' => $nameAr, 'en' => $nameEn],
             'is_active' => $isActive,
             'updated_by' => $user->id,
         ]);
 
-        return redirect()->route('categories.index')->with('success', __('pos.category_updated_successfully'));
+        if ($category->isDirty()) {
+            $category->save();
+            return redirect()->route('categories.index')->with('success', __('pos.category_updated_successfully'));
+        }
+
+        return redirect()->route('categories.index')->with('info', __('pos.no_changes_made'));
     }
 
     public function destroy($id)

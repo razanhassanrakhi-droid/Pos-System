@@ -207,11 +207,13 @@ class NotificationController extends Controller
             abort(403);
         }
 
-        $user->update([
-            'notification_settings' => $request->input('settings', [])
-        ]);
+        $user->notification_settings = $request->input('settings', []);
+        if ($user->isDirty('notification_settings')) {
+            $user->save();
+            return redirect()->back()->with('success', __('pos.settings_updated_successfully') ?? 'Notification settings updated successfully.');
+        }
 
-        return redirect()->back()->with('success', __('pos.settings_updated_successfully') ?? 'Notification settings updated successfully.');
+        return redirect()->back()->with('info', __('pos.no_changes_made') ?? 'No changes were made.');
     }
 
     /**
